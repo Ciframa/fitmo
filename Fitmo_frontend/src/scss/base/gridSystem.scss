@@ -1,0 +1,41 @@
+// Small tablets and large smartphones
+$screen-sm-min: 520px;
+
+// Small tablets
+$screen-md-min: 768px;
+
+// Tablets and small desktops
+$screen-lg-min: 992px;
+
+// Large tablets and desktops
+$screen-xl-min: 1200px;
+
+$collumns-default: 12 !default;
+
+@function createPercents($col-number) {
+  @return 100% / ($collumns-default / $col-number);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+$displaySizes: (
+  "xs": 0px,
+  "sm": 520px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px,
+);
+
+@each $sizes, $pixels in $displaySizes {
+  @for $i from 1 to $collumns-default + 1 {
+    @media (min-width: $pixels) {
+      .col-#{$i}-#{$sizes} {
+        width: createPercents($i);
+      }
+    }
+  }
+}

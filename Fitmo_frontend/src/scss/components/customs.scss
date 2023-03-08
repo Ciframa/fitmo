@@ -1,0 +1,26 @@
+.vue-number-input {
+  &__input {
+    text-align: center;
+    font-weight: 100 !important;
+    font-size: 1.6rem !important;
+    background: $white !important;
+    display: block !important;
+    height: 4rem !important;
+    padding: 0 !important;
+    border-radius: 2rem !important;
+    width: 10rem !important;
+  }
+  &__button {
+    width: 3rem !important;
+    height: 3rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+
+    &--minus {
+      left: 7px !important;
+    }
+    &--plus {
+      right: 7px !important;
+    }
+  }
+}

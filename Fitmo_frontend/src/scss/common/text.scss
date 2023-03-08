@@ -1,0 +1,144 @@
+@font-face {
+  font-family: "Poppins";
+  src: url("/public/assets/fonts/Poppins-Light.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/public/assets/fonts/Poppins-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/public/assets/fonts/Poppins-Medium.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/public/assets/fonts/Poppins-SemiBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/public/assets/fonts/Poppins-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/public/assets/fonts/Poppins-ExtraBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 1000;
+}
+
+$font-main: "Poppins";
+
+%headlines {
+  color: $text-color;
+}
+// HEADLINES
+h1,
+.h1 {
+  @extend %headlines;
+  color: $black-headers;
+  line-height: 3.5rem;
+  font-weight: 700;
+  font-size: 2.4rem;
+  text-align: center;
+  padding-right: 0;
+}
+@media screen and (min-width: $screen-md-min) {
+}
+
+h2,
+.h2 {
+  @extend %headlines;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 3.3rem;
+  color: $black-headers;
+  text-align: center;
+}
+
+h3,
+.h3 {
+  @extend %headlines;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.025rem;
+  color: $black-headers;
+  line-height: 3rem;
+  text-align: center;
+}
+
+h4,
+.h4 {
+  @extend %headlines;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 2.7rem;
+}
+
+h5,
+.h5 {
+  @extend %headlines;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.015rem;
+  line-height: 2.2rem;
+}
+
+h6,
+.h6 {
+  @extend %headlines;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.015rem;
+  line-height: 2rem;
+}
+
+// BODY (regular text)
+body {
+  color: $text-color;
+  font-family: $font-main;
+  font-size: 1.4rem;
+  letter-spacing: 0.05rem;
+  line-height: $line-height;
+  font-weight: 100;
+}
+
+small {
+  // font-family: $font-family-primary-light;
+  font-size: 1rem;
+  letter-spacing: 0.05rem;
+  line-height: 1.8rem;
+}
+
+a,
+.pseudo-link {
+  color: $text-color;
+  display: block;
+
+  &:hover,
+  &:focus {
+    cursor: pointer;
+    // text-decoration: underline;
+  }
+  &:visited,
+  &:focus {
+    text-decoration: none;
+  }
+}
+input {
+  font-family: $font-main;
+}

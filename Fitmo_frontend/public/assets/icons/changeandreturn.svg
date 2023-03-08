@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="47.342" height="46.385" viewBox="0 0 47.342 46.385">
+  <g id="Group_308" data-name="Group 308" transform="translate(1.5 2.121)">
+    <g id="Group_295" data-name="Group 295" transform="translate(6.787 4.148)">
+      <path id="Path_119" data-name="Path 119" d="M6192.059,57.28,6175.69,63.2l-16.462-5.953" transform="translate(-6159.083 -51.273)" fill="none" stroke="#474747" stroke-linecap="round" stroke-width="3"/>
+      <path id="Path_120" data-name="Path 120" d="M6190.755,11.584,6175.037,5.9a1.336,1.336,0,0,0-.909,0l-15.717,5.683a.661.661,0,0,0-.437.621V32.037a.274.274,0,0,0,.181.257l15.973,5.775a1.338,1.338,0,0,0,.909,0l15.973-5.775a.274.274,0,0,0,.181-.257V12.205A.66.66,0,0,0,6190.755,11.584Z" transform="translate(-6157.975 -5.821)" fill="none" stroke="#474747" stroke-linecap="round" stroke-width="3"/>
+      <line id="Line_57" data-name="Line 57" y2="20.207" transform="translate(16.608 11.926)" fill="none" stroke="#474747" stroke-linecap="round" stroke-width="3"/>
+      <line id="Line_58" data-name="Line 58" y1="5.796" x2="16.03" transform="translate(8.16 2.753)" fill="none" stroke="#474747" stroke-linecap="round" stroke-width="3"/>
+    </g>
+    <g id="Group_300" data-name="Group 300" transform="translate(0 0)">
+      <path id="Path_130" data-name="Path 130" d="M7755.895,532.927h-13.136" transform="translate(-7742.32 -530.094)" fill="none" stroke="#474747" stroke-linecap="round" stroke-width="3"/>
+      <path id="Path_131" data-name="Path 131" d="M7745.742,527.617l-2.833,2.833,2.833,2.833" transform="translate(-7742.91 -527.617)" fill="none" stroke="#474747" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    </g>
+    <g id="Group_301" data-name="Group 301" transform="translate(44.341 42.142) rotate(180)">
+      <path id="Path_130-2" data-name="Path 130" d="M13.136,0H0" transform="translate(0.439 2.833)" fill="none" stroke="#474747" stroke-linecap="round" stroke-width="3"/>
+      <path id="Path_131-2" data-name="Path 131" d="M2.833,0,0,2.833,2.833,5.665" fill="none" stroke="#474747" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+.arrow-slick {
+  font-family: "slick";
+  font-size: 17px;
+  line-height: 1;
+  opacity: 1;
+  color: black;
+  margin-left: 0.3rem;
+
+  &::before {
+    content: "→";
+    height: 17.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+    transform: rotate(90deg);
+    font-weight: 100 !important;
+  }
+}
