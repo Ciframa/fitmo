@@ -1,23 +1,23 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "@/views/Home.vue";
-import Product from "@/views/Product.vue";
-import Category from "@/views/Category.vue";
-import Registration from "@/views/Registration.vue";
+import Home from "../views/Home.vue";
+import Product from "../views/Product.vue";
+import Category from "../views/Category.vue";
+import Registration from "../views/Registration.vue";
 
-import PaymentDelivery from "@/views/buySteps/PaymentDelivery.vue";
-import Cart from "@/views/buySteps/Cart.vue";
-import CustomerInfo from "@/views/buySteps/CustomerInfo.vue";
-import OrderConfirmation from "@/views/buySteps/OrderConfirmation.vue";
+import PaymentDelivery from "../views/buySteps/PaymentDelivery.vue";
+import Cart from "../views/buySteps/Cart.vue";
+import CustomerInfo from "../views/buySteps/CustomerInfo.vue";
+import OrderConfirmation from "../views/buySteps/OrderConfirmation.vue";
 
-import ChangeReturn from "@/views/info/ChangeReturn.vue";
-import Contact from "@/views/info/Contact.vue";
-import OrderStatus from "@/views/info/OrderStatus.vue";
-import PaymentDeliveryInfo from "@/views/info/PaymentDelivery.vue";
-import SmazatPotom from "@/views/SmazatPotom.vue";
-import VerifyEmail from "@/views/VerifyEmail.vue";
+import ChangeReturn from "../views/info/ChangeReturn.vue";
+import Contact from "../views/info/Contact.vue";
+import OrderStatus from "../views/info/OrderStatus.vue";
+import PaymentDeliveryInfo from "../views/info/PaymentDelivery.vue";
+import SmazatPotom from "../views/SmazatPotom.vue";
+import VerifyEmail from "../views/VerifyEmail.vue";
 
-import Admin from "@/views/Admin.vue";
-import ProductEdit from "@/views/admin/ProductEdit.vue";
+import Admin from "../views/Admin.vue";
+import ProductEdit from "../views/admin/ProductEdit.vue";
 
 const routes = [{
     path: "/",
