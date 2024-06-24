@@ -16,11 +16,11 @@ jobs:
       - name: Deploy Backend to FTP server
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          ftp-server: 287586.w86.wedos.net
-          ftp-username: ${{ secrets.FTP_USERNAME }}
-          ftp-password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: Fitmo_backend  # Specify the directory containing backend files
-          server-dir: /www/subdom/beTest  # Change this to your target directory on the server
+          server: ftp://287586.w86.wedos.net
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: Fitmo_backend  # Directory containing backend files
+          server-dir: /www/subdom/beTest  # Target directory on the server for backend
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -32,8 +32,8 @@ jobs:
       - name: Deploy Frontend to FTP server
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          ftp-server: 287586.w86.wedos.net
-          ftp-username: ${{ secrets.FTP_USERNAME }}
-          ftp-password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: Fitmo_frontend  # Specify the directory containing frontend files
-          server-dir: /www/subdom/devTest  # Change this to your target directory on the server
+          server: ftp://287586.w86.wedos.net
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: Fitmo_frontend  # Directory containing frontend files
+          server-dir: /www/subdom/devTest  # Target directory on the server for frontend
