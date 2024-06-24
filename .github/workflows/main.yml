@@ -35,7 +35,7 @@ jobs:
       - name: Build Frontend
         run: |
           cd Fitmo_frontend
-          pnpm run build  # Adjust this based on your actual build command
+          npm run build  
 
       - name: Deploy Frontend via SFTP
         env:
