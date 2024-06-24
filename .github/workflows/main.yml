@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies and build Vue.js frontend
         run: |
           cd Fitmo_frontend
-          npm install
-          npm run build
+          pnpm install
+          pnpm run build
 
       - name: Deploy Vue.js frontend to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
