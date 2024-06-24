@@ -3,7 +3,7 @@ name: Deploy to SFTP
 on:
   push:
     branches:
-      - master  # Trigger deployment on changes pushed to the master branch
+      - master  # Change this to your target branch
 
 jobs:
   deploy-backend:
@@ -13,10 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Deploy Backend via SFTP
-        if: github.ref == 'refs/heads/master'  # Ensure deployment only happens for the master branch
+      - name: Install lftp
         run: |
-          lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Deploy Backend via SFTP
+        run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -25,22 +28,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Node.js for Frontend
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'  # Adjust to your required Node.js version
-
-      - name: Install Frontend dependencies
+      - name: Install lftp
         run: |
-          cd Fitmo_frontend
-          npm install
-
-      - name: Build Frontend project
-        run: |
-          cd Fitmo_frontend
-          npm run build  # Replace with your actual build command for the frontend (e.g., npm run build)
+          sudo apt-get update
+          sudo apt-get install -y lftp
 
       - name: Deploy Frontend via SFTP
-        if: github.ref == 'refs/heads/master'  # Ensure deployment only happens for the master branch
-        run: |
-          lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_frontend/dist /www/subdom/devTest"
+        run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_frontend /www/subdom/devTest"
