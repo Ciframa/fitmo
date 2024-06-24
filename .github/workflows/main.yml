@@ -13,11 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Update packages and install lftp
-        run: |
-          apt-get update
-          apt-get install -y lftp
-
       - name: Deploy Backend via SFTP
         env:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -32,19 +27,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Node.js and npm
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Navigate to frontend directory and install dependencies
         run: |
           cd Fitmo_frontend
-          npm install
+          pnpm install
 
       - name: Build Frontend
         run: |
-          npm run build  # Adjust this based on your actual build command
+          pnpm run build  # Adjust this based on your actual build command
 
       - name: Deploy Frontend via SFTP
         env:
