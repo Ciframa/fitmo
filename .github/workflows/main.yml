@@ -19,8 +19,8 @@ jobs:
           server: ftp://287586.w86.wedos.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: Fitmo_backend  # Directory containing backend files
-          server-dir: /www/subdom/beTest  # Target directory on the server for backend
+          local-dir: Fitmo_backend/  # Directory containing backend files
+          server-dir: /www/subdom/beTest/  # Target directory on the server for backend
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -35,5 +35,5 @@ jobs:
           server: ftp://287586.w86.wedos.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: Fitmo_frontend  # Directory containing frontend files
-          server-dir: /www/subdom/devTest  # Target directory on the server for frontend
+          local-dir: Fitmo_frontend/  # Directory containing frontend files
+          server-dir: /www/subdom/devTest/  # Target directory on the server for frontend
