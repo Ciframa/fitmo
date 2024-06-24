@@ -18,11 +18,7 @@ build/
 out/
 
 # Static assets
-*.png
-*.jpg
-*.jpeg
 *.gif
-*.svg
 *.ico
 
 # Testing
