@@ -3,11 +3,11 @@ name: Deploy to FTP
 on:
   push:
     branches:
-      - master  # Change this to your main branch name
+      - main  # Change this to your main branch name
 
 jobs:
   deploy_frontend:
-    runs-on: windows-latest  # Specify Windows environment
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -15,12 +15,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '20'
 
       - name: Install dependencies and build Vue.js frontend
         run: |
           cd Fitmo_frontend
-          npm i -g pnpm  # Use npm instead of pnpm if you're not using pnpm
+          npm npm i -g pnpm
           npm run build
 
       - name: Deploy Vue.js frontend to FTP
@@ -33,7 +33,7 @@ jobs:
           remote-dir: www/subdoms/devTest
 
   deploy_backend:
-    runs-on: windows-latest  # Specify Windows environment
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -44,10 +44,7 @@ jobs:
       - name: Install Composer dependencies
         run: |
           cd Fitmo_backend
-          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php composer-setup.php
-          php -r "unlink('composer-setup.php');"
-          php composer.phar install --no-dev --optimize-autoloader
+          composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-fileinfo
 
       - name: Deploy Laravel backend to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
