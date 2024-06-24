@@ -27,13 +27,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - name: Navigate to frontend directory and install dependencies
         run: |
           cd Fitmo_frontend
-          pnpm install
+          npm install
 
       - name: Build Frontend
         run: |
