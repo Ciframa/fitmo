@@ -127,7 +127,7 @@ export default {};
     }
   }
 }
-@media screen and(min-width: $screen-md-min) {
+@media screen and (min-width: $screen-md-min) {
   .customMade__content__showroom {
     & > div {
       position: relative;
@@ -148,39 +148,7 @@ export default {};
   }
 }
 
-@media screen and(min-width: $screen-lg-min) {
-  .customMade__content {
-    h2 {
-      font-size: 3.96rem;
-    }
-    article {
-      max-width: 90rem;
-      p {
-        font-size: 1.98rem;
-        line-height: 2.3rem;
-        &:last-child {
-          font-size: 2.16rem;
-        }
-      }
-    }
-    &__showroom {
-      margin-top: 11rem;
-      & > div {
-        img {
-          width: 18rem;
-          height: 18rem;
-
-          &:last-child {
-            height: 5rem;
-            width: 5rem;
-            top: 6.5rem;
-          }
-        }
-      }
-    }
-  }
-}
-@media screen and(min-width: $screen-xl-min) {
+@media screen and (min-width: $screen-xl-min) {
   .customMade__content__showroom {
     & > div {
       img {

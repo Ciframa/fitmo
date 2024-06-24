@@ -41,5 +41,14 @@ test/
 # Recommended template: Node.gitignore
 
 dist/
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.zip
+*.docx
+*.pdf
 
 # End of https://www.toptal.com/developers/gitignore/api/vue,laravel,vuejs

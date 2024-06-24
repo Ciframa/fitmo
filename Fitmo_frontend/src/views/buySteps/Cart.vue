@@ -1,212 +1,121 @@
 <template>
   <div class="cart paymentDelivery">
-    <current-step-c class="col-12-xs col-8-lg"></current-step-c>
+    <current-step-c
+      v-if="this.products?.length > 0"
+      class="col-12-xs col-8-lg"
+    ></current-step-c>
     <h1>
       Nákupní <br />
       košík
     </h1>
     <div class="cart__wrapper">
-      <div class="cart__wrapper__headings">
-        <span>Produkt</span>
-        <span>Dostupnost</span>
-        <span>Množství</span>
-        <span>Cena/ks</span>
-        <span>Cena celkem</span>
-      </div>
-      <div class="col-12-xs cart__wrapper__item_wrapper">
-        <div class="cart__wrapper__item_wrapper__header">
-          <img
-            src="../../../public/assets/products/main/fitness_vybaveni.png"
-            alt=""
-          />
-          <div>
-            <span class="cart__wrapper__item_wrapper__header__title"
-              >NÁZEV PRODUKTU JÁ JSEM PRODUKT KOBLÍŽEK
+      <template v-if="this.products?.length > 0">
+        <div class="cart__wrapper__headings">
+          <span>Produkt</span>
+          <span>Dostupnost</span>
+          <span>Množství</span>
+          <span>Cena/ks</span>
+          <span>Cena celkem</span>
+        </div>
+        <div
+          class="col-12-xs cart__wrapper__item_wrapper"
+          v-for="product in this.products"
+          :key="product"
+        >
+          <div class="cart__wrapper__item_wrapper__header">
+            <img
+              :src="
+                product.color_name
+                  ? this.imagesBasePath +
+                    product.name +
+                    '-' +
+                    product.color_name +
+                    '/' +
+                    product.image_urls[0]
+                  : product.variant
+                  ? this.imagesBasePath +
+                    product.name +
+                    '-' +
+                    product.variant +
+                    '/' +
+                    product.image_urls[0]
+                  : this.imagesBasePath +
+                    product.name +
+                    '/' +
+                    product.image_urls[0]
+              "
+              alt=""
+            />
+            <div>
+              <span class="cart__wrapper__item_wrapper__header__title"
+                >{{ product.name }}
+              </span>
+              <span>Hmotnost: 2 kg</span>
+            </div>
+          </div>
+          <div class="cart__wrapper__item_wrapper__to_hide">
+            <span>Dostupnost</span>
+            <span>Množství</span>
+          </div>
+          <section>
+            <span class="cart__wrapper__item_wrapper__availibility">
+              <font-awesome-icon :icon="['fa', 'check']" size="2x" />
+              Skladem
             </span>
-            <span>Hmotnost: 2 kg</span>
+          </section>
+          <section>
+            <vue-number-input
+              :model-value="product.count"
+              :min="1"
+              v-model="product.count"
+              :inputtable="false"
+              inline
+              controls
+              @update:model-value="onUpdate(product.count, product.id)"
+            ></vue-number-input>
+          </section>
+          <div class="cart__wrapper__item_wrapper__to_hide">
+            <span>Cena/ks</span>
           </div>
-        </div>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Dostupnost</span>
-          <span>Množství</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__availibility">
-            <font-awesome-icon :icon="['fa', 'check']" size="2x" />
-            Skladem
-          </span>
-        </section>
-        <section>
-          <vue-number-input
-            :model-value="1"
-            :min="1"
-            :inputtable="false"
-            inline
-            controls
-          ></vue-number-input>
-        </section>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Cena/ks</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceItem">890 Kč/ks</span>
-        </section>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceFinal"
-            >890 Kč
-            <font-awesome-icon :icon="['fa', 'times']" size="2x" />
-          </span>
-        </section>
-      </div>
-      <div class="col-12-xs cart__wrapper__item_wrapper">
-        <div class="cart__wrapper__item_wrapper__header">
-          <img
-            src="../../../public/assets/products/main/fitness_vybaveni.png"
-            alt=""
-          />
-          <div>
-            <span class="cart__wrapper__item_wrapper__header__title"
-              >TRIGGER POINT STK CONTOUR</span
+          <section>
+            <span class="cart__wrapper__item_wrapper__priceItem"
+              >{{ getLowestPrice(product) }}/ks</span
             >
-            <span>Hmotnost: 2 kg</span>
-          </div>
+          </section>
+          <section>
+            <span class="cart__wrapper__item_wrapper__priceFinal"
+              ><span>{{ getLowestPrice(product) * product.count }} Kč</span>
+              <font-awesome-icon
+                :icon="['fa', 'times']"
+                :style="{ fontSize: '2.8rem' }"
+                v-on:click="removeItem(product.id)"
+              />
+            </span>
+          </section>
         </div>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Dostupnost</span>
-          <span>Množství</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__availibility">
-            <font-awesome-icon :icon="['fa', 'check']" size="2x" />
-            Skladem
-          </span>
-        </section>
-        <section>
-          <vue-number-input
-            :model-value="1"
-            :min="1"
-            :inputtable="false"
-            inline
-            controls
-          ></vue-number-input>
-        </section>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Cena/ks</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceItem">890 Kč/ks</span>
-        </section>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceFinal"
-            >890 Kč
-            <font-awesome-icon :icon="['fa', 'times']" size="2x" />
-          </span>
-        </section>
-      </div>
-      <div class="col-12-xs cart__wrapper__item_wrapper">
-        <div class="cart__wrapper__item_wrapper__header">
-          <img
-            src="../../../public/assets/products/main/fitness_vybaveni.png"
-            alt=""
-          />
-          <div>
-            <span class="cart__wrapper__item_wrapper__header__title"
-              >NÁZEV PRODUKTU</span
-            >
-            <span>Hmotnost: 2 kg</span>
-          </div>
-        </div>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Dostupnost</span>
-          <span>Množství</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__availibility">
-            <font-awesome-icon :icon="['fa', 'check']" size="2x" />
-            Skladem
-          </span>
-        </section>
-        <section>
-          <vue-number-input
-            :model-value="1"
-            :min="1"
-            :inputtable="false"
-            inline
-            controls
-          ></vue-number-input>
-        </section>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Cena/ks</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceItem">890 Kč/ks</span>
-        </section>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceFinal"
-            >890 Kč
-            <font-awesome-icon :icon="['fa', 'times']" size="2x" />
-          </span>
-        </section>
-      </div>
-      <div class="col-12-xs cart__wrapper__item_wrapper">
-        <div class="cart__wrapper__item_wrapper__header">
-          <img
-            src="../../../public/assets/products/main/fitness_vybaveni.png"
-            alt=""
-          />
-          <div>
-            <span class="cart__wrapper__item_wrapper__header__title"
-              >NÁZEV PRODUKTU</span
-            >
-            <span>Hmotnost: 2 kg</span>
-          </div>
-        </div>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Dostupnost</span>
-          <span>Množství</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__availibility">
-            <font-awesome-icon :icon="['fa', 'check']" size="2x" />
-            Skladem
-          </span>
-        </section>
-        <section>
-          <vue-number-input
-            :model-value="1"
-            :min="1"
-            :inputtable="false"
-            inline
-            controls
-          ></vue-number-input>
-        </section>
-        <div class="cart__wrapper__item_wrapper__to_hide">
-          <span>Cena/ks</span>
-        </div>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceItem">890 Kč/ks</span>
-        </section>
-        <section>
-          <span class="cart__wrapper__item_wrapper__priceFinal"
-            >890 Kč
-            <font-awesome-icon :icon="['fa', 'times']" size="2x" />
-          </span>
-        </section>
-      </div>
+      </template>
+      <template v-if="!this.products">
+        <span>Košík je zatím prázdný</span>
+      </template>
     </div>
-
     <nav-buttons-c
+      v-if="this.products?.length > 0"
       page="kosik"
       pageBefore="/"
       pageAfter="/objednavka/doprava-a-platba"
     ></nav-buttons-c>
-    <summary-price-c class="col-12-xs col-4-lg" page="kosik"></summary-price-c>
+    <summary-price-c
+      v-if="this.products?.length > 0"
+      class="col-12-xs col-4-lg"
+      page="kosik"
+    ></summary-price-c>
   </div>
 </template>
 <script>
 import currentStepC from "../../components/buyComponents/CurrentStep.vue";
 import summaryPriceC from "../../components/buyComponents/SummaryPrice.vue";
 import navButtonsC from "../../components/buyComponents/NavButtons.vue";
+import axios from "../../api";
 
 export default {
   components: {
@@ -216,7 +125,75 @@ export default {
   },
 
   data() {
-    return {};
+    return {
+      imagesBasePath: "http://localhost:8000/products/",
+      //imagesBasePath: "https://be.fitmo.cz/products/",
+    };
+  },
+
+  methods: {
+    removeItem(itemToRemove) {
+      console.log(itemToRemove);
+      // Get the current items from sessionStorage
+      const storedItems = this.products;
+
+      // Filter out the items that match the criteria (id and count)
+      const filteredItems = storedItems.filter(
+        (item) => item.id !== itemToRemove
+      );
+
+      // Save the filtered array back to sessionStorage
+      sessionStorage.setItem("cart", JSON.stringify(filteredItems));
+
+      this.$store.commit("updateCart", filteredItems);
+    },
+
+    getLowestPrice(product) {
+      if (product.discount !== 0) {
+        return product.discount;
+      } else {
+        return product.price;
+      }
+    },
+    /*
+    async getProducts() {
+      if (this.cartProducts.length > 0) {
+        const ids = [];
+        this.cartProducts.forEach((item) => {
+          ids.push(item.id);
+        });
+        try {
+          const response = await axios.get("/api/productsByIds/" + ids);
+          if (response.data.length) {
+            const secondArrayMap = new Map(
+              this.cartProducts.map((item) => [item.id, item.count])
+            );
+
+            const mappedArray = response.data.map((item) => ({
+              ...item,
+              count: secondArrayMap.get(item.id) || 0,
+            }));
+            this.products = mappedArray;
+          }
+        } catch (error) {}
+      } else {
+        this.products = [];
+      }
+    },*/
+    onUpdate(newValue, productId) {
+      this.products.map((item) => {
+        if (item.id === productId) {
+          item.count = newValue;
+          return;
+        }
+      });
+      this.$store.commit("updateCart", this.products);
+    },
+  },
+  computed: {
+    products() {
+      return this.$store.state.cart;
+    },
   },
 };
 </script>
@@ -313,6 +290,7 @@ export default {
         display: flex;
         color: $green;
         font-weight: 500;
+        align-items: center;
 
         svg {
           margin-right: 0.4rem;
@@ -375,7 +353,7 @@ export default {
         order: 4;
 
         .btn-yellow {
-          padding: 0.5rem 3rem;
+          padding: 1rem 3rem;
         }
         &__back {
           background: $gray-second;
@@ -434,6 +412,10 @@ export default {
         &__priceFinal {
           font-weight: 400;
           font-size: 1.2rem;
+          width: 13.2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
       }
     }
@@ -468,19 +450,21 @@ export default {
           width: 9.1rem;
         }
         span:nth-child(3) {
-          width: 10rem;
+          width: 9.6rem;
         }
         span:nth-child(4) {
-          width: 7.1rem;
+          width: 4.9rem;
         }
         span:nth-child(5) {
-          width: 14.9rem;
+          width: 15.2rem;
         }
       }
       &__item_wrapper {
         &__header {
           img {
             height: 10rem;
+            width: 10rem;
+            object-fit: contain;
           }
 
           &__title {

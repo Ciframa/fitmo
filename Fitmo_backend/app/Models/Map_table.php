@@ -9,4 +9,5 @@ class Map_table extends Model
 {
     use HasFactory;
     protected $table = 'map_table';
+      protected $fillable = ['path', 'category_id'];
 }

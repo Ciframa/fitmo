@@ -2,18 +2,119 @@
   <div class="registration row">
     <div class="col-12-xs col-6-md">
       <h1>Registrace</h1>
-      <form action="">
-        <label for="name">Jméno*</label>
-        <input type="text" name="" id="name" />
-        <label for="surname">Příjmení*</label>
-        <input type="text" name="" id="surname" />
-        <label for="email">Email*</label>
-        <input type="text" name="" id="email" />
-        <label for="password">Vytvořte heslo*</label>
-        <input type="text" name="" id="password" />
-        <span>Musí obsahovat minimálně 5 znaků</span>
-        <label for="password">Potvrdit heslo*</label>
-        <input type="text" name="" id="password" />
+      <form action="" @submit.prevent="registration(formData)">
+        <h2>Osobní údaje</h2>
+        <label for="name">Jméno a příjmení*</label>
+        <input type="text" name="" id="name" required v-model="formData.name" />
+        <label for="phoneNumber">Telefonní číslo*</label>
+        <input
+          type="tel"
+          name=""
+          id="phoneNumber"
+          required
+          v-model="formData.phoneNumber"
+        />
+        <label for="emailReg">Email*</label>
+        <input
+          type="email"
+          name=""
+          id="emailReg"
+          required
+          v-model="formData.email"
+          :class="{ invalid: this.formData.responseAnswer != '' }"
+        />
+        <span>
+          {{ this.formData.responseAnswer }}
+        </span>
+        <label for="passwordReg">Vytvořte heslo*</label>
+        <input
+          type="password"
+          id="passwordReg"
+          required
+          v-model="formData.password"
+          pattern=".{8,}$"
+          @input="passwordRequirementsCheck(formData.password)"
+        />
+        <div class="regex">
+          <span
+            :class="{
+              unfulfilled: !formData.passwordStrength >= 1,
+              fulfilled: formData.passwordStrength >= 1,
+            }"
+            v-show="formData.password?.length > 0"
+            >Heslo musí obsahovat minimálně 8 znaků</span
+          >
+          <div class="regex__bar" v-if="formData.passwordStrength >= 1">
+            <div :class="'regex__bar' + formData.passwordStrength"></div>
+            <span>{{
+              formData.passwordStrengthText[formData.passwordStrength - 1]
+            }}</span>
+          </div>
+        </div>
+        <label for="passwordRegCheck">Potvrdit heslo*</label>
+        <input
+          type="password"
+          name=""
+          id="passwordRegCheck"
+          required
+          v-model="formData.passwordCheck"
+        />
+        <span class="quote">{{ formData.quote }}</span>
+
+        <div class="billing_information">
+          <h2>Fakturační a dodací údaje</h2>
+          <div>
+            <label for="street">Ulice a číslo popisné</label>
+            <input type="text" name="" id="street" />
+          </div>
+
+          <div>
+            <label for="town">Město</label>
+            <input type="text" name="" id="town" />
+          </div>
+          <div>
+            <label for="zip_code">PSČ</label>
+            <input type="text" name="" id="zip_code" />
+          </div>
+          <input
+            type="checkbox"
+            name=""
+            id="identicalAdresses"
+            :checked="this.formData.identicalAdresses"
+            v-model="this.formData.identicalAdresses"
+          />
+          <label for="identicalAdresses" class="billing_information__check">
+            <font-awesome-icon :icon="['fa', 'check']" />Fakturační údaje jsou
+            stejné jako dodací</label
+          >
+        </div>
+
+        <div
+          class="billing_information"
+          v-if="!this.formData.identicalAdresses"
+        >
+          <h2>Dodací údaje</h2>
+          <div>
+            <label for="street">Ulice a číslo popisné</label>
+            <input type="text" name="" id="street" />
+          </div>
+          <div>
+            <label for="town">Město</label>
+            <input type="text" name="" id="town" />
+          </div>
+          <div>
+            <label for="zip_code">PSČ</label>
+            <input type="text" name="" id="zip_code" />
+          </div>
+          <input
+            type="checkbox"
+            name=""
+            id="identicalAdresses"
+            :checked="this.formData.identicalAdresses"
+            v-model="this.formData.identicalAdresses"
+          />
+        </div>
+
         <div class="options">
           <div class="row">
             <input type="checkbox" name="Agrees" id="first" />
@@ -64,7 +165,7 @@
           </li>
           <li>
             <img src="../../public/assets/icons/check_transparent.svg" alt="" />
-            <span> FUBO novinky z první ruky</span>
+            <span>FITMO novinky z první ruky</span>
           </li>
         </ul>
       </div>
@@ -78,14 +179,106 @@
 </template>
 
 <script>
+import axios from "../api";
+
 export default {
   components: {},
   data() {
-    return {};
+    return {
+      formData: {
+        // identicalAdresses: true,
+        //passwordStrengthText: ["slabé", "střední", "silné"],
+        //passwordStrength: 0,
+
+        email: "marekcifra@seznam.cz",
+        identicalAdresses: true,
+        name: "aFjm",
+        password: "Markusius1",
+        passwordCheck: "Markusius1",
+        passwordStrength: 0,
+        passwordStrengthText: [("slabé", "střední", "silné")],
+        phoneNumber: "fawfa",
+        quote: "",
+        responseAnswer: "",
+      },
+    };
+  },
+  /**/
+  methods: {
+    registration(userData) {
+      if (userData.password != userData.passwordCheck) {
+        this.formData.quote = "Hesla se neshodují";
+        return;
+      } else {
+        this.formData.quote = "";
+
+        axios
+          .post("api/register", { userData })
+          .then((response) => {
+            if (response.status == 201) {
+              console.log("Úspěch");
+            }
+          })
+          .catch((error) => {
+            if (error.response.status === 409) {
+              this.formData.responseAnswer =
+                "Email je již používaný, prosíme použijte jiný";
+            }
+          });
+      }
+    },
+    passwordRequirementsCheck(password) {
+      let passwordEightCharacters = /.{8,}/.test(password);
+      let passwordOneCapital = /.*[A-Z].*/.test(password);
+      let passwordOneNumber = /.*[0-9].*/.test(password);
+
+      if (passwordEightCharacters) {
+        this.formData.passwordStrength = 1;
+
+        if (passwordOneCapital || passwordOneNumber) {
+          this.formData.passwordStrength = 2;
+        }
+        if (passwordOneCapital && passwordOneNumber) {
+          this.formData.passwordStrength = 3;
+        }
+      } else {
+        this.formData.passwordStrength = 0;
+      }
+    },
   },
 };
 </script>
 <style lang="scss">
+.billing_information {
+  display: flex;
+  margin-top: 1rem;
+  input[type="checkbox"] {
+    padding: 0;
+    &:checked + label svg {
+      background: $yellow;
+      border-color: $yellow;
+    }
+  }
+  &__check {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 1.1rem;
+    line-height: 2.2rem;
+    margin-top: 0;
+
+    svg {
+      margin-right: 0.6rem;
+      border: 1px solid #cac8c8;
+      padding: 0.1rem;
+      border-radius: 0.5rem;
+      background: white;
+      color: #ffffff;
+      aspect-ratio: 1 / 1;
+    }
+  }
+}
+
 .registration {
   margin: auto;
 
@@ -106,25 +299,125 @@ export default {
   h2 {
     text-align: left;
     font-size: 2rem;
+    width: 100%;
   }
   form {
     display: flex;
     flex-wrap: wrap;
 
-    > label {
+    .quote {
+      font-size: 1.6rem;
+      color: red;
+    }
+    h2 {
+      font-size: 1.8rem;
+      margin-top: 2rem;
+    }
+
+    .regex {
+      margin-top: 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      width: 100%;
+
+      &__bar {
+        align-items: center;
+        display: flex;
+        span {
+          min-width: 4.2rem;
+          font-weight: 400;
+          text-align: right;
+          margin-right: 0.5rem;
+        }
+        div {
+          min-width: 10rem;
+          display: block;
+          height: 1.2rem;
+          background: $gray-third;
+          border-radius: 1rem;
+          position: relative;
+          margin-right: 2rem;
+        }
+        &1 {
+          &::before {
+            content: "";
+            height: 100%;
+            width: 33%;
+            display: block;
+            background: red;
+            border-radius: 1rem;
+          }
+        }
+        &2 {
+          &::before {
+            content: "";
+            height: 100%;
+            width: 66%;
+            display: block;
+            background: orange;
+            border-radius: 1rem;
+          }
+        }
+        &3 {
+          &::after {
+            content: "";
+            height: 100%;
+            width: 100%;
+            display: block;
+            background: green;
+            border-radius: 1rem;
+          }
+        }
+      }
+      span {
+        width: unset;
+      }
+      .fulfilled {
+        color: lightgreen;
+      }
+      .unfulfilled {
+        color: red;
+      }
+    }
+
+    .billing_information {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+
+      div {
+        margin-top: 1.2rem;
+        width: 100%;
+        &:nth-child(5) {
+          width: 9rem;
+          margin-left: 2rem;
+        }
+        input {
+        }
+      }
+      &__check {
+        padding-top: 1rem;
+      }
+    }
+
+    label {
       width: 100%;
       font-size: 1.4rem;
       margin-top: 1.2rem;
+      display: block;
     }
-    > span {
+    span {
       width: 100%;
       font-size: 1.1rem;
     }
-    input[type="text"] {
+    input {
       width: 100%;
       padding: 1rem;
     }
     input[type="checkbox"] {
+      padding: 0;
       &:checked + label svg {
         background: $yellow;
         border-color: $yellow;
@@ -133,19 +426,19 @@ export default {
     .options {
       margin: 1.5rem 0 2.5rem 0;
       width: 100%;
-
+    }
+    .options,
+    .billing_information {
       label {
         display: flex;
         align-items: center;
         white-space: nowrap;
         font-size: 1.1rem;
         line-height: 2.2rem;
-
-        svg {
-          margin-right: 0.6rem;
-        }
+        margin-top: 0;
       }
-      .row svg {
+      svg {
+        margin-right: 0.6rem;
         border: 1px solid $gray-second;
         padding: 0.1rem;
         border-radius: 0.5rem;
@@ -223,7 +516,7 @@ export default {
     margin-bottom: 0;
   }
 }
-@media screen and(max-width: $screen-sm-min - 1px) {
+@media screen and (max-width: $screen-sm-min - 1px) {
   .registration {
     form input[type="submit"],
     &__buttons .btn-blue,
@@ -232,7 +525,7 @@ export default {
     }
   }
 }
-@media screen and(min-width: $screen-md-min) {
+@media screen and (min-width: $screen-md-min) {
   .registration {
     margin-bottom: 7rem;
     &__info {
@@ -244,7 +537,7 @@ export default {
     }
   }
 }
-@media screen and(max-width: $screen-md-min - 1px) {
+@media screen and (max-width: $screen-md-min - 1px) {
   .registration {
     input[type="submit"] {
       margin-bottom: 2.5rem;
@@ -261,7 +554,7 @@ export default {
   }
 }
 
-@media screen and(min-width: $screen-lg-min) {
+@media screen and (min-width: $screen-lg-min) {
   .registration {
     &__info {
     }

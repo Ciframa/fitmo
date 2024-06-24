@@ -38,7 +38,9 @@
           @click="slider.moveToIdx(idx)"
           :class="{ dot: true, active: current === idx }"
           :key="idx"
-        ></button>
+        >
+          <div></div>
+        </button>
       </div>
     </div>
   </div>
@@ -80,7 +82,6 @@ export default {
   watch: {
     ratings: () => {
       slider.update();
-      console.log("Updatni se");
     },
   },
 };
@@ -93,6 +94,7 @@ export default {
   padding: 7rem 0 15rem 10%;
 }
 .keen-slider {
+  align-items: flex-start;
   &__slide {
     background: $white;
     border-radius: 2rem;
@@ -102,6 +104,7 @@ export default {
     color: $black-headers;
     min-height: 200px !important;
     min-width: 30rem;
+    align-items: flex-start;
     &__header {
       display: flex;
       margin-bottom: 1rem;
@@ -141,25 +144,40 @@ export default {
   }
 }
 .dots {
-  display: flex;
-  padding: 10px 0;
-  justify-content: center;
+  display: none;
+  @media screen and (min-width: $screen-md-min) {
+    display: flex;
+    margin-top: 4rem;
+    justify-content: center;
+  }
 }
 .dot {
   border: none;
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 20px;
   background: #c5c5c5;
   border-radius: 50%;
-  margin: 0 5px;
-  padding: 5px;
   cursor: pointer;
+  padding: 0 0.5rem;
+  position: relative;
+  margin: 0 0.5rem;
 }
 .dot:focus {
   outline: none;
 }
 .dot.active {
-  background: #000;
+  border: 1px solid black;
+  background: $yellow;
+
+  div {
+    background: $black-headers;
+    height: 8px;
+    width: 8px;
+    position: absolute;
+    top: calc(50% - 4px);
+    left: calc(50% - 4px);
+    border-radius: 50%;
+  }
 }
 .arrow {
   width: 30px;

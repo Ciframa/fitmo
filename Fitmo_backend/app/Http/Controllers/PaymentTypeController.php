@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentType;
+
 use Illuminate\Http\Request;
-use App\Models\Ratings;
 
 
-class RatingsController extends Controller
+class PaymentTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +16,9 @@ class RatingsController extends Controller
      */
     public function index()
     {
-        return Ratings::get();
+        return PaymentType::get();
     }
+
 
     /**
      * Show the form for creating a new resource.
