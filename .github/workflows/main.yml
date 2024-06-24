@@ -16,6 +16,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Update packages and install lftp
+        run: |
+          apt-get update
+          apt-get install -y lftp
+
       - name: Deploy Backend via SFTP
         run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
 
