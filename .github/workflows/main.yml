@@ -3,22 +3,21 @@ name: Deploy to SFTP
 on:
   push:
     branches:
-      - master  # Change this to your target branch zkouska
+      - master  # Change this to your target branch
 
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Deploy Backend via SFTP
-        env:
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
+        run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
 
   deploy-frontend:
     runs-on: ubuntu-latest
