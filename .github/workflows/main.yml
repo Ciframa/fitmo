@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy_frontend:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest  # Specify Windows environment
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies and build Vue.js frontend
         run: |
           cd Fitmo_frontend
-          pnpm install
-          pnpm run build
+          npm install  # Use npm instead of pnpm if you're not using pnpm
+          npm run build
 
       - name: Deploy Vue.js frontend to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
@@ -33,7 +33,7 @@ jobs:
           remote-dir: www/subdoms/devTest
 
   deploy_backend:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest  # Specify Windows environment
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -44,7 +44,10 @@ jobs:
       - name: Install Composer dependencies
         run: |
           cd Fitmo_backend
-          composer install --no-dev --optimize-autoloader
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php composer-setup.php
+          php -r "unlink('composer-setup.php');"
+          php composer.phar install --no-dev --optimize-autoloader
 
       - name: Deploy Laravel backend to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
