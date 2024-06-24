@@ -1,0 +1,50 @@
+name: Deploy to SFTP
+
+on:
+  push:
+    branches:
+      - master  # Change this to your target branch
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Update packages and install lftp
+        run: |
+          apt-get update
+          apt-get install -y lftp
+
+      - name: Deploy Backend via SFTP
+        run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Navigate to frontend directory and install dependencies
+        run: |
+          cd Fitmo_frontend
+          npm install
+
+      - name: Build Frontend
+        run: |
+          cd Fitmo_frontend
+          npm run build  
+
+      - name: Deploy Frontend via SFTP
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          cd Fitmo_frontend/dist  # Navigate to the build output directory
+          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD 287586.w86.wedos.net && mirror -R . /www/subdom/devTest"
