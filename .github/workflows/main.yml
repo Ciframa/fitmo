@@ -16,7 +16,7 @@ jobs:
       - name: Deploy Backend to FTP server
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ftp://287586.w86.wedos.net
+          server: 287586.w86.wedos.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: Fitmo_backend/  # Directory containing backend files
@@ -32,7 +32,7 @@ jobs:
       - name: Deploy Frontend to FTP server
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ftp://287586.w86.wedos.net
+          server: 287586.w86.wedos.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: Fitmo_frontend/  # Directory containing frontend files
