@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies and build Vue.js frontend
         run: |
           cd Fitmo_frontend
-          npm install  # Use npm instead of pnpm if you're not using pnpm
+          npm i -g pnpm  # Use npm instead of pnpm if you're not using pnpm
           npm run build
 
       - name: Deploy Vue.js frontend to FTP
