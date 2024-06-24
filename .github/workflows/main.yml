@@ -34,6 +34,9 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Navigate to frontend directory
+        run: cd Fitmo_frontend  # Adjust this to your frontend directory path
+
       - name: Install dependencies and build Frontend
         run: |
           npm install
