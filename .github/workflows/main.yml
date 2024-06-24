@@ -1,0 +1,39 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches:
+      - main  # Change this to your target branch
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy Backend to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          ftp-server: 287586.w86.wedos.net
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: Fitmo_backend  # Specify the directory containing backend files
+          server-dir: /www/subdom/beTest  # Change this to your target directory on the server
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy Frontend to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          ftp-server: 287586.w86.wedos.net
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: Fitmo_frontend  # Specify the directory containing frontend files
+          server-dir: /www/subdom/devTest  # Change this to your target directory on the server
