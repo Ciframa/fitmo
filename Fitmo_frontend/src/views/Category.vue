@@ -1,42 +1,53 @@
 <template>
   <div class="category">
     <div class="category__header">
+      <ul class="category__header__navigation">
+        <li>
+          <router-link :to="'/'">
+            <font-awesome-icon :icon="['fa', 'house']" />
+          </router-link>
+          <font-awesome-icon :icon="['fa', 'angle-down']" rotation="270" />
+        </li>
+
+        <li
+          v-for="(link, index) in this.getNavigation(
+            this.mainCategory.url_path
+          )"
+          :key="link.id"
+        >
+          <font-awesome-icon
+            v-if="index !== 0"
+            :icon="['fa', 'angle-down']"
+            rotation="270"
+          />
+          <router-link :to="'/' + link.url_path">
+            {{ link.name }}
+          </router-link>
+        </li>
+      </ul>
       <h1>{{ mainCategory.name }}</h1>
       <article>
-        <p>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quisquam,
-          necessitatibus! Quod commodi a soluta eos tempora cumque sunt
-          cupiditate mollitia magnam hic alias dolore voluptates, qui explicabo
-          eum praesentium dolores.Lorem ipsum, dolor sit amet consectetur
-          adipisicing elit. Quisquam, necessitatibus! Quod commodi a soluta eos
-          tempora cumque sunt cupiditate mollitia magnam hic alias dolore
-          voluptates, qui
-        </p>
-        <p>
-          Není problém, rádi Vám s tímhle problémem pomůžeme a Vaší překážku
-          vyrobíme.
-        </p>
+        <p>{{ categoryText }}</p>
       </article>
       <div class="category__header__list row">
-        <router-link
-          class="col-6-xs col-3-md"
+        <div
           v-for="subCategory in subCategories"
           :key="subCategory.id"
-          :to="{
-            name: 'Category',
-            params: { categoryname: subCategory.url_path.split('/') },
-          }"
+          class="col-6-xs col-3-sm"
         >
-          <div class="category__header__list__item">
-            <span>{{ subCategory.name }}</span>
-            <img
-              src="../../public/assets/products/main/fitness_vybaveni.png"
-              alt=""
-            />
-          </div>
-        </router-link>
+          <router-link
+            :to="{
+              name: 'Category',
+              params: { categoryname: subCategory.url_path.split('/') },
+            }"
+          >
+            <div class="category__header__list__item">
+              <span>{{ subCategory.name }}</span>
+              <img :src="imageBasePath + subCategory.image_path" alt="" />
+            </div>
+          </router-link>
+        </div>
       </div>
-      <!--<CategoryInfo />-->
     </div>
     <div class="category__eshop row">
       <img src="../../public/assets/banners/druhy.png" alt="" />
@@ -80,7 +91,6 @@
               <li v-on:click="provizorniCheck = !provizorniCheck">
                 <font-awesome-icon
                   :icon="['fa', 'check']"
-                  size="2x"
                   :class="{
                     show: provizorniCheck,
                   }"
@@ -126,6 +136,10 @@
                   }"
                 />
                 <span>Fitmo</span>
+              </li>
+              <li>
+                <font-awesome-icon :icon="['fa', 'times']" size="2x" />
+                <span>Zrušit všechny filtry</span>
               </li>
             </ul>
           </div>
@@ -137,171 +151,33 @@
             <span>po-pá: 8:00 - 17:00</span>
           </div>
           <div class="category__eshop__filters__info__wrapper">
-            <a href="mailto:obchod@fitmo.cz">obchod@fitmo.cz</a>
+            <a target="_blank" href="mailto:obchod@fitmo.cz">obchod@fitmo.cz</a>
           </div>
-          <a href="#">Kontaktujte nás</a>
+          <span>Kontaktujte nás</span>
         </div>
         <img src="../../public/assets/banners/treti.png" alt="" />
         <img src="../../public/assets/banners/treti.png" alt="" />
       </div>
-      <div class="home__eshop__wrapper row col-12-xs col-8-md col-9-lg">
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <span class="home__eshop__wrapper__item_discount">-20%</span>
-          <img
-            src="../../public/assets/products/main/doplnky_stravy.png"
-            alt=""
-          />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span class="home__eshop__wrapper__price__trough">450,-</span>
-            <span class="home__eshop__wrapper__price__discount">400,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-blue">Novinka</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <span class="home__eshop__wrapper__item_discount">-20%</span>
-          <img
-            src="../../public/assets/products/main/fitness_vybaveni.png"
-            alt=""
-          />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span class="home__eshop__wrapper__price__trough">450,-</span>
-            <span class="home__eshop__wrapper__price__discount">400,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-blue">Novinka</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-12-xs col-6-sm col-4-lg">
-          <img src="../../public/assets/products/main/regenerace.png" alt="" />
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
+      <div
+        v-if="this.products.length !== 0"
+        class="home__eshop__wrapper row col-12-xs col-8-md col-9-lg"
+      >
+        <Product
+          v-for="product in this.products"
+          :key="product.id"
+          sizes="col-12-xs col-6-sm col-4-lg"
+          :products="product"
+        />
+      </div>
+      <div
+        v-if="this.products.length === 0"
+        class="home__eshop__wrapper row col-12-xs col-8-md col-9-lg"
+      >
+        Pro tuto kategorii nejsou žádné produkty.
       </div>
     </div>
+    <div class="home__gray_banner"></div>
+    <CustomMade />
   </div>
 </template>
 
@@ -309,10 +185,14 @@
 //import CategoryInfo from "../components/CategoryInfo.vue";
 import MultiRangeSlider from "multi-range-slider-vue";
 import axios from "../api";
+import Product from "@/components/Product.vue";
+import CustomMade from "@/components/CustomMade.vue";
 
 export default {
   components: {
     MultiRangeSlider,
+    Product,
+    CustomMade,
     /*CategoryInfo*/
   },
   data() {
@@ -320,25 +200,82 @@ export default {
       url_path: this.$route.params.categoryname,
       mainCategory: "",
       subCategories: [],
+      products: [],
       provizorniCheck: false,
       showFilters: false,
       barMinValue: 10,
       barMaxValue: 5000,
+      categoryText: "",
+      categories: [],
+      imageBasePath: "http://localhost:8000/categories/",
+      //imageBasePath: "https://be.fitmo.cz/categories/",
     };
   },
   watch: {
     $route(to, from) {
       this.url_path = this.$route.params.categoryname;
       this.getSubCategories();
+      this.getCategoryProducts();
     },
   },
 
   methods: {
+    getNavigation(url) {
+      let navigation = [];
+      let oldElement = "";
+      let index = 0;
+      if (url && Object.keys(this.categories).length !== 0) {
+        url.split("/").forEach((element) => {
+          oldElement += "/" + element;
+          if (index === 0) {
+            oldElement = oldElement.substring(1);
+          }
+          this.categories.filter((item) => {
+            if (item.url_path === oldElement) {
+              navigation.push(item);
+            }
+          });
+          index++;
+        });
+      }
+      return navigation;
+    },
+    async getCategories() {
+      const response = await axios.get("/api/categories");
+      this.categories = response.data;
+    },
     async getSubCategories() {
       try {
         const response = await axios.get("/api/category/" + [this.url_path]);
         this.subCategories = response.data;
+        console.log(response.data);
         this.mainCategory = this.subCategories.pop();
+        if (this.mainCategory.url_path === "ocr-vybaveni") {
+          this.categoryText =
+            "U nás si vybereš vše, co budeš pro trénink na OCR závody potřebovat. Veškeré segmenty si vyrábíme sami a to v té nejlepší kvalitě. Mrkni na naši nabídku a určitě si vybereš právě to vybavení, se kterým už ti v tréninku nebude nic chybět!";
+        } else if (this.mainCategory.url_path === "fitness-vybaveni") {
+          this.categoryText =
+            "Chybí ti nějaký doplněk pro tvůj workout? Rozhodnul jses začít pořádně makat? Tak to jsi tu správně! Mrkni na naši nabídku a určitě najdeš co potřebuješ.";
+        } else if (this.mainCategory.url_path === "regenerace") {
+          this.categoryText =
+            "Bez správné regenerace to ve sportu prostě nejde a jestli se chceš vyhnout zranění a ještě mít výsledky, tak jsi tu správně!";
+        } else if (this.mainCategory.url_path === "vyziva") {
+          this.categoryText =
+            "Ve spolupráci s prémiovou českou značkou EDGAR POWER ti přinášíme produkty, které tě povedou k neobyčejným výsledkům. ";
+        } else {
+          this.categoryText = "";
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getCategoryProducts() {
+      try {
+        const response = await axios.get(
+          "/api/categoryProducts/" + [this.url_path]
+        );
+        this.products = response.data;
+        console.log(this.products);
       } catch (error) {
         console.log(error);
       }
@@ -350,20 +287,43 @@ export default {
     },
   },
   created() {
-    this.getSubCategories();
+    this.getSubCategories().then(this.getCategoryProducts());
+    this.getCategories();
   },
 };
 </script>
 <style lang="scss">
 .category {
   background: $gray-third;
-
+  position: relative;
   &__header {
     max-width: 1140px;
     width: 90%;
     text-align: center;
     margin: auto;
 
+    &__navigation {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 5%;
+      gap: 0.8rem;
+      color: $gray;
+      width: 90%;
+      border-top: 1px solid $gray-second;
+      padding-top: 1.2rem;
+      font-weight: 500;
+
+      li {
+        gap: 0.8rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        a {
+          color: $gray;
+        }
+      }
+    }
     h1 {
       font-size: 2.8rem;
       font-weight: 700;
@@ -392,17 +352,23 @@ export default {
 
     &__list {
       padding: 5rem 0;
-      & > a {
+      justify-content: center;
+      & > div {
         padding: 0.7rem;
         display: flex;
+        min-width: 240px;
         justify-content: center;
-
-        img {
-          height: 9rem;
-          padding: 0.3rem 0.3rem 0.3rem 0.8rem;
-        }
-        span {
-          font-weight: 700;
+        & > a {
+          img {
+            height: 9rem;
+            padding: 0.3rem 2rem 0.3rem 0.8rem;
+          }
+          span {
+            font-weight: 700;
+            padding-left: 3rem;
+            text-align: left;
+            margin-right: auto;
+          }
         }
       }
       &__item {
@@ -526,22 +492,32 @@ export default {
           display: flex;
           gap: 0.6rem;
           flex-direction: column;
+
           li {
-            display: flex;
-            align-items: center;
-
-            span {
-              margin-left: 0.8rem;
+            &:last-of-type {
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+              padding-left: 0.3rem;
+              margin-top: 0.7rem;
+              svg {
+                font-size: 2rem;
+              }
             }
-            svg {
-              background: $white;
-              border-radius: 0.8rem;
-              color: $white;
-              height: 1.8rem;
-              padding: 0.25rem;
+            &:not(:last-of-type) {
+              span {
+                margin-left: 0.8rem;
+              }
+              svg {
+                background: $white;
+                border-radius: 0.8rem;
+                color: $white;
+                height: 1.8rem;
+                padding: 0.25rem;
 
-              &.show {
-                background: $yellow;
+                &.show {
+                  background: $yellow;
+                }
               }
             }
           }
@@ -588,16 +564,6 @@ export default {
 
 @media screen and (max-width: $screen-sm-min - 1px) {
   .category {
-    &__header__list {
-      /* & > div {
-        &:nth-child(odd) {
-          padding-left: 0;
-        }
-        &:nth-child(even) {
-          padding-right: 0;
-        }
-      }*/
-    }
     &__eshop {
       .home__eshop__wrapper {
         & > div::after {
@@ -628,7 +594,7 @@ export default {
         justify-content: end;
       }
       &:nth-child(even) {
-        justify-content: start;
+        justify-content: flex-start;
       }
     }
   }
@@ -656,6 +622,7 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-md-min) {
   .category {
     &__header__list {

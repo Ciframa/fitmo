@@ -2,7 +2,6 @@
   <div class="home">
     <div class="home__header">
       <h2>PŘIPRAVTE SE NA OCR ZÁVODY KOMPLEXNĚ. <br />STAČÍ SI JEN VYBRAT!</h2>
-
       <div class="row">
         <div
           v-for="category in categories"
@@ -10,10 +9,7 @@
           class="col-12-xs col-6-md col-3-xl"
         >
           <div class="category_wrapper">
-            <img
-              src="../../public/assets/products/main/ocr_vybaveni.png"
-              alt=""
-            />
+            <img :src="imageBasePath + category.image_path" alt="" />
             <h3>
               <router-link
                 :to="{
@@ -48,28 +44,29 @@
     <div class="home__trailer">
       <div class="row">
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/toChange/prvni.jpg" alt="" />
+          <img src="../../public/assets/showRoom/prvni.png" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/quality.svg" alt="" />
             <span>KVALITA ZBOŽÍ</span>
           </div>
         </div>
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/toChange/druhy.jpg" alt="" />
+          <img src="../../public/assets/showRoom/druhy.png" alt="" />
+
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/equipment.svg" alt="" />
             <span>VYBAVENÍ DO GYMŮ</span>
           </div>
         </div>
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/toChange/treti.jpg" alt="" />
+          <img src="../../public/assets/showRoom/treti.png" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/one_place.svg" alt="" />
             <span>VŠE NA JEDNOM MÍSTĚ</span>
           </div>
         </div>
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/toChange/ctvrty.jpg" alt="" />
+          <img src="../../public/assets/showRoom/ctvrty.png" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/ocr.svg" alt="" />
             <span>SPECIALISTA NA OCR ZÁVODY!</span>
@@ -79,171 +76,22 @@
     </div>
     <div class="home__eshop row">
       <h3 class="col-12-xs">E-SHOP</h3>
-      <div class="home__eshop__wrapper row col-12-xs">
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <span class="home__eshop__wrapper__item_discount">-20%</span>
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img
-              src="../../public/assets/products/main/regenerace.png"
-              alt=""
-            />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>POINT FOAM ROLLER GRID 1.0 CAMU GREY</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span class="home__eshop__wrapper__price__trough">450,-</span>
-            <span class="home__eshop__wrapper__price__discount">400,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <span class="home__eshop__wrapper__item_discount">-20%</span>
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img src="../../public/assets/products/provizorni/1.jpg" alt="" />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>TRIGGER POINT FOAM ROLLER GRID 1.0 MINT</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span class="home__eshop__wrapper__price__trough">450,-</span>
-            <span class="home__eshop__wrapper__price__discount">400,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <span class="home__eshop__wrapper__item_discount">-20%</span>
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img src="../../public/assets/products/provizorni/2.jpg" alt="" />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>RUSH ROLLER</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts"></div>
-        </div>
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img src="../../public/assets/products/provizorni/3.jpg" alt="" />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>NANO LTE FOOT ROLLER</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
 
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img
-              src="../../public/assets/products/main/regenerace.png"
-              alt=""
-            />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-            <span class="btn-blue">Novinka</span>
-          </div>
-        </div>
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img
-              src="../../public/assets/products/main/regenerace.png"
-              alt=""
-            />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img
-              src="../../public/assets/products/main/regenerace.png"
-              alt=""
-            />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
-        <div class="col-6-xs col-4-lg col-3-xl">
-          <div class="home__eshop__wrapper__img_wrapper">
-            <img
-              src="../../public/assets/products/main/regenerace.png"
-              alt=""
-            />
-            <img
-              src="../../public/assets/products/main/doplnky_stravy.png"
-              alt=""
-            />
-          </div>
-          <h4>OCR VYBAVENÍ</h4>
-          <span class="home__eshop__wrapper__name">Masážní válec</span>
-          <div class="home__eshop__wrapper__price">
-            <span>450,-</span>
-          </div>
-          <div class="home__eshop__wrapper__discounts">
-            <span class="btn-yellow">Akce</span>
-            <span class="btn-green">Top produkt</span>
-          </div>
-        </div>
+      <div class="home__eshop__wrapper row col-12-xs">
+        <div v-for="product in products" :key="product.id"></div>
+        <Product
+          v-for="product in products"
+          :key="product.id"
+          sizes="col-6-xs col-4-lg col-3-xl"
+          :products="product"
+        />
       </div>
       <button class="btn-gray">Zobrazit další produkty</button>
-      <img src="../../public/assets/banners/druhy.png" alt="" />
+      <div class="banners">
+        <img src="../../public/assets/banners/banner pc.jpg" alt="" />
+        <img src="../../public/assets/banners/banner tablet .jpg" alt="" />
+        <img src="../../public/assets/banners/banner mobil 1+1.jpg" alt="" />
+      </div>
     </div>
     <div class="home__gray_banner"></div>
     <CustomMade></CustomMade>
@@ -257,17 +105,22 @@
 import axios from "../api";
 import CustomMade from "@/components/CustomMade.vue";
 import Slider from "@/components/Slider.vue";
+import Product from "@/components/Product.vue";
 
 export default {
   components: {
     CustomMade,
     Slider,
+    Product,
   },
 
   data() {
     return {
       categories: [],
       ratings: [],
+      products: [],
+      imageBasePath: "http://localhost:8000/categories/",
+      // imageBasePath: "https://be.fitmo.cz/categories/",
     };
   },
 
@@ -311,15 +164,27 @@ export default {
         console.log(error);
       }
     },
+    async getProducts() {
+      try {
+        const response = await axios.get("/api/products");
+        this.products = response.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 
   created() {
     this.getCategories();
     this.getRatings();
+    this.getProducts();
   },
 };
 </script>
 <style lang="scss">
+.Home {
+  max-height: none;
+}
 .home {
   background: $gray-third;
   &__header {
@@ -358,13 +223,17 @@ export default {
           padding: 3rem 0 0 3rem;
           position: relative;
           max-width: 30rem;
+          transition: 0.3s ease all;
+          &:hover {
+            box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.07);
+          }
 
           img {
             max-height: 22rem;
             position: absolute;
             top: 0;
             left: calc(50% - 11rem);
-            transform: translateY(-41%);
+            transform: translateY(-57%);
           }
 
           h3 {
@@ -388,6 +257,26 @@ export default {
             li {
               padding-right: 0.9rem;
               position: relative;
+              a {
+                position: relative;
+                &::before {
+                  content: "";
+                  display: block;
+                  position: absolute;
+                  bottom: 2px;
+                  left: 0%;
+                  transition: 0.2s ease width;
+                  height: 1px;
+                  background: $gray-second;
+                  width: 0%;
+                }
+
+                &:hover {
+                  &::before {
+                    width: 100%;
+                  }
+                }
+              }
 
               &::after {
                 content: "";
@@ -435,10 +324,12 @@ export default {
 
         img {
           height: 12rem;
+          filter: drop-shadow(2px 4px 16px black);
         }
         span {
           font-weight: 700;
           font-size: 1.6rem;
+          filter: drop-shadow(2px 4px 16px black);
         }
       }
     }
@@ -495,7 +386,33 @@ export default {
         width: 100%;
         height: 100%;
         display: flex;
-        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        &__subProducts {
+          display: flex;
+          border-radius: 50%;
+          margin-bottom: 0.4rem;
+          height: 2.2rem;
+          width: 2.2rem;
+          border: 2px solid $gray-second;
+          overflow: hidden;
+          flex-direction: row;
+
+          &__wrapper {
+            height: 2.5rem;
+            margin-bottom: 0.2rem;
+          }
+
+          &.active {
+            border-color: $black-headers;
+            border-width: 3px;
+          }
+          & > div {
+            display: block;
+            height: 2.2rem;
+            width: 2.2rem;
+          }
+        }
 
         img {
           transition: 0.3s ease all;
@@ -503,7 +420,7 @@ export default {
           height: 100%;
           margin: 0 auto;
         }
-        img:last-child {
+        img:nth-of-type(2) {
           position: absolute;
           top: 0;
           opacity: 0;
@@ -543,9 +460,9 @@ export default {
           margin: auto;
         }
         img {
-          max-width: 90%;
           margin: 0 auto;
           object-fit: contain;
+          height: 25rem;
           max-height: 25rem;
         }
         &::before {
@@ -567,9 +484,6 @@ export default {
             right: 0;
             top: 10%;
           }
-        }
-        &:nth-child(n + 7) {
-          display: none;
         }
       }
 
@@ -597,10 +511,10 @@ export default {
           &::after {
             content: "";
             top: calc(50% - 1px);
-            left: 0;
-            background: $gray;
-            height: 1px;
-            width: 73%;
+            left: 0%;
+            background: $black-headers;
+            height: 2px;
+            width: 100%;
             position: absolute;
           }
         }
@@ -633,7 +547,7 @@ export default {
   }
 }
 
-@media screen and(min-width: $screen-sm-min) {
+@media screen and (min-width: $screen-sm-min) {
   .home__eshop {
     .btn-gray {
       padding: 1.5rem 4rem;
@@ -666,7 +580,7 @@ export default {
     }
   }
 }
-@media screen and(min-width: $screen-md-min) {
+@media screen and (min-width: $screen-md-min) {
   .home {
     &__header {
       padding-top: 11.1rem;
@@ -708,7 +622,7 @@ export default {
   }
 }
 
-@media screen and(min-width: $screen-lg-min) {
+@media screen and (min-width: $screen-lg-min) {
   .home {
     &__trailer .row > div {
       > img {
@@ -731,11 +645,12 @@ export default {
             -webkit-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
             -moz-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
             box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
+            z-index: 99;
             .home__eshop__wrapper__img_wrapper {
-              img:first-child {
+              img:first-of-type {
                 opacity: 0;
               }
-              img:last-child {
+              img:last-of-type {
                 opacity: 1;
               }
             }
@@ -757,7 +672,7 @@ export default {
     }
   }
 }
-@media screen and(min-width: $screen-xl-min) {
+@media screen and (min-width: $screen-xl-min) {
   .home {
     &__eshop {
     }

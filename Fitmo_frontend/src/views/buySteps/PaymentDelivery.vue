@@ -10,111 +10,62 @@
       <div class="payment__info_wrapper">
         <h2>Zvolte způsob dopravy</h2>
         <section>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="delivery" id="zasilkovna" />
-            <label for="zasilkovna">
-              <img src="" alt="" />
+          <div
+            class="payment__info_wrapper__item"
+            v-for="deliveryType in deliveryTypes"
+            v-on:click="
+              if (deliveryType.id === 2) {
+                openZasilkovnaPickupPoint(deliveryType);
+              } else {
+                changeDeliveryType(deliveryType);
+              }
+            "
+            :key="deliveryType.id"
+          >
+            <input
+              type="radio"
+              name="deliveryType"
+              :id="deliveryType.name"
+              :checked="deliveryType.id === storedDeliveryType?.id"
+            />
+            <label :for="deliveryType.name">
               <font-awesome-icon :icon="['fa', 'check']" />
             </label>
             <div class="payment__info_wrapper__item__textImg">
-              <img
-                src="../../../public/assets/carriers/zasilkovna.jpg"
-                alt=""
-              />
-              <span>Zásilkovna: balík do zásilkovny</span>
+              <img :src="imageBasePath + deliveryType.image_path" alt="" />
+              <span>{{ deliveryType.name }}</span>
             </div>
-            <span class="payment__info_wrapper__item__price">60 Kč</span>
-          </div>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="delivery" id="ppl" />
-            <label for="ppl">
-              <font-awesome-icon :icon="['fa', 'check']" />
-            </label>
-            <div class="payment__info_wrapper__item__textImg">
-              <img src="../../../public/assets/carriers/ppl.jpg" alt="" />
-              <span>PPL: balík na adresu</span>
-            </div>
-            <span class="payment__info_wrapper__item__price">75 Kč</span>
-          </div>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="delivery" id="cp" />
-            <label for="cp">
-              <font-awesome-icon :icon="['fa', 'check']" />
-            </label>
-            <div class="payment__info_wrapper__item__textImg">
-              <img src="../../../public/assets/carriers/cp.jpg" alt="" />
-              <span>Česká pošta</span>
-            </div>
-            <span class="payment__info_wrapper__item__price">od 80 Kč</span>
-          </div>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="delivery" id="dhl" />
-            <label for="dhl">
-              <font-awesome-icon :icon="['fa', 'check']" />
-            </label>
-            <div class="payment__info_wrapper__item__textImg">
-              <img src="../../../public/assets/carriers/dhl.jpg" alt="" />
-              <span>DHL: balík do zahraničí</span>
-            </div>
-            <span class="payment__info_wrapper__item__price">250 Kč</span>
+            <span class="payment__info_wrapper__item__price">{{
+              deliveryType.price
+            }}</span>
           </div>
         </section>
       </div>
       <div class="payment__info_wrapper">
         <h2>Zvolte způsob platby</h2>
         <section>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="payment" id="card" />
-            <label for="card">
+          <div
+            v-for="paymentType in paymentTypes"
+            :key="paymentType.id"
+            v-on:click="changePaymentType(paymentType)"
+            class="payment__info_wrapper__item"
+          >
+            <input
+              type="radio"
+              name="paymentType"
+              :id="paymentType.name"
+              :checked="paymentType.id === storedPaymentType?.id"
+            />
+            <label :for="paymentType.name">
               <font-awesome-icon :icon="['fa', 'check']" />
             </label>
             <div class="payment__info_wrapper__item__textImg">
-              <img src="../../../public/assets/icons/paying/card.svg" alt="" />
-              <span>Kartou on-line</span>
+              <img :src="imageBasePath + paymentType.image_path" alt="" />
+              <span>{{ paymentType.name }}</span>
             </div>
-            <span class="payment__info_wrapper__item__price">ZDARMA</span>
-          </div>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="payment" id="transfer" />
-            <label for="transfer">
-              <font-awesome-icon :icon="['fa', 'check']" />
-            </label>
-            <div class="payment__info_wrapper__item__textImg">
-              <img
-                src="../../../public/assets/icons/paying/transferToAcc.svg"
-                alt=""
-              />
-              <span>Převodem na účet</span>
-            </div>
-            <span class="payment__info_wrapper__item__price">ZDARMA</span>
-          </div>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="payment" id="cash" />
-            <label for="cash">
-              <font-awesome-icon :icon="['fa', 'check']" />
-            </label>
-            <div class="payment__info_wrapper__item__textImg">
-              <img
-                src="../../../public/assets/icons/paying/cashOnDelivery.svg"
-                alt=""
-              />
-              <span>Dobírkou</span>
-            </div>
-            <span class="payment__info_wrapper__item__price">60 Kč</span>
-          </div>
-          <div class="payment__info_wrapper__item">
-            <input type="radio" name="payment" id="twisto" />
-            <label for="twisto">
-              <font-awesome-icon :icon="['fa', 'check']" />
-            </label>
-            <div class="payment__info_wrapper__item__textImg">
-              <img
-                src="../../../public/assets/icons/paying/twisto.svg"
-                alt=""
-              />
-              <span>Platbou přes Twisto: objednej zaplať do 14 dnů</span>
-            </div>
-            <span class="payment__info_wrapper__item__price">ZDARMA</span>
+            <span class="payment__info_wrapper__item__price">{{
+              paymentType.price
+            }}</span>
           </div>
         </section>
       </div>
@@ -133,12 +84,133 @@
 import currentStepC from "../../components/buyComponents/CurrentStep.vue";
 import summaryPriceC from "../../components/buyComponents/SummaryPrice.vue";
 import navButtonsC from "../../components/buyComponents/NavButtons.vue";
+import axios from "../../api";
 
 export default {
   components: {
     currentStepC,
     summaryPriceC,
     navButtonsC,
+  },
+  data() {
+    return {
+      deliveryTypes: [],
+      paymentTypes: [],
+      priceSummary: 0,
+      imageBasePath: "http://localhost:8000",
+      // imageBasePath: "https://be.fitmo.cz",
+      packetaApiKey: "APIe6ee80786c2d92b2",
+      packetaOptions: {
+        valueFormat:
+          '"Packeta",id,carrierId,carrierPickupPointId,name,city,street',
+      },
+    };
+  },
+
+  methods: {
+    async getDeliveryTypes() {
+      const response = await axios.get("/api/deliveryTypes");
+
+      this.deliveryTypes = response.data.map((item) => {
+        return {
+          ...item,
+          price: item.price == 0 ? "ZDARMA" : item.price + " Kč",
+          priceNumber: item.price,
+        };
+      });
+    },
+
+    async getPaymentTypes() {
+      const response = await axios.get("/api/paymentTypes");
+
+      this.paymentTypes = response.data.map((item) => {
+        return {
+          ...item,
+          price: item.price == 0 ? "ZDARMA" : item.price + " Kč",
+          priceNumber: item.price,
+        };
+      });
+    },
+
+    changeDeliveryType(deliveryType) {
+      sessionStorage.removeItem("deliveryType");
+      sessionStorage.setItem(
+        "deliveryType",
+        JSON.stringify({
+          id: deliveryType.id,
+          price: deliveryType.price,
+          priceNumber: deliveryType.priceNumber,
+          address: deliveryType.address ?? "",
+        })
+      );
+      const newDeliveryType = {
+        id: deliveryType.id,
+        price: deliveryType.price,
+        priceNumber: deliveryType.priceNumber,
+        address: deliveryType.address ?? "",
+      };
+      this.$store.commit("updateDeliveryType", newDeliveryType);
+    },
+    showSelectedPickupPoint(point) {
+      // Add here an action on pickup point selection
+      if (point) {
+        this.changeDeliveryType(
+          this.deliveryTypes.find((item) => {
+            if (item.id === 2) {
+              item.address = {
+                city: point.city,
+                street: point.street,
+                zip: point.zip,
+                country: point.country,
+                type: "zasilkovna",
+                info: point.place,
+              };
+            }
+            return item.id === 2;
+          })
+        );
+      }
+    },
+    openZasilkovnaPickupPoint() {
+      Packeta.Widget.pick(
+        this.packetaApiKey,
+        this.showSelectedPickupPoint,
+        this.packetaOptions
+      );
+    },
+
+    changePaymentType(paymentType) {
+      sessionStorage.removeItem("paymentType");
+      sessionStorage.setItem(
+        "paymentType",
+        JSON.stringify({
+          id: paymentType.id,
+          price: paymentType.price,
+          priceNumber: paymentType.priceNumber,
+          name: paymentType.name,
+        })
+      );
+
+      const newPaymentType = {
+        id: paymentType.id,
+        price: paymentType.price,
+        priceNumber: paymentType.priceNumber,
+        name: paymentType.name,
+      };
+      this.$store.commit("updatePaymentType", newPaymentType);
+    },
+  },
+  computed: {
+    storedPaymentType() {
+      return this.$store.state.paymentType;
+    },
+    storedDeliveryType() {
+      return this.$store.state.deliveryType;
+    },
+  },
+  created() {
+    this.getDeliveryTypes();
+    this.getPaymentTypes();
   },
 };
 </script>
@@ -244,6 +316,12 @@ export default {
   .payment__info_wrapper {
     &__item {
       width: 100%;
+
+      &:hover {
+        input[type="radio"]:checked + label svg {
+          color: $white;
+        }
+      }
     }
   }
   input[type="radio"]:checked + label {
@@ -316,13 +394,13 @@ export default {
         &__buttons {
           width: 88%;
           .btn-yellow {
-            padding: 0.5rem 3rem;
+            padding: 1rem 3rem;
             font-size: 1.6rem;
           }
           &__back {
             background: $gray-second;
             color: $white;
-            padding: 0.5rem 3rem;
+            padding: 1rem 3rem;
             font-size: 1.6rem;
 
             img:first-child {

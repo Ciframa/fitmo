@@ -46,7 +46,12 @@
           >
         </div>
       </div>
-      <a href="/info#customMade" class="btn-gray">Mám zájem</a>
+      <a
+        v-if="$route.name === 'Home'"
+        href="/info/kontakt#customMadeForm"
+        class="btn-gray"
+        >Mám zájem</a
+      >
     </div>
   </div>
 </template>
@@ -134,7 +139,7 @@
     }
   }
 }
-@media screen and(min-width: $screen-md-min) {
+@media screen and (min-width: $screen-md-min) {
   .customMade__content__showroom {
     & > div {
       position: relative;
@@ -155,16 +160,11 @@
   }
 }
 
-@media screen and(min-width: $screen-lg-min) {
+@media screen and (min-width: $screen-xl-min) {
   .customMade__content {
-    h2 {
-      font-size: 3.96rem;
-    }
     article {
       max-width: 90rem;
       p {
-        font-size: 1.98rem;
-        line-height: 2.3rem;
         &:last-child {
           font-size: 2.16rem;
         }
@@ -187,7 +187,7 @@
     }
   }
 }
-@media screen and(min-width: $screen-xl-min) {
+@media screen and (min-width: $screen-xl-min) {
   .customMade__content__showroom {
     & > div {
       img {

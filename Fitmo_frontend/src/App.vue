@@ -1,13 +1,18 @@
 <script setup>
 import Header from "./views/Header.vue";
 import Footer from "./views/Footer.vue";
+import { Vue3Snackbar } from "vue3-snackbar";
+
 </script>
 
 <template>
-  <Header></Header>
+  <div><Header></Header>
   <RouterView class="content" />
   <Footer></Footer>
+  <vue3-snackbar top right :duration="4000"></vue3-snackbar>
+  </div>
 </template>
+
 
 <style lang="scss">
 * {

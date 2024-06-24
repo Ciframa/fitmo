@@ -1,26 +1,43 @@
 .vue-number-input {
-  &__input {
-    text-align: center;
-    font-weight: 100 !important;
-    font-size: 1.6rem !important;
-    background: $white !important;
-    display: block !important;
-    height: 4rem !important;
-    padding: 0 !important;
-    border-radius: 2rem !important;
-    width: 10rem !important;
-  }
-  &__button {
-    width: 3rem !important;
-    height: 3rem !important;
-    padding: 0 !important;
-    border: 0 !important;
+    &__input {
+        text-align: center;
+        font-weight: 100 !important;
+        font-size: 1.6rem !important;
+        background: $white !important;
+        display: block !important;
+        height: 5rem !important;
+        padding: 0 !important;
+        border-width: 2px !important;
+        border-radius: 1.5rem !important;
+        width: 10rem !important;
+        text-align: center !important;
+    }
+    &__button {
+        width: 3rem !important;
+        height: 3rem !important;
+        padding: 0 !important;
+        border: 0 !important;
+        &--minus {
+            left: 7px !important;
+            &::before {
+                background-color: $gray-second !important;
+                height: 2px !important;
+            }
+        }
+        &--plus {
+            right: 7px !important;
+            &::before {
+                background-color: $gray-second !important;
+                height: 2px !important;
+            }
+            &::after {
+                background-color: $gray-second !important;
+                width: 2px !important;
+            }
+        }
+    }
+}
 
-    &--minus {
-      left: 7px !important;
-    }
-    &--plus {
-      right: 7px !important;
-    }
-  }
+input::-webkit-textfield-decoration-container {
+    font-weight: bolder !important;
 }

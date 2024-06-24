@@ -10,7 +10,7 @@
         </div>
         <ul class="row">
           <li class="col-12-xs col-6-md">
-            <h3>Fakturační období</h3>
+            <h3>Fakturační údaje</h3>
             <div class="row">
               <ul>
                 <li>Martin Kadrmas</li>
@@ -42,14 +42,6 @@
               <li>SWIFT/BIC: KOMBCZPPXXX</li>
             </ul>
           </li>
-          <li class="col-12-xs col-6-md">
-            <h3>Bankovní spojení</h3>
-            <ul>
-              <li>2601142927/2010</li>
-              <li>IBAN : CZ2420100000002601142927</li>
-              <li>SWIFT/BIC: FIOBCZPPXXX</li>
-            </ul>
-          </li>
         </ul>
       </div>
       <side-bar-links></side-bar-links>
@@ -73,7 +65,7 @@
       </div>
     </form>
     <custom-made></custom-made>
-    <div class="info__form">
+    <div class="info__form" id="customMadeForm">
       <h2>Mám zájem o výrobu na míru</h2>
       <form action="" class="row">
         <div class="col-12-xs col-6-md">
@@ -123,7 +115,7 @@ export default {
   &__header {
     padding: 0 6%;
     width: 100%;
-    align-items: start;
+    align-items: flex-start;
   }
   .customMade {
     width: 100%;
@@ -164,6 +156,7 @@ export default {
           max-height: 40rem;
           border-radius: 2rem;
           min-height: 15rem;
+          outline: none !important;
         }
 
         &.upload {
@@ -206,7 +199,7 @@ export default {
     min-height: 10rem;
     flex-direction: column;
     justify-content: center;
-    padding: 3rem 0;
+    padding: 5rem 0 3rem 0;
 
     h3 {
       color: $white;
@@ -252,8 +245,9 @@ export default {
         margin: auto;
         resize: vertical;
         max-height: 40rem;
-        border-radius: 2rem;
-        min-height: 12rem;
+        border-radius: 1.4rem;
+        outline: none !important;
+        min-height: 20rem;
       }
     }
   }

@@ -6,17 +6,37 @@
     <div class="col-4-md col-2-lg col-12-xs">
       <h5>UŽITEČNÉ INFORMACE</h5>
       <ul>
-        <li><a href="">Doprava a platba</a></li>
-        <li><a href="/info">Kontakt</a></li>
-        <li><a href="">O nás</a></li>
+        <li>
+          <router-link to="/info/doprava">Doprava a platba</router-link>
+        </li>
+        <li>
+          <router-link to="/info/kontakt">Kontakt</router-link>
+        </li>
+        <!--<li><a href="">O nás</a></li>-->
       </ul>
     </div>
     <div class="col-4-md col-2-lg col-12-xs">
       <h5>VŠE O NÁKUPU</h5>
       <ul>
-        <li><a href="">Zásady ochrany osobních údajů</a></li>
-        <li><a href="">Reklamace a vrácení zboží</a></li>
-        <li><a href="">Obchodní podmínky</a></li>
+        <li>
+          <a
+            href="../../assets/documents/Podmínky ochrany osobních údajů.pdf"
+            download
+          >
+            <font-awesome-icon icon="fa-regular fa-file" />
+            Zásady ochrany osobních údajů</a
+          >
+        </li>
+        <li>
+          <a href="../../assets/documents/Obchodní podmínky.pdf" download>
+            <font-awesome-icon icon="fa-regular fa-file" /> Obchodní podmínky</a
+          >
+        </li>
+        <li>
+          <router-link to="/info/vymena-a-vraceni-zbozi"
+            >Reklamace a vrácení zboží</router-link
+          >
+        </li>
       </ul>
     </div>
     <div class="col-4-md col-2-lg col-12-xs">
@@ -99,7 +119,7 @@ footer {
   }
 }
 
-@media screen and(min-width: $screen-md-min) {
+@media screen and (min-width: $screen-md-min) {
   footer {
     .logo {
       width: unset;
@@ -107,7 +127,7 @@ footer {
   }
 }
 
-@media screen and(max-width: $screen-lg-min - 1px) {
+@media screen and (max-width: $screen-lg-min - 1px) {
   footer {
     text-align: center;
 
@@ -129,7 +149,7 @@ footer {
     }
   }
 }
-@media screen and(max-width: $screen-md-min - 1px) {
+@media screen and (max-width: $screen-md-min - 1px) {
   footer {
     & > :nth-child(1) {
       order: 5;
