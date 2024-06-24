@@ -1,46 +1,57 @@
-name: Deploy to SFTP
+name: Deploy to FTP
 
 on:
   push:
     branches:
-      - master  # Trigger deployment on changes pushed to the master branch
+      - master  # Change this to your main branch name
 
 jobs:
-  deploy-backend:
+  deploy_frontend:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Deploy Backend via SFTP
-        if: github.ref == 'refs/heads/master'  # Ensure deployment only happens for the master branch
-        run: |
-          lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
-
-  deploy-frontend:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js for Frontend
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  # Adjust to your required Node.js version
+          node-version: '14'
 
-      - name: Install Frontend dependencies
+      - name: Install dependencies and build Vue.js frontend
         run: |
           cd Fitmo_frontend
           npm install
+          npm run build
 
-      - name: Build Frontend project
-        run: |
-          cd Fitmo_frontend
-          npm run build  # Replace with your actual build command for the frontend (e.g., npm run build)
+      - name: Deploy Vue.js frontend to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: Fitmo_frontend/dist
+          remote-dir: www/subdoms/devTest
 
-      - name: Deploy Frontend via SFTP
-        if: github.ref == 'refs/heads/master'  # Ensure deployment only happens for the master branch
+  deploy_backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+
+      - name: Install Composer dependencies
         run: |
-          lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_frontend/dist /www/subdom/devTest"
+          cd Fitmo_backend
+          composer install --no-dev --optimize-autoloader
+
+      - name: Deploy Laravel backend to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: Fitmo_backend
+          exclude: ".env,.git"
+          remote-dir: www/subdoms/beTest
