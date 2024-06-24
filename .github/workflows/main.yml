@@ -34,6 +34,6 @@ jobs:
         with:
           server: 287586.w86.wedos.net
           username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          password: ${{ secrets.FTP_PASSWORD }} # Use the same FTP credentials
           local-dir: Fitmo_frontend/  # Directory containing frontend files
           server-dir: /www/subdom/devTest/  # Target directory on the server for frontend
