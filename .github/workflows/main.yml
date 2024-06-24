@@ -3,7 +3,7 @@ name: Deploy to SFTP
 on:
   push:
     branches:
-      - master  # Change this to your target branch
+      - main  # Change this to your target branch
 
 jobs:
   deploy-backend:
@@ -13,14 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Deploy Backend to SFTP server
-        uses: depsypher/sftp-deploy@v3
-        with:
-          server: 287586.w86.wedos.net
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localPath: Fitmo_backend  # Directory containing backend files
-          remotePath: /www/subdom/beTest  # Target directory on the server for backend
+      - name: Deploy Backend via SFTP
+        run: |
+          apt-get update && apt-get install -y lftp
+          lftp -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} sftp://287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -29,11 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Deploy Frontend to SFTP server
-        uses: depsypher/sftp-deploy@v3
-        with:
-          server: 287586.w86.wedos.net
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localPath: Fitmo_frontend  # Directory containing frontend files
-          remotePath: /www/subdom/devTest  # Target directory on the server for frontend
+      - name: Deploy Frontend via SFTP
+        run: |
+          apt-get update && apt-get install -y lftp
+          lftp -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} sftp://287586.w86.wedos.net && mirror -R Fitmo_frontend /www/subdom/devTest"
