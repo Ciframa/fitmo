@@ -185,7 +185,7 @@
 //import CategoryInfo from "../components/CategoryInfo.vue";
 import MultiRangeSlider from "multi-range-slider-vue";
 import axios from "../api";
-import Product from "@/components/Product.vue";
+import Product from "../components/Product.vue";
 import CustomMade from "@/components/CustomMade.vue";
 
 export default {

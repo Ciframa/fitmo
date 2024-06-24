@@ -103,9 +103,9 @@
 
 <script>
 import axios from "../api";
-import CustomMade from "@/components/CustomMade.vue";
-import Slider from "@/components/Slider.vue";
-import Product from "@/components/Product.vue";
+import CustomMade from "../components/CustomMade.vue";
+import Slider from "../components/Slider.vue";
+import Product from "../components/Product.vue";
 
 export default {
   components: {
