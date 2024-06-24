@@ -34,11 +34,10 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Frontend
-        run: npm run build  # Adjust this command based on your frontend build process
+      - name: Install dependencies and build Frontend
+        run: |
+          npm install
+          npm run build  # Adjust this based on your actual build command
 
       - name: Deploy Frontend via SFTP
         env:
@@ -47,4 +46,5 @@ jobs:
         run: |
           apt-get update
           apt-get install -y lftp
-          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD 287586.w86.wedos.net && mirror -R path_to_your_build_directory /www/subdom/devTest"
+          cd dist  # Navigate to the build output directory
+          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD 287586.w86.wedos.net && mirror -R . /www/subdom/devTest"
