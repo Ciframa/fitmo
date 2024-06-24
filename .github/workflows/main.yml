@@ -9,17 +9,14 @@ jobs:
   deploy-backend:
     runs-on: ubuntu-latest
 
-    container:
-      image: ubuntu:latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Update packages and install lftp
+      - name: Install lftp
         run: |
-          apt-get update
-          apt-get install -y lftp
+          sudo apt-get update
+          sudo apt-get install -y lftp
 
       - name: Deploy Backend via SFTP
         run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
@@ -27,17 +24,14 @@ jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
 
-    container:
-      image: ubuntu:latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Update packages and install lftp
+      - name: Install lftp
         run: |
-          apt-get update
-          apt-get install -y lftp
+          sudo apt-get update
+          sudo apt-get install -y lftp
 
       - name: Deploy Frontend via SFTP
         run: lftp -e "set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_frontend /www/subdom/devTest"
