@@ -22,7 +22,7 @@ jobs:
           apt-get install -y lftp
 
       - name: Deploy Backend via SFTP
-        run: lftp -d -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
+        run: lftp -e "set ssl:verify-certificate no;open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/beTest"
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -40,4 +40,4 @@ jobs:
           apt-get install -y lftp
 
       - name: Deploy Frontend via SFTP
-        run: lftp -d -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_frontend /www/subdom/devTest"
+        run: lftp -e "set ssl:verify-certificate no;open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} 287586.w86.wedos.net && mirror -R Fitmo_frontend /www/subdom/devTest"
