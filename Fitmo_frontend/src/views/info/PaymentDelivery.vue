@@ -119,8 +119,7 @@ export default {
     return {
       deliveryTypes: [],
       paymentTypes: [],
-       imageBasePath: "http://localhost:8000",
-      //imageBasePath: "https://be.fitmo.cz/",
+       imageBasePath: process.env.VUE_APP_FITMO_BACKEND_URL,
     };
   },
   methods: {

@@ -42,6 +42,9 @@ jobs:
           cd Fitmo_frontend
           npm install
 
+      - name: Set environment variable
+        run: echo "VUE_APP_FITMO_BACKEND_URL=${{ secrets.VUE_APP_FITMO_BACKEND_URL }}" >> Fitmo_frontend/.env
+
       - name: Build Frontend
         run: |
           cd Fitmo_frontend

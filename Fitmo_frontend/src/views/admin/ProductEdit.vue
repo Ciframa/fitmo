@@ -177,7 +177,7 @@
         </label>
       </div>
       <input type="submit" value="Přidat fotku" class="btn-yellow" />
-      
+
       --><input
           type="submit"
           value="Změnit produkt"
@@ -421,8 +421,7 @@ export default {
       categoriesSelects: [],
       categories: [],
       groupedCategories: [],
-      imagesBasePath: "http://localhost:8000/products/",
-      //  imagesBasePath: "https://be.fitmo.cz/products/",
+      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
     };
   },
 

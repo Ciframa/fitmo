@@ -97,8 +97,7 @@ export default {
       deliveryTypes: [],
       paymentTypes: [],
       priceSummary: 0,
-      imageBasePath: "http://localhost:8000",
-      // imageBasePath: "https://be.fitmo.cz",
+      imageBasePath: process.env.VUE_APP_FITMO_BACKEND_URL,
       packetaApiKey: "APIe6ee80786c2d92b2",
       packetaOptions: {
         valueFormat:

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: `http://127.0.0.1:8000`,
+    baseURL: process.env.VUE_APP_FITMO_BACKEND_URL,
     headers: {
         "Content-Type": "application/json",
         Authorization: localStorage.getItem("token"),
@@ -10,16 +10,3 @@ export default axios.create({
     xsrfHeaderName: "X-CSRFToken",
     withCredentials: true,
 });
-/*
-
-export default axios.create({
-    baseURL: `https://be.fitmo.cz/`,
-    headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-    },
-    xsrfCookieName: "csrftoken",
-    xsrfHeaderName: "X-CSRFToken",
-    withCredentials: true,
-});
-*/

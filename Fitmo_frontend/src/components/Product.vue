@@ -125,8 +125,7 @@
 export default {
   data() {
     return {
-      imagesBasePath: "http://localhost:8000/products/",
-      // imagesBasePath: "https://be.fitmo.cz/products/",
+      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/;products/`,
     };
   },
   props: {

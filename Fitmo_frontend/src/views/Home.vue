@@ -119,8 +119,7 @@ export default {
       categories: [],
       ratings: [],
       products: [],
-      imageBasePath: "http://localhost:8000/categories/",
-      // imageBasePath: "https://be.fitmo.cz/categories/",
+      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
     };
   },
 

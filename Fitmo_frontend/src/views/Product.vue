@@ -210,8 +210,7 @@ export default {
       amount: 1,
       templates: [],
       parentProduct: null,
-      imagesBasePath: "http://localhost:8000/products/",
-      // imagesBasePath: "https://be.fitmo.cz/products/",
+      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
     };
   },
   methods: {
