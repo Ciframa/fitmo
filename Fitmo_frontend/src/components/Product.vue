@@ -125,7 +125,7 @@
 export default {
   data() {
     return {
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/;products/`,
+      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
     };
   },
   props: {
