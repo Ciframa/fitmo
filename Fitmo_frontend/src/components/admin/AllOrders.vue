@@ -2,18 +2,20 @@
   <div>
     <div class="row actions">
       <select v-model="this.activeAction">
-        <option value="all">Všechny</option>
-        <option value="new">Nové</option>
-        <option value="confirmed">Potvrzené</option>
-        <option value="shipped">Odeslané</option>
-        <option value="delivered">Doručené</option>
-        <option value="cancelled">Zrušené</option>
+        <option value="vytvorena">Změnit na Vytvořena</option>
+        <option value="zpracovavaSe">Změnit na Expedice</option>
+        <option value="expedice">Změnit na Předána přepravci</option>
+        <option value="naCesteKZakaznikovi">
+          Změnit na Na cestě k zákazánovi
+        </option>
+        <option value="casoveOkno">Změnit na Časové okno</option>
+        <option value="dorucena">Změnit na Doručena</option>
       </select>
       <input
         type="submit"
         value="Použít"
         class="btn-yellow"
-        :onClick="provideAction(activeAction)"
+        :onClick="() => provideAction(activeAction)"
       />
     </div>
     <table class="collapsed-border">
@@ -87,6 +89,8 @@
             </td>
           </tr>
           <tr v-if="order.showProducts">
+            <div></div>
+            <div></div>
             <th>Název</th>
             <th>Počet</th>
             <th>Cena</th>
@@ -99,6 +103,8 @@
             v-for="product in order.products"
             :key="product.id"
           >
+            <div></div>
+            <div></div>
             <td>{{ product.name }}</td>
             <td>{{ product.pivot.product_count }}</td>
             <td>{{ product.price }}</td>
@@ -122,6 +128,7 @@
 
 <script>
 import axios from "../../api";
+
 export default {
   data() {
     return {
@@ -140,14 +147,48 @@ export default {
     },
 
     provideAction(action) {
-      console.log(action);
-      if (action === "delete") {
-        console.log("delete");
-      } else if (action === "editState") {
-        console.log("edit state");
+      if (action) {
+        const ordersToChange = this.orders
+          .filter((order) => order.isActive)
+          .map((order) => order.id);
+        if (ordersToChange.length > 0) {
+          axios
+            .post(
+              `api/order/updateStates`,
+              { orderIds: ordersToChange, action: action },
+              {
+                headers: {
+                  //  Authorization: this.tokenData.data.token,
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            )
+            .then((response) => {
+              console.log(response);
+              if (response.status == 200 || response.status == 201) {
+                this.$snackbar.add({
+                  type: "success",
+                  text: "Jsi moc šikovný kluk 🎸!",
+                });
+                this.getOrders();
+              }
+            })
+            .catch(() => {
+              this.$snackbar.add({
+                type: "error",
+                text: "Něco se 💩. Radši zavolej Márovi, než to celý rozbiješ.",
+              });
+            });
+        } else {
+          this.$snackbar.add({
+            type: "error",
+            text: "Nemáš vybrané objednávky",
+          });
+        }
       }
     },
   },
+
   created() {
     this.getOrders();
   },
@@ -158,6 +199,7 @@ export default {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
+
   .btn-yellow {
     width: unset;
     padding: 0.8rem 2rem;
@@ -168,6 +210,7 @@ input {
   -webkit-appearance: button;
   appearance: button;
 }
+
 /* Apply collapsed border styles */
 .collapsed-border {
   border-collapse: collapse;
@@ -177,10 +220,12 @@ input {
 .collapsed-border td:not(:first-child) {
   border: 1px solid $gray-second;
 }
+
 .collapsed-border th,
 .collapsed-border td {
   padding: 8px;
 }
+
 .collapsed-border th {
   background-color: #f2f2f2;
 }

@@ -75,6 +75,7 @@ Route::get('/orders', [OrderController::class, 'index']);
 Route::prefix('/order')->group(function () {
   Route::post('/store', [OrderController::class, 'store']);
   Route::get('/{id}', [OrderController::class, 'getOrderById']);
+  Route::post('/updateStates', [OrderController::class, 'updateState']);
 });
 
 

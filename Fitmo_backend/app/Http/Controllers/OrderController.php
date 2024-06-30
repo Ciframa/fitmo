@@ -58,7 +58,7 @@ public function index()
 
     public function getOrderById($hash)
     {
-         
+
          $orders = Order::with([
         'products' => function ($query) {
             // Include pivot data from the order_product table
@@ -89,7 +89,7 @@ public function index()
     return $orders;
     }
 
-   
+
 
 
     /**
@@ -175,9 +175,9 @@ public function index()
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                 ->join('product_states', 'products.id', '=', 'product_states.product_id')
-              
+
         ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-        ->join('categories', 'categories.id', '=', 'product_categories.category_id') 
+        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->orderBy('products.created_at', "desc")
@@ -250,7 +250,7 @@ public function index()
         //Save order
         $newOrder = new Order();
         $newOrder->hash = $this->guidv4();
-        $newOrder->status = "vytvořena";
+        $newOrder->status = "vytvorena";
         $newOrder->user_id = $userId;
         $newOrder->delivery_id = $overallInfo["deliveryType"]["id"];
         $newOrder->delivery_price = $overallInfo["deliveryType"]["priceNumber"];
@@ -326,6 +326,21 @@ public function index()
     {
         //
     }
+   public function updateState(Request $request)
+   {
+       // Validate the request data
+       $request->validate([
+           'orderIds' => 'required|array',
+           'action' => 'required|string',
+       ]);
+
+       // Update the status of each order
+       Order::whereIn('id', $request->orderIds)
+           ->update(['status' => $request->action]);
+
+       // Return a success response
+       return response()->json(['message' => 'Orders updated successfully']);
+   }
 
     /**
      * Remove the specified resource from storage.
