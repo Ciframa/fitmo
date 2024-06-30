@@ -19,8 +19,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lftp
 
-      - name: Set environment variable
-        run: echo "FRONTEND_URL=${{ secrets.VUE_APP_FITMO_FRONTEND_URL }}" >> Fitmo_backend/.env
+#      - name: Set environment variable
+#        run: echo "FRONTEND_URL=${{ secrets.VUE_APP_FITMO_FRONTEND_URL }}" >> Fitmo_backend/.env
 
       - name: Deploy Backend via SFTP
         env:
