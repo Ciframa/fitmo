@@ -40,7 +40,7 @@
         <div
           class="product__header__item row"
           :key="product.id"
-          v-if="product.isActive === 1"
+          v-if="product.isMain === 1"
         >
           <div class="product__header__item__header">
             <h1 v-if="!product.color_name">{{ product.name }}</h1>
@@ -79,7 +79,7 @@
               <div v-for="variant in this.products[0]" :key="variant.id">
                 <div
                   class="home__eshop__wrapper__img_wrapper__subProducts"
-                  :class="{ active: variant.isActive == 1 }"
+                  :class="{ active: variant.isMain == 1 }"
                   v-on:click="changeProduct(variant)"
                   v-if="variant.color_id"
                 >
@@ -102,7 +102,7 @@
                     v-if="variant.id"
                     :key="variant.id"
                     :value="variant.id"
-                    :selected="variant.isActive === 1"
+                    :selected="variant.isMain === 1"
                   >
                     {{ variant.variant }}
                   </option>
@@ -153,7 +153,7 @@
       <template v-for="product in products[0]">
         <div
           :key="product.id"
-          v-if="product.isActive === 1"
+          v-if="product.isMain === 1"
           class="templates__wrapper"
         >
           <template v-for="template in templates" :key="template.id">
@@ -228,16 +228,17 @@ export default {
           response.data[0].length > 1
         ) {
           response.data[0].shift();
-          response.data[0][0].isActive = 1;
+          response.data[0][0].isMain = 1;
         }
         this.products = response.data;
+        console.log(this.products);
       } catch (error) {
         console.log(error);
       }
     },
     async getTemplates() {
       const activeItem = this.products[0].find((item) => {
-        return item.isActive === 0;
+        return item.isMain === 1;
       });
 
       try {
@@ -297,9 +298,9 @@ export default {
     changeProduct(variant) {
       this.products[0].forEach((product) => {
         if (product.id != variant.id) {
-          product.isActive = 0;
+          product.isMain = 0;
         } else {
-          product.isActive = 1;
+          product.isMain = 1;
         }
       });
     },

@@ -9,7 +9,7 @@
             // categoryPath: product.categoryPath,
           },
         }"
-        v-if="product.isActive === 1"
+        v-if="product.isMain === 1"
       >
         <span
           class="home__eshop__wrapper__item_discount"
@@ -72,7 +72,7 @@
           <div v-for="variant in products" :key="variant.id">
             <div
               class="home__eshop__wrapper__img_wrapper__subProducts"
-              :class="{ active: variant.isActive == 1 }"
+              :class="{ active: variant.isMain == 1 }"
               v-on:mouseover="changeProduct(variant, 'over')"
               v-if="variant.color_id"
             >
@@ -87,7 +87,7 @@
             </div>
           </div>
         </div>
-        <div v-if="product.isActive === 1"></div>
+        <div v-if="product.isMain === 1"></div>
         <h4>
           {{ product.name }}
         </h4>
@@ -136,16 +136,16 @@ export default {
       if (mouse == "over") {
         this.products.forEach((product) => {
           if (product.id !== variant.id) {
-            product.isActive = 0;
+            product.isMain = 0;
           } else {
-            product.isActive = 1;
+            product.isMain = 1;
           }
         });
       } else {
         this.products.forEach((product) => {
-          product.isActive = 0;
+          product.isMain = 0;
         });
-        this.products[0].isActive = 1;
+        this.products[0].isMain = 1;
       }
     },
     getLowestPrice() {

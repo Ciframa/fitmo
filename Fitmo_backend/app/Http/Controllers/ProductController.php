@@ -22,16 +22,16 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-public function index(Request $request)
-{
-    $products = Product::select(
+    public function index(Request $request)
+    {
+        $products = Product::select(
             'prices.*',
             'product_states.*',
             'categories.name as category_name',
             'colors.*',
             'products.*',
             'product_categories.category_id as category_id'
-        )->with(['categories', 'children' => function($query) {
+        )->with(['categories', 'children' => function ($query) {
             $query->select(
                 'prices.*',
                 'product_states.*',
@@ -40,37 +40,37 @@ public function index(Request $request)
                 'products.*',
                 'product_categories.category_id as category_id'
             )
+                ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->where('products.parent_id', '!=', 0);
+        }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->where('products.parent_id', '!=', 0);
-        }])
-        ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-        ->join('product_states', 'products.id', '=', 'product_states.product_id')
-        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-        ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-        ->orderBy('products.created_at', 'desc')
-        ->where('products.parent_id', 0)
-        ->paginate(20, ['*'], 'page', $request->page ?? 1);
+            ->orderBy('products.created_at', 'desc')
+            ->where('products.parent_id', 0)
+            ->paginate(20, ['*'], 'page', $request->page ?? 1);
 
 
-    $products = $this->formatProducts($products, true);
-    return $products;
-}
+        $products = $this->formatProducts($products, true);
+        return $products;
+    }
 
     public function getSingleProduct($product_url_name)
     {
-        $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name',    'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
-        ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+        $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
-          ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-           ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->orderBy('products.created_at', "desc")
@@ -78,53 +78,54 @@ public function index(Request $request)
             ->get();
         return $this->formatProducts($products);
     }
+
     public function getTemplates($product_id)
     {
         $templates = Template::where("product_id", $product_id)->orderBy('sort', "asc")->get();
         return $templates;
     }
 
- public function getSearchedItems($query)
-{
-    // Explode the search query into individual words
-    $searchWords = explode(' ', $query);
+    public function getSearchedItems($query)
+    {
+        // Explode the search query into individual words
+        $searchWords = explode(' ', $query);
 
-    // Initialize an array to store matched products
-    $matchedProducts = [];
+        // Initialize an array to store matched products
+        $matchedProducts = [];
 
-    // Loop through each search word
-    foreach ($searchWords as $word) {
-        // Skip empty words
-        if (empty($word)) {
-            continue;
+        // Loop through each search word
+        foreach ($searchWords as $word) {
+            // Skip empty words
+            if (empty($word)) {
+                continue;
+            }
+
+            // Perform the product query for each word
+            $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
+                ->with('categories')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
+                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                ->orderBy('products.created_at', 'desc')
+                ->where('products.name', 'like', '%' . $word . '%')
+                ->get();
+
+            // Merge the products into the matchedProducts array
+            foreach ($products as $product) {
+                $matchedProducts[$product->id] = $product; // Use product id as key to avoid duplicates
+            }
         }
 
-        // Perform the product query for each word
-        $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name',  'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
-            ->with('categories')
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-            ->join('product_states', 'products.id', '=', 'product_states.product_id')
-            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-            ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
-            ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-            ->orderBy('products.created_at', 'desc')
-            ->where('products.name', 'like', '%' . $word . '%')
-            ->get();
+        // Convert array of matched products back to a collection
+        $matchedProducts = collect(array_values($matchedProducts));
 
-        // Merge the products into the matchedProducts array
-        foreach ($products as $product) {
-            $matchedProducts[$product->id] = $product; // Use product id as key to avoid duplicates
-        }
+        // Return formatted products
+        return $this->formatProducts($matchedProducts);
     }
-
-    // Convert array of matched products back to a collection
-    $matchedProducts = collect(array_values($matchedProducts));
-
-    // Return formatted products
-    return $this->formatProducts($matchedProducts);
-}
 
     public function getAllProducts()
     {
@@ -134,9 +135,9 @@ public function index(Request $request)
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->get();
-            foreach ($products as $product) {
-                $product->image_urls = explode(',', $product->image_urls);
-            }
+        foreach ($products as $product) {
+            $product->image_urls = explode(',', $product->image_urls);
+        }
         return $products;
     }
 
@@ -145,7 +146,7 @@ public function index(Request $request)
         $products = Product::all();
 
         foreach ($products as $product) {
-            $product->url_name = str_replace(" ", "-", (strtolower(str_replace([","], "",  Str::ascii($product["name"])))));
+            $product->url_name = str_replace(" ", "-", (strtolower(str_replace([","], "", Str::ascii($product["name"])))));
             $product->save();
         }
     }
@@ -153,33 +154,43 @@ public function index(Request $request)
     public function getMainProducts()
     {
         return Product::select('categories.*', 'products.*')->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-        ->join('categories', 'categories.id', '=', 'product_categories.category_id')->orderBy("products.name")->where("products.parent_id", 0)->with('categories')->get();
+            ->join('categories', 'categories.id', '=', 'product_categories.category_id')->orderBy("products.name")->where("products.parent_id", 0)->with('categories')->get();
     }
+
     public function formatProducts($products, $shouldWorkWithChildren = false)
-    {
-    $newProducts = [];
-        foreach ($products as $product) {
-        $temp = [];
-        $product->isActive = 1; // Activate the product
-        $temp[] = $product; // Add the product to the array
-               // Format parent product
-               $product->image_urls = explode(',', $product->image_urls);
-               $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
+      {
+            foreach ($products as $product) {
+                $product->image_urls = explode(',', $product->image_urls);
+                $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
+            }
+            $newProducts = [];
+            foreach ($products as $product) {
+                $temp = [];
+                $product->isMain = 0;
+                if ($product["parent_id"] === 0) {
+                    $product->isMain = 1;
+                    $temp[] = $product;
 
-               // Check if the product has children and format them
-               if ($shouldWorkWithChildren && $product->children->isNotEmpty()) {
-                   foreach ($product->children as $child) {
-                       $child->image_urls = explode(',', $child->image_urls);
-                       $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
-                        $child->isActive = 0; // Activate the product
-                   $temp[] = $child;
-                   }
-               }
-           $newProducts[] = $temp;
-           }
+                    foreach ($products as $tempProduct) {
+                        if ($product["id"] === $tempProduct["parent_id"]) {
+                            $temp[] = $tempProduct;
+                        }
+                    }
+                 if ($shouldWorkWithChildren && $product->children->isNotEmpty()) {
+                                   foreach ($product->children as $child) {
+                                       $child->image_urls = explode(',', $child->image_urls);
+                                       $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
+                                        $child->isMain = 0; // Activate the product
+                                   $temp[] = $child;
+                                   }
+                               }
+                    $newProducts[] = $temp;
+                }
+            }
 
-        return $newProducts;
-    }
+            return $newProducts;
+        }
+
     public function getProductById($id)
     {
 
@@ -196,7 +207,7 @@ public function index(Request $request)
         )
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-              ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->where('products.id', $id)
@@ -212,7 +223,6 @@ public function index(Request $request)
     }
 
 
-
     public function getCategoryProducts($categoryName)
     {
         $categoryName = join("/", explode(",", $categoryName));
@@ -222,7 +232,7 @@ public function index(Request $request)
             'LIKE',
             Category::select("categories.path")
                 ->join('map_table', 'categories.id', '=', 'map_table.category_id')
-                ->where('map_table.path', $categoryName)->first()["path"]  . "%"
+                ->where('map_table.path', $categoryName)->first()["path"] . "%"
         )->get();
 
         $categoriesToSearch = [];
@@ -233,21 +243,20 @@ public function index(Request $request)
         }
 
 
-        $products = Product::select('prices.*', 'product_states.*', 'product_categories.category_id as category_id',  'categories.name as category_name',  'colors.*', 'products.*',)
+        $products = Product::select('prices.*', 'product_states.*', 'product_categories.category_id as category_id', 'categories.name as category_name', 'colors.*', 'products.*',)
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->whereIn('category_id', $categoriesToSearch)
             ->get();
 
 
-
-
         return $this->formatProducts($products);
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -263,7 +272,7 @@ public function index(Request $request)
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function storeTemplate(Request $request, $id)
@@ -336,6 +345,7 @@ public function index(Request $request)
 
         return "Asi se to povedlo";
     }
+
     public function store(Request $request)
     {
 
@@ -354,14 +364,14 @@ public function index(Request $request)
         $newProduct->variant = $request->variant;
 
         $newProduct->parent_id = $request->parent["id"];
-        $newProduct->url_name = str_replace(" ", "-", (strtolower(str_replace([","], "",  Str::ascii($request["name"])))));
+        $newProduct->url_name = str_replace(" ", "-", (strtolower(str_replace([","], "", Str::ascii($request["name"])))));
         if ($request->colors["colorName"]) {
             $newProduct->color_id = $newColor->id;
         }
         $newProduct->save();
 
 
-         if(isset($request->parent["category_id"]) && $request->parent["category_id"] == 0){
+        if (isset($request->parent["category_id"]) && $request->parent["category_id"] == 0) {
             foreach ($request->categories as $category) {
                 $newProductCategories = new ProductCategory();
                 $newProductCategories->product_id = $newProduct->id;
@@ -369,15 +379,14 @@ public function index(Request $request)
                 $newProductCategories->save();
             }
 
-        }
-        else{
+        } else {
             foreach ($request->parent["categories"] as $category) {
                 $newProductCategories = new ProductCategory();
                 $newProductCategories->product_id = $newProduct->id;
                 $newProductCategories->category_id = $category["id"];
                 $newProductCategories->save();
+            }
         }
-    }
 
         $path = 'products/';
 
@@ -393,9 +402,9 @@ public function index(Request $request)
         File::makeDirectory($path);
         $newState = new ProductState();
         $newState->product_id = $newProduct->id;
-        $newState->discount = (int) filter_var($request->stateButtons["discount"], FILTER_VALIDATE_BOOLEAN);
-        $newState->newProduct = (int) filter_var($request->stateButtons["newProduct"], FILTER_VALIDATE_BOOLEAN);
-        $newState->topProduct = (int) filter_var($request->stateButtons["topProduct"], FILTER_VALIDATE_BOOLEAN);
+        $newState->discount = (int)filter_var($request->stateButtons["discount"], FILTER_VALIDATE_BOOLEAN);
+        $newState->newProduct = (int)filter_var($request->stateButtons["newProduct"], FILTER_VALIDATE_BOOLEAN);
+        $newState->topProduct = (int)filter_var($request->stateButtons["topProduct"], FILTER_VALIDATE_BOOLEAN);
         $newState->save();
 
         if ($request->prices["normal"]) {
@@ -409,12 +418,11 @@ public function index(Request $request)
         }
 
 
-
         foreach ($request->photos as $photo) {
             $newImg = new Image();
             $newImg->product_id = $newProduct->id;
             $newImg->image_path = $photo["image_path"];
-            $newImg->is_main = (int) filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
+            $newImg->is_main = (int)filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
 
             $newImg->save();
 
@@ -435,16 +443,18 @@ public function index(Request $request)
         $this->setUrlNames();
         return $newProduct;
     }
+
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         //
     }
+
     public function deleteTemplate($productId, $templateId)
     {
         $existingProduct = Product::find($productId);
@@ -463,65 +473,66 @@ public function index(Request $request)
         $imageFiles = glob($folderPath . '/*.jpg');
         $folderPath .= "/";
         foreach ($imageFiles as $imageFile) {
-            if ($imageFile == $folderPath . $existingTemplate->image1 || $imageFile == $folderPath . $existingTemplate->image2 || $imageFile == $folderPath . $existingTemplate->image3 || $imageFile == $folderPath .  $existingTemplate->image4 || $imageFile == $folderPath . $existingTemplate->image5 || $imageFile == $folderPath . $existingTemplate->image6) {
+            if ($imageFile == $folderPath . $existingTemplate->image1 || $imageFile == $folderPath . $existingTemplate->image2 || $imageFile == $folderPath . $existingTemplate->image3 || $imageFile == $folderPath . $existingTemplate->image4 || $imageFile == $folderPath . $existingTemplate->image5 || $imageFile == $folderPath . $existingTemplate->image6) {
                 File::delete($imageFile);
             }
 
         }
-        $existingTemplate->delete();
-;
+        $existingTemplate->delete();;
     }
+
     public function delete($id)
     {
 
-          $existingProduct = Product::find($id);
+        $existingProduct = Product::find($id);
 
-    if ($existingProduct) {
-        $existingProduct->isActive = 0;
-        $existingProduct->save();
-        return "Product successfully updated";
-    } else {
-        return "Product not found";
-    }
-      /* $existingProduct = Product::find($id);
-        $existingColor = Color::find($existingProduct->color_id);
-        $folderPath = 'products/';
-
-        if (isset($existingColor)) {
-            $folderPath .= $existingProduct["name"] . "-" . $existingColor["colorName"];
-        } elseif (isset($existingProduct["variant"])) {
-            $folderPath .= $existingProduct["name"] . "-" . $existingProduct["variant"];
-        } else {
-            $folderPath .= $existingProduct["name"];
-        }
-
-
-
-        if ($existingColor) {
-            $existingColor->delete();
-        }
-
-        if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-            // Folder exists, delete it
-            if (File::deleteDirectory($folderPath)) {
-                echo "Folder deleted successfully.";
-            } else {
-                echo "Unable to delete the folder.";
-            }
-        } else {
-            echo "Folder does not exist.";
-        }
         if ($existingProduct) {
-            $existingProduct->delete();
-            return "Product successfully deleted";
+            $existingProduct->isActive = 0;
+            $existingProduct->save();
+            return "Product successfully updated";
+        } else {
+            return "Product not found";
         }
-        return $existingProduct;
-         */
+        /* $existingProduct = Product::find($id);
+          $existingColor = Color::find($existingProduct->color_id);
+          $folderPath = 'products/';
+
+          if (isset($existingColor)) {
+              $folderPath .= $existingProduct["name"] . "-" . $existingColor["colorName"];
+          } elseif (isset($existingProduct["variant"])) {
+              $folderPath .= $existingProduct["name"] . "-" . $existingProduct["variant"];
+          } else {
+              $folderPath .= $existingProduct["name"];
+          }
+
+
+
+          if ($existingColor) {
+              $existingColor->delete();
+          }
+
+          if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+              // Folder exists, delete it
+              if (File::deleteDirectory($folderPath)) {
+                  echo "Folder deleted successfully.";
+              } else {
+                  echo "Unable to delete the folder.";
+              }
+          } else {
+              echo "Folder does not exist.";
+          }
+          if ($existingProduct) {
+              $existingProduct->delete();
+              return "Product successfully deleted";
+          }
+          return $existingProduct;
+           */
     }
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -532,8 +543,8 @@ public function index(Request $request)
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -583,7 +594,7 @@ public function index(Request $request)
 
                     $newPrice = new Price();
                     $newPrice->product_id = $product->id;
-                    $newPrice->price =  $request->price;
+                    $newPrice->price = $request->price;
                     $newPrice->discounted = $request->discounted ?? null;;
                     $newPrice->discountedPercent = $request->discountedPercent ?? null;
                     $newPrice->save();
@@ -592,16 +603,16 @@ public function index(Request $request)
         }
         $existingStates = ProductState::where("product_id", $product->id)->first();
         if ($existingStates) {
-            $existingStates->discount = (int) filter_var($request->discount, FILTER_VALIDATE_BOOLEAN);
-            $existingStates->newProduct = (int) filter_var($request->newProduct, FILTER_VALIDATE_BOOLEAN);
-            $existingStates->topProduct = (int) filter_var($request->topProduct, FILTER_VALIDATE_BOOLEAN);
+            $existingStates->discount = (int)filter_var($request->discount, FILTER_VALIDATE_BOOLEAN);
+            $existingStates->newProduct = (int)filter_var($request->newProduct, FILTER_VALIDATE_BOOLEAN);
+            $existingStates->topProduct = (int)filter_var($request->topProduct, FILTER_VALIDATE_BOOLEAN);
             $existingStates->save();
         } else {
             $newState = new ProductState();
             $newState->product_id = $product->id;
-            $newState->discount = (int) filter_var($request->discount, FILTER_VALIDATE_BOOLEAN);
-            $newState->newProduct = (int) filter_var($request->newProduct, FILTER_VALIDATE_BOOLEAN);
-            $newState->topProduct = (int) filter_var($request->topProduct, FILTER_VALIDATE_BOOLEAN);
+            $newState->discount = (int)filter_var($request->discount, FILTER_VALIDATE_BOOLEAN);
+            $newState->newProduct = (int)filter_var($request->newProduct, FILTER_VALIDATE_BOOLEAN);
+            $newState->topProduct = (int)filter_var($request->topProduct, FILTER_VALIDATE_BOOLEAN);
             $newState->save();
         }
         $folderPath = 'products/';
@@ -638,7 +649,7 @@ public function index(Request $request)
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

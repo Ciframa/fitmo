@@ -472,9 +472,8 @@ header {
           left: -3rem;
           right: 0;
           // display: none;
-          z-index: 2;
           height: 1500px;
-          z-index: 5;
+          z-index: 99;
           /* margin-right: 20px; */
           border-radius: 16px 0 0 16px;
           overflow: hidden;
@@ -599,7 +598,7 @@ header {
             text-align: right;
             margin-right: 0.6rem;
 
-            span:first-child() {
+            span:first-child {
               line-height: 1.2rem;
               margin-bottom: 0.4rem;
             }
