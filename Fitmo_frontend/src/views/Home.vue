@@ -86,12 +86,15 @@
           :products="product"
         />
       </div>
-      <button class="btn-gray">Zobrazit další produkty</button>
-      <div class="banners">
-        <img src="../../public/assets/banners/banner pc.jpg" alt="" />
-        <img src="../../public/assets/banners/banner tablet .jpg" alt="" />
-        <img src="../../public/assets/banners/banner mobil 1+1.jpg" alt="" />
-      </div>
+      <button class="btn-gray" :onClick="() => getProducts()">
+        <VaProgressCircle v-show="this.isLoading" indeterminate />
+        <span v-show="!this.isLoading">Zobrazit další produkty</span>
+      </button>
+      <!--      <div class="banners">-->
+      <!--        <img src="../../public/assets/banners/banner pc.jpg" alt="" />-->
+      <!--        <img src="../../public/assets/banners/banner tablet .jpg" alt="" />-->
+      <!--        <img src="../../public/assets/banners/banner mobil 1+1.jpg" alt="" />-->
+      <!--      </div>-->
     </div>
     <div class="home__gray_banner"></div>
     <CustomMade></CustomMade>
@@ -116,9 +119,11 @@ export default {
 
   data() {
     return {
+      page: 0,
       categories: [],
       ratings: [],
       products: [],
+      isLoading: false,
       imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
     };
   },
@@ -164,11 +169,15 @@ export default {
       }
     },
     async getProducts() {
+      this.isLoading = true;
+      this.page++;
       try {
-        const response = await axios.get("/api/products");
-        this.products = response.data;
+        const response = await axios.get(`/api/products?page=${this.page}`);
+        this.products = [...this.products, ...response.data];
       } catch (error) {
         console.log(error);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -184,8 +193,10 @@ export default {
 .Home {
   max-height: none;
 }
+
 .home {
   background: $gray-third;
+
   &__header {
     max-width: 1140px;
     width: 90%;
@@ -196,10 +207,12 @@ export default {
       height: 50rem;
       border: 1px solid black;
       margin: 7rem 0;
+
       img {
         object-fit: cover;
       }
     }
+
     h2 {
       font-size: 3rem;
     }
@@ -223,6 +236,7 @@ export default {
           position: relative;
           max-width: 30rem;
           transition: 0.3s ease all;
+
           &:hover {
             box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.07);
           }
@@ -246,6 +260,7 @@ export default {
             display: flex;
             align-items: flex-end;
           }
+
           ul {
             display: flex;
             flex-wrap: wrap;
@@ -256,8 +271,10 @@ export default {
             li {
               padding-right: 0.9rem;
               position: relative;
+
               a {
                 position: relative;
+
                 &::before {
                   content: "";
                   display: block;
@@ -289,6 +306,7 @@ export default {
               }
             }
           }
+
           & > a {
             width: 18rem;
             margin: auto 0 2rem 0;
@@ -297,6 +315,7 @@ export default {
       }
     }
   }
+
   &__trailer {
     color: $white;
     font-weight: 400;
@@ -305,11 +324,13 @@ export default {
 
     .row > div {
       position: relative;
+
       > img {
         padding: 0.5rem;
         object-fit: cover;
         min-height: 100%;
       }
+
       .img_text_wrapper {
         display: flex;
         justify-content: center;
@@ -325,6 +346,7 @@ export default {
           height: 12rem;
           filter: drop-shadow(2px 4px 16px black);
         }
+
         span {
           font-weight: 700;
           font-size: 1.6rem;
@@ -333,11 +355,13 @@ export default {
       }
     }
   }
+
   &__eshop {
     max-width: 1520px;
     margin: auto;
     justify-content: space-between;
     padding: 0 5%;
+    margin-bottom: 4rem;
 
     .btn-gray {
       color: #525358;
@@ -347,13 +371,16 @@ export default {
       font-size: 12px;
       text-decoration: underline;
     }
+
     & > img {
       margin: 6rem 0 20rem 0;
     }
+
     h3 {
       font-size: 3.2rem;
       margin: 13.4rem 0 4rem 0;
     }
+
     &__wrapper {
       background: $white;
       border-radius: 2rem;
@@ -370,6 +397,7 @@ export default {
         position: absolute;
         z-index: 2;
       }
+
       &::after {
         content: "";
         right: 0;
@@ -380,6 +408,7 @@ export default {
         position: absolute;
         z-index: 2;
       }
+
       &__img_wrapper {
         position: relative;
         width: 100%;
@@ -387,6 +416,7 @@ export default {
         display: flex;
         align-items: center;
         flex-direction: column;
+
         &__subProducts {
           display: flex;
           border-radius: 50%;
@@ -406,6 +436,7 @@ export default {
             border-color: $black-headers;
             border-width: 3px;
           }
+
           & > div {
             display: block;
             height: 2.2rem;
@@ -419,6 +450,7 @@ export default {
           height: 100%;
           margin: 0 auto;
         }
+
         img:nth-of-type(2) {
           position: absolute;
           top: 0;
@@ -458,12 +490,14 @@ export default {
           max-width: 80%;
           margin: auto;
         }
+
         img {
           margin: 0 auto;
           object-fit: contain;
           height: 25rem;
           max-height: 25rem;
         }
+
         &::before {
           content: "";
           position: absolute;
@@ -473,6 +507,7 @@ export default {
           top: 0;
           left: 10%;
         }
+
         &:nth-child(odd) {
           &::after {
             content: "";
@@ -491,6 +526,7 @@ export default {
         line-height: 2rem;
         min-height: 1.8rem;
       }
+
       &__price {
         font-weight: 700;
         font-size: 1.6rem;
@@ -502,6 +538,7 @@ export default {
         & > * {
           margin: 0 0.2rem;
         }
+
         &__trough {
           font-size: 1.1rem;
           font-weight: 400;
@@ -517,10 +554,12 @@ export default {
             position: absolute;
           }
         }
+
         &__discount {
           color: $yellow;
         }
       }
+
       &__discounts {
         margin-top: 0.4rem;
         min-height: 2.8rem;
@@ -538,6 +577,7 @@ export default {
       }
     }
   }
+
   &__gray_banner {
     height: 73.8rem;
     background: $black-second;
@@ -552,6 +592,7 @@ export default {
       padding: 1.5rem 4rem;
       font-size: 15px;
     }
+
     &__wrapper {
       & > div {
         h4 {
@@ -565,12 +606,15 @@ export default {
         width: 6.5rem;
         font-size: 2rem;
       }
+
       &__name {
         font-size: 1.7rem;
         margin-top: 0.3rem;
       }
+
       &__price {
         font-size: 1.9rem;
+
         &__trough {
           font-size: 1.4rem;
           font-weight: 400;
@@ -579,24 +623,29 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-md-min) {
   .home {
     &__header {
       padding-top: 11.1rem;
     }
+
     &__trailer {
       .center {
         display: block;
       }
+
       .row > div .img_text_wrapper span {
         font-size: 1.8rem;
       }
     }
+
     &__eshop__wrapper {
       &__item_discount {
         top: 3rem;
         right: 3rem;
       }
+
       &__discounts {
         span {
           font-size: 1.2rem;
@@ -615,6 +664,7 @@ export default {
     &:nth-child(odd) {
       justify-content: flex-end;
     }
+
     &:nth-child(even) {
       justify-content: flex-start;
     }
@@ -627,10 +677,12 @@ export default {
       > img {
         padding-left: 0.5rem;
       }
+
       .img_text_wrapper {
         span {
           font-size: 2rem;
         }
+
         img {
         }
       }
@@ -639,24 +691,29 @@ export default {
     &__eshop {
       &__wrapper {
         padding: 0;
+
         & > div {
           &:hover {
             -webkit-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
             -moz-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
             box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
             z-index: 99;
+
             .home__eshop__wrapper__img_wrapper {
               img:first-of-type {
                 opacity: 0;
               }
+
               img:last-of-type {
                 opacity: 1;
               }
             }
           }
+
           &:nth-child(n + 7) {
             display: flex;
           }
+
           &::after {
             content: "";
             position: absolute;
@@ -671,12 +728,15 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-xl-min) {
   .home {
     &__eshop {
     }
+
     &__trailer .row > div {
       min-height: 28rem;
+
       .img_text_wrapper {
         span {
           font-size: 2.2rem;
@@ -685,25 +745,32 @@ export default {
         }
       }
     }
+
     &__header {
       padding-top: 18.3rem;
       max-width: 1484px;
+
       h2 {
         font-size: 3.96rem;
         line-height: 4.3rem;
       }
+
       .row > div {
         padding: 1.6rem;
+
         .category_wrapper {
           max-width: unset;
+
           h3 {
             font-size: 2.88rem;
             margin-bottom: 2.2rem;
           }
+
           ul {
             font-size: 1.44rem;
             margin-bottom: 4.5rem;
           }
+
           > a {
             font-size: 1.44rem;
             white-space: nowrap;

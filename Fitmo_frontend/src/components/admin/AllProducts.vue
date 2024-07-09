@@ -4,6 +4,29 @@
     <ul class="productsList">
       <template v-for="product in products">
         <li v-if="!product.isChildren" :key="product.id">
+          <img
+            :src="
+              product.color_name
+                ? this.imagesBasePath +
+                  product.name +
+                  '-' +
+                  product.color_name +
+                  '/' +
+                  product.image_urls[0]
+                : product.variant
+                ? this.imagesBasePath +
+                  product.name +
+                  '-' +
+                  product.variant +
+                  '/' +
+                  product.image_urls[0]
+                : this.imagesBasePath +
+                  product.name +
+                  '/' +
+                  product.image_urls[0]
+            "
+            alt=""
+          />
           <span class="productsList__name__wrapper">
             <span class="productsList__name">
               {{
@@ -18,15 +41,38 @@
               <router-link :to="'/edit/' + product.id">Editovat</router-link>
               <li v-on:click="deleteProduct(product.id)">Smazat</li>
               <font-awesome-icon
-                v-if="product.children.length > 0"
+                v-if="product.children?.length > 0"
                 :icon="['fa', 'angle-down']"
                 :size="'2x'"
                 v-on:click="product.showChildren = !product.showChildren"
-                :class="{ 'rotated': product.showChildren }"
+                :class="{ rotated: product.showChildren }"
               />
             </ul>
             <template v-if="product.showChildren">
               <li v-for="child in product.children" :key="child.id">
+                <img
+                  :src="
+                    child.color_name
+                      ? this.imagesBasePath +
+                        child.name +
+                        '-' +
+                        child.color_name +
+                        '/' +
+                        product.image_urls[0]
+                      : child.variant
+                      ? this.imagesBasePath +
+                        child.name +
+                        '-' +
+                        child.variant +
+                        '/' +
+                        child.image_urls[0]
+                      : this.imagesBasePath +
+                        child.name +
+                        '/' +
+                        child.image_urls[0]
+                  "
+                  alt=""
+                />
                 <span class="productsList__name__wrapper">
                   <span class="productsList__name">
                     {{
@@ -58,7 +104,10 @@ import axios from "../../api";
 export default {
   components: {},
   data() {
-    return { products: [] };
+    return {
+      products: [],
+      imagesBasePath: process.env.VUE_APP_FITMO_BACKEND_URL + "/products/",
+    };
   },
 
   methods: {
@@ -110,12 +159,24 @@ export default {
   gap: 1rem;
   display: flex;
   flex-direction: column;
-  .rotated{
+
+  img {
+    width: 80px;
+    object-fit: contain;
+    object-position: top;
+  }
+
+  .rotated {
     transform: rotateX(180deg);
   }
   & > li {
     border-bottom: 1px solid $gray-second;
     padding: 1rem 0;
+    display: flex;
+
+    li {
+      display: flex;
+    }
   }
   &__name {
     font-weight: 500;

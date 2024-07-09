@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-    
+
       public function orders()
     {
         return $this->belongsToMany(Order::class)->withTimestamps();
@@ -23,5 +23,9 @@ class Product extends Model
       public function color()
     {
         return $this->belongsTo(Color::class);
+    }
+ public function children()
+    {
+        return $this->hasMany(Product::class, 'parent_id');
     }
 }

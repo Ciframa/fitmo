@@ -40,7 +40,6 @@
             "
             alt=""
           />
-
           <img
             v-if="product.image_urls[1] && product.color_id === null"
             :src="
