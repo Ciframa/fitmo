@@ -129,16 +129,32 @@ class ProductController extends Controller
 
     public function getAllProducts()
     {
-        $products = Product::select('colors.*', 'prices.*', 'product_states.*', 'products.*')
+        $products = Product::select('colors.*', 'prices.*', 'product_states.*', 'products.*')->with(['categories', 'children' => function ($query) {
+                                                                                                         $query->select(
+                                                                                                             'prices.*',
+                                                                                                             'product_states.*',
+                                                                                                             'categories.name as category_name',
+                                                                                                             'colors.*',
+                                                                                                             'products.*',
+                                                                                                             'product_categories.category_id as category_id'
+                                                                                                         )
+                                                                                                             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                                                                                                             ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                                                                                                             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                                                                                                             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                                                                                                             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                                                                                                             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                                                                                                             ->where('products.parent_id', '!=', 0);
+                                                                                                     }])
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
+            ->where('products.parent_id', 0)
             ->get();
-        foreach ($products as $product) {
-            $product->image_urls = explode(',', $product->image_urls);
-        }
-        return $products;
+
+
+        return $this->formatProducts($products, true);
     }
 
     public function setUrlNames()
