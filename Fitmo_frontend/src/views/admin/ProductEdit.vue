@@ -137,6 +137,7 @@
             >Novinka</span
           >
         </div>
+
         <!--  <div class="addPhoto__wrapper">
        <div
           class="addPhoto__wrapper__checkbox"
@@ -415,6 +416,7 @@ export default {
   },
   data() {
     return {
+      photos: [],
       product: {},
       products: {},
       templates: [],

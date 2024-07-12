@@ -127,19 +127,46 @@ class ProductController extends Controller
         return $this->formatProducts($matchedProducts);
     }
 
+
     public function getAllProducts()
     {
-        $products = Product::select('colors.*', 'prices.*', 'product_states.*', 'products.*')
+        $products = Product::select(
+//                     'prices.*',
+//                     'product_states.*',
+                    'categories.name as category_name',
+                    'colors.*',
+            'products.*',
+                    'product_categories.category_id as category_id'
+        )->with(['children' => function ($query) {
+            $query->select(
+//                         'prices.*',
+//                         'product_states.*',
+                        'categories.name as category_name',
+                        'colors.*',
+                'products.*',
+//                         'product_categories.category_id as category_id'
+            )
+//                         ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+//                         ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->where('products.parent_id', '!=', 0);
+        }])
+//                     ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+//                     ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-            ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-            ->join('product_states', 'products.id', '=', 'product_states.product_id')
-            ->get();
-        foreach ($products as $product) {
-            $product->image_urls = explode(',', $product->image_urls);
-        }
+            ->orderBy('products.name', 'asc')
+            ->where('products.parent_id', 0)->get();
+
+        $products = $this->formatOnlyPhotos($products);
         return $products;
     }
+
 
     public function setUrlNames()
     {
@@ -158,38 +185,55 @@ class ProductController extends Controller
     }
 
     public function formatProducts($products, $shouldWorkWithChildren = false)
-      {
-            foreach ($products as $product) {
-                $product->image_urls = explode(',', $product->image_urls);
-                $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
-            }
-            $newProducts = [];
-            foreach ($products as $product) {
-                $temp = [];
-                $product->isMain = 0;
-                if ($product["parent_id"] === 0) {
-                    $product->isMain = 1;
-                    $temp[] = $product;
+    {
+        foreach ($products as $product) {
+            $product->image_urls = explode(',', $product->image_urls);
+            $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
+        }
+        $newProducts = [];
+        foreach ($products as $product) {
+            $temp = [];
+            $product->isMain = 0;
+            if ($product["parent_id"] === 0) {
+                $product->isMain = 1;
+                $temp[] = $product;
 
-                    foreach ($products as $tempProduct) {
-                        if ($product["id"] === $tempProduct["parent_id"]) {
-                            $temp[] = $tempProduct;
-                        }
+                foreach ($products as $tempProduct) {
+                    if ($product["id"] === $tempProduct["parent_id"]) {
+                        $temp[] = $tempProduct;
                     }
-                 if ($shouldWorkWithChildren && $product->children->isNotEmpty()) {
-                                   foreach ($product->children as $child) {
-                                       $child->image_urls = explode(',', $child->image_urls);
-                                       $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
-                                        $child->isMain = 0; // Activate the product
-                                   $temp[] = $child;
-                                   }
-                               }
-                    $newProducts[] = $temp;
+                }
+                if ($shouldWorkWithChildren && $product->children->isNotEmpty()) {
+                    foreach ($product->children as $child) {
+                        $child->image_urls = explode(',', $child->image_urls);
+                        $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
+                        $child->isMain = 0; // Activate the product
+                        $temp[] = $child;
+                    }
+                }
+                $newProducts[] = $temp;
+            }
+        }
+
+        return $newProducts;
+    }
+
+    public function formatOnlyPhotos($products)
+    {
+        foreach ($products as $product) {
+            $product->image_urls = explode(',', $product->image_urls);
+            $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
+
+            if ($product->children->isNotEmpty()) {
+                foreach ($product->children as $child) {
+                    $child->image_urls = explode(',', $child->image_urls);
+                    $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
                 }
             }
-
-            return $newProducts;
         }
+
+        return $products;
+    }
 
     public function getProductById($id)
     {
@@ -554,7 +598,7 @@ class ProductController extends Controller
         $productOriginalVariant = $product->variant;
         $product->name = $request->name;
         $product->description = $request->description;
-        $product->category_id = $request->category_id;
+        // $product->category_id = $request->category_id;
         $product->parent_id = $request->parent_id;
 
         $product->variant = $request->variant;
@@ -637,11 +681,11 @@ class ProductController extends Controller
 
             rename($folderPath, $path);
         }
-        if ($request->parent["category_id"] != 0) {
-
-            $product->category_id = $request->parent["category_id"];
-            Product::where('parent_id', $product->id)->update(['category_id' => $request->parent["category_id"]]);
-        }
+//         if ($request->parent["category_id"] != 0) {
+//
+//             $product->category_id = $request->parent["category_id"];
+//             Product::where('parent_id', $product->id)->update(['category_id' => $request->parent["category_id"]]);
+//         }
         $this->setUrlNames();
         return $product->save();
     }
