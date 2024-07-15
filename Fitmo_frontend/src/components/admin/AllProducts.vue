@@ -3,7 +3,7 @@
     <h2>Přehled produktů</h2>
     <ul class="productsList">
       <template v-for="product in products">
-        <li v-if="product.children.length > 0" :key="product.id">
+        <li>
           <div class="productsList__nameImageWrapper">
             <img
               :src="
