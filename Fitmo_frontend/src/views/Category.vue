@@ -168,6 +168,14 @@
           sizes="col-12-xs col-6-sm col-4-lg"
           :products="product"
         />
+        <button
+          v-if="this.pagination.current_page < this.pagination.last_page"
+          class="btn-gray"
+          :onClick="() => this.getCategoryProducts()"
+        >
+          <VaProgressCircle v-show="this.isLoading" indeterminate />
+          <span v-show="!this.isLoading">Zobrazit další produkty</span>
+        </button>
       </div>
       <div
         v-if="this.products.length === 0"
@@ -206,6 +214,8 @@ export default {
       barMinValue: 10,
       barMaxValue: 5000,
       categoryText: "",
+      isLoading: false,
+      pagination: {},
       categories: [],
       imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
     };
@@ -269,14 +279,19 @@ export default {
       }
     },
     async getCategoryProducts() {
+      this.isLoading = true;
       try {
-        const response = await axios.get(
-          "/api/categoryProducts/" + [this.url_path]
-        );
-        this.products = response.data;
-        console.log(this.products);
+        const url =
+          this.pagination.next_page_url ??
+          "/api/categoryProducts/" + [this.url_path];
+
+        const response = await axios.get(url);
+        this.products = [...this.products, ...response.data.data];
+        this.pagination = response.data.pagination;
       } catch (error) {
         console.log(error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
@@ -391,6 +406,14 @@ export default {
     clip-path: inset(0 -100vmax);
     justify-content: space-between;
 
+    //.btn-gray {
+    //  color: #525358;
+    //  padding: 1rem 2rem;
+    //  border-radius: 0 0 2rem 2rem;
+    //  font-size: 12px;
+    //  text-decoration: underline;
+    //  border: none;
+    //}
     & > img {
       -webkit-box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
       -moz-box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);

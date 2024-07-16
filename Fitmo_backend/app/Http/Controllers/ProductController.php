@@ -24,7 +24,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::select(
+        $paginatedProducts = Product::select(
             'prices.*',
             'product_states.*',
             'categories.name as category_name',
@@ -59,8 +59,20 @@ class ProductController extends Controller
             ->paginate(20, ['*'], 'page', $request->page ?? 1);
 
 
-        $products = $this->formatProducts($products, true);
-        return $products;
+        $products = $this->formatProducts($paginatedProducts, true);
+
+           return response()->json([
+                            'data' => $products,
+                            'pagination' => [
+                                'total' => $paginatedProducts->total(),
+                                'per_page' => $paginatedProducts->perPage(),
+                                'current_page' => $paginatedProducts->currentPage(),
+                                'last_page' => $paginatedProducts->lastPage(),
+                                'next_page_url' => $paginatedProducts->nextPageUrl(),
+                                'prev_page_url' => $paginatedProducts->previousPageUrl(),
+                                'path' => $paginatedProducts->path(),
+                            ]
+                        ]);
     }
 
     public function getSingleProduct($product_url_name)
@@ -267,7 +279,7 @@ class ProductController extends Controller
     }
 
 
-    public function getCategoryProducts($categoryName)
+    public function getCategoryProducts($categoryName, Request $request)
     {
         $categoryName = join("/", explode(",", $categoryName));
         $products = [];
@@ -287,18 +299,58 @@ class ProductController extends Controller
         }
 
 
-        $products = Product::select('prices.*', 'product_states.*', 'product_categories.category_id as category_id', 'categories.name as category_name', 'colors.*', 'products.*',)
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-            ->join('product_states', 'products.id', '=', 'product_states.product_id')
-            ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-            ->whereIn('category_id', $categoriesToSearch)
-            ->get();
+        $paginatedProducts = Product::select(
+                    'prices.*',
+                    'product_states.*',
+                    'categories.name as category_name',
+                    'colors.*',
+                    'products.*',
+                    'product_categories.category_id as category_id'
+                )->with(['categories', 'children' => function ($query) {
+                    $query->select(
+                        'prices.*',
+                        'product_states.*',
+                        'categories.name as category_name',
+                        'colors.*',
+                        'products.*',
+                        'product_categories.category_id as category_id'
+                    )
+                        ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                        ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                        ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                        ->where('products.parent_id', '!=', 0);
+                }])
+                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->orderBy('products.created_at', 'desc')
+                    ->where('products.parent_id', 0)
+                      ->whereIn('category_id', $categoriesToSearch)
+                    ->paginate(6, ['*'], 'page', $request->page ?? 1);
 
 
-        return $this->formatProducts($products);
+
+
+        $products = $this->formatProducts($paginatedProducts, true);
+       return response()->json([
+                    'data' => $products,
+                    'pagination' => [
+                        'total' => $paginatedProducts->total(),
+                        'per_page' => $paginatedProducts->perPage(),
+                        'current_page' => $paginatedProducts->currentPage(),
+                        'last_page' => $paginatedProducts->lastPage(),
+                        'next_page_url' => $paginatedProducts->nextPageUrl(),
+                        'prev_page_url' => $paginatedProducts->previousPageUrl(),
+                        'path' => $paginatedProducts->path(),
+                    ]
+                ]);
+
     }
 
     /**

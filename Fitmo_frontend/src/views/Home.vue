@@ -86,7 +86,11 @@
           :products="product"
         />
       </div>
-      <button class="btn-gray" :onClick="() => getProducts()">
+      <button
+        v-if="this.pagination.current_page < this.pagination.last_page"
+        class="btn-gray"
+        :onClick="() => getProducts()"
+      >
         <VaProgressCircle v-show="this.isLoading" indeterminate />
         <span v-show="!this.isLoading">Zobrazit další produkty</span>
       </button>
@@ -123,6 +127,7 @@ export default {
       categories: [],
       ratings: [],
       products: [],
+      pagination: {},
       isLoading: false,
       imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
     };
@@ -170,10 +175,11 @@ export default {
     },
     async getProducts() {
       this.isLoading = true;
-      this.page++;
       try {
-        const response = await axios.get(`/api/products?page=${this.page}`);
-        this.products = [...this.products, ...response.data];
+        const url = this.pagination.next_page_url ?? "/api/products";
+        const response = await axios.get(url);
+        this.products = [...this.products, ...response.data.data];
+        this.pagination = response.data.pagination;
       } catch (error) {
         console.log(error);
       } finally {
