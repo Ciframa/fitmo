@@ -251,7 +251,7 @@ export default {
       priceListHidden: true,
       activePrice: "CZK",
       searchResults: [],
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imageBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
       search: "",
       credentials: {
         email: "",
