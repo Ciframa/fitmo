@@ -221,7 +221,7 @@
                       params: { categoryname: child.url_path.split('/') },
                     }"
                   >
-                    <img :src="imageBasePath + child.image_path" alt="" />
+                    <img :src="this.imageBasePath + child.image_path" alt="" />
                     {{ child.name }}
                   </router-link>
                 </li>
