@@ -217,7 +217,7 @@ export default {
       isLoading: false,
       pagination: {},
       categories: [],
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imageBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
     };
   },
   watch: {
