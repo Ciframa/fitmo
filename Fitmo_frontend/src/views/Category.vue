@@ -300,7 +300,7 @@ export default {
       this.barMaxValue = e.maxValue;
     },
   },
-  created() {
+  mounted() {
     this.getSubCategories().then(this.getCategoryProducts());
     this.getCategories();
   },

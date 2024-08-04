@@ -207,7 +207,7 @@ export default {
       return this.$store.state.deliveryType;
     },
   },
-  created() {
+  mounted() {
     this.getDeliveryTypes();
     this.getPaymentTypes();
   },

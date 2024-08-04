@@ -63,6 +63,7 @@ Route::prefix('/product')->group(function () {
   Route::post('/store', [ProductController::class, 'store']);
   Route::delete('/{id}', [ProductController::class, 'delete']);
   Route::put('/{id}', [ProductController::class, 'update']);
+  Route::put('/{id}/hide', [ProductController::class, 'hideProduct']);
   Route::post('/{id}/template/store', [ProductController::class, 'storeTemplate']);
   Route::get('{id}/getTemplates/', [ProductController::class, 'getTemplates']);
   Route::delete('{id}/template/{templateId}', [ProductController::class, 'deleteTemplate']);

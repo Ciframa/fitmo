@@ -35,7 +35,7 @@ export default {
       this.image = canvas.toDataURL();
     },
   },
-  created() {},
+  mounted() {},
 };
 </script>
 <style lang="scss" scoped>

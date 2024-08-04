@@ -188,7 +188,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     this.getCategories();
     this.getRatings();
     this.getProducts();

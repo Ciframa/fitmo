@@ -369,7 +369,7 @@ export default {
       }, 500); // Adjust the debounce time as needed (e.g., 500 milliseconds)
     },
   },
-  created() {
+  mounted() {
     this.getCategories();
     this.getLoggedUser();
   },

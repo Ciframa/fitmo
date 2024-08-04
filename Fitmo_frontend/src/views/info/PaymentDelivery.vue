@@ -119,7 +119,7 @@ export default {
     return {
       deliveryTypes: [],
       paymentTypes: [],
-       imageBasePath: process.env.VUE_APP_FITMO_BACKEND_URL,
+      imageBasePath: process.env.VUE_APP_FITMO_BACKEND_URL,
     };
   },
   methods: {
@@ -151,7 +151,7 @@ export default {
       });
     },
   },
-  created() {
+  mounted() {
     this.getDeliveryTypes();
     this.getPaymentTypes();
   },

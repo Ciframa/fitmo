@@ -15,7 +15,7 @@ export default {
       this.$store.commit("updateCart", cart);
     },
   },
-  created() {
+  mounted() {
     this.loadData();
   },
   computed: {

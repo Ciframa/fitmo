@@ -1,5 +1,6 @@
 <template>
-  <div class="product">
+  <div v-if="isLoading">Načítání produktu...</div>
+  <div class="product" v-else-if="this.products[0]">
     <ul class="category__header__navigation">
       <li>
         <router-link :to="'/'">
@@ -190,6 +191,7 @@
       </div>
     </div>
   </div>
+  <div v-else>Nebyl nalezen zadaný produkt</div>
 </template>
 
 <script>
@@ -210,6 +212,7 @@ export default {
       amount: 1,
       templates: [],
       parentProduct: null,
+      isLoading: true,
       imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
     };
   },
@@ -219,41 +222,46 @@ export default {
         const response = await axios.get(
           "/api/product/" + this.productPathName
         );
-        this.parentProduct = response.data[0].find(
-          (item) => item.parent_id == 0
-        );
-        if (
-          response.data[0][0].price === null &&
-          response.data[0][0].color_id === null &&
-          response.data[0].length > 1
-        ) {
-          response.data[0].shift();
-          response.data[0][0].isMain = 1;
+        if (response.data[0]) {
+          this.parentProduct = response.data[0].find(
+            (item) => item.parent_id == 0
+          );
+          if (
+            response.data[0][0].price === null &&
+            response.data[0][0].color_id === null &&
+            response.data[0].length > 1
+          ) {
+            response.data[0].shift();
+            response.data[0][0].isMain = 1;
+          }
+          this.products = response.data;
         }
-        this.products = response.data;
-        console.log(this.products);
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
       }
     },
     async getTemplates() {
-      const activeItem = this.products[0].find((item) => {
-        return item.isMain === 1;
-      });
-
-      try {
-        const response = await axios.get(
-          `/api/product/${
-            this.parentProduct ? this.parentProduct.id : activeItem.id
-          }/getTemplates`
-        );
-        this.templates = response.data.map((item) => {
-          item.from = "db";
-          return item;
+      if (this.products[0]) {
+        const activeItem = this.products[0].find((item) => {
+          return item.isMain === 1;
         });
-        console.log(this.templates);
-      } catch (error) {
-        console.log(error);
+
+        try {
+          const response = await axios.get(
+            `/api/product/${
+              this.parentProduct ? this.parentProduct.id : activeItem.id
+            }/getTemplates`
+          );
+          this.templates = response.data.map((item) => {
+            item.from = "db";
+            return item;
+          });
+          console.log(this.templates);
+        } catch (error) {
+          console.log(error);
+        }
       }
     },
     addItem(product) {
@@ -311,17 +319,15 @@ export default {
     },
   },
 
-  created() {
-    this.getCategories();
-    this.getProduct().then(() => {
-      return this.getTemplates();
-    });
-  },
   computed: {},
   mounted() {
     // Load items from sessionStorage when the component is mounted
     const storedItems = JSON.parse(sessionStorage.getItem("items")) || [];
     this.items = storedItems;
+    this.getCategories();
+    this.getProduct().then(() => {
+      return this.getTemplates();
+    });
   },
 };
 </script>

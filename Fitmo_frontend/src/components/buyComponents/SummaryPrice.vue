@@ -100,7 +100,7 @@ export default {
       this.$emit("submit-order");
     },
   },
-  created() {
+  mounted() {
     this.loadItems();
   },
 

@@ -97,7 +97,7 @@ export default {
       }
     },
   },
-  created() {},
+  mounted() {},
 };
 </script>
 <style lang="scss" scoped>

@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\Price;
 use App\Models\ProductCategory;
+use App\Models\Order_product;
 use App\Models\Template;
 use App\Models\ProductState;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -46,7 +47,9 @@ class ProductController extends Controller
                 ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                ->where('products.parent_id', '!=', 0);
+                ->where('products.parent_id', '!=', 0)
+                ->where('products.isActive', 1);
+
         }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
@@ -56,23 +59,24 @@ class ProductController extends Controller
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.created_at', 'desc')
             ->where('products.parent_id', 0)
+            ->where('products.isActive', 1)
             ->paginate(20, ['*'], 'page', $request->page ?? 1);
 
 
         $products = $this->formatProducts($paginatedProducts, true);
 
-           return response()->json([
-                            'data' => $products,
-                            'pagination' => [
-                                'total' => $paginatedProducts->total(),
-                                'per_page' => $paginatedProducts->perPage(),
-                                'current_page' => $paginatedProducts->currentPage(),
-                                'last_page' => $paginatedProducts->lastPage(),
-                                'next_page_url' => $paginatedProducts->nextPageUrl(),
-                                'prev_page_url' => $paginatedProducts->previousPageUrl(),
-                                'path' => $paginatedProducts->path(),
-                            ]
-                        ]);
+        return response()->json([
+            'data' => $products,
+            'pagination' => [
+                'total' => $paginatedProducts->total(),
+                'per_page' => $paginatedProducts->perPage(),
+                'current_page' => $paginatedProducts->currentPage(),
+                'last_page' => $paginatedProducts->lastPage(),
+                'next_page_url' => $paginatedProducts->nextPageUrl(),
+                'prev_page_url' => $paginatedProducts->previousPageUrl(),
+                'path' => $paginatedProducts->path(),
+            ]
+        ]);
     }
 
     public function getSingleProduct($product_url_name)
@@ -87,6 +91,7 @@ class ProductController extends Controller
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->orderBy('products.created_at', "desc")
             ->where("products.url_name", $product_url_name)
+            ->where('products.isActive', 1)
             ->get();
         return $this->formatProducts($products);
     }
@@ -123,6 +128,7 @@ class ProductController extends Controller
                 ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->orderBy('products.created_at', 'desc')
+                ->where('products.isActive', 1)
                 ->where('products.name', 'like', '%' . $word . '%')
                 ->get();
 
@@ -145,35 +151,39 @@ class ProductController extends Controller
         $products = Product::select(
 //                     'prices.*',
 //                     'product_states.*',
-                    'categories.name as category_name',
-                    'colors.*',
+            'categories.name as category_name',
+            'colors.*',
             'products.*',
-                    'product_categories.category_id as category_id'
+            'product_categories.category_id as category_id'
         )->with(['children' => function ($query) {
             $query->select(
 //                         'prices.*',
 //                         'product_states.*',
-                        'categories.name as category_name',
-                        'colors.*',
+                'categories.name as category_name',
+                'colors.*',
                 'products.*',
 //                         'product_categories.category_id as category_id'
             )
 //                         ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
 //                         ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                ->where('products.parent_id', '!=', 0);
+                ->where('products.parent_id', '!=', 0)
+                ->whereNotNull('products.parent_id');
         }])
 //                     ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
 //                     ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.name', 'asc')
-            ->where('products.parent_id', 0)->get();
+            ->where(function($query) {
+                $query->where('products.parent_id', 0)
+                    ->orWhereNull('products.parent_id');
+            })->get();
 
         $products = $this->formatOnlyPhotos($products);
         return $products;
@@ -232,9 +242,18 @@ class ProductController extends Controller
 
     public function formatOnlyPhotos($products)
     {
+        $nullParentProducts = [];
+        $finalProducts = [];
         foreach ($products as $product) {
             $product->image_urls = explode(',', $product->image_urls);
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
+
+            if ($product->parent_id === null) {
+                $nullParentProducts[] = $product;
+
+            }
+            else{
+
 
             if ($product->children->isNotEmpty()) {
                 foreach ($product->children as $child) {
@@ -242,9 +261,22 @@ class ProductController extends Controller
                     $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
                 }
             }
+            $finalProducts[] = $product;
+            }
         }
+        if (!empty($nullParentProducts)) {
+            $unassignedCategory = new \stdClass();
+            $unassignedCategory->name = "Nezařazeny";
+            $unassignedCategory->children = $nullParentProducts;
+            // Convert collection to array
 
-        return $products;
+            // Insert at the beginning of the array
+            array_unshift($finalProducts, $unassignedCategory);
+
+            // Convert back to collection
+
+        }
+        return $finalProducts;
     }
 
     public function getProductById($id)
@@ -288,8 +320,7 @@ class ProductController extends Controller
             'LIKE',
             Category::select("categories.path")
                 ->join('map_table', 'categories.id', '=', 'map_table.category_id')
-                ->where('map_table.path', $categoryName)->first()["path"] . "%"
-        )->get();
+                ->where('map_table.path', $categoryName)->first()["path"] . "%")->get();
 
         $categoriesToSearch = [];
 
@@ -300,56 +331,56 @@ class ProductController extends Controller
 
 
         $paginatedProducts = Product::select(
-                    'prices.*',
-                    'product_states.*',
-                    'categories.name as category_name',
-                    'colors.*',
-                    'products.*',
-                    'product_categories.category_id as category_id'
-                )->with(['categories', 'children' => function ($query) {
-                    $query->select(
-                        'prices.*',
-                        'product_states.*',
-                        'categories.name as category_name',
-                        'colors.*',
-                        'products.*',
-                        'product_categories.category_id as category_id'
-                    )
-                        ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-                        ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                        ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                        ->where('products.parent_id', '!=', 0);
-                }])
-                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                    ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                    ->orderBy('products.created_at', 'desc')
-                    ->where('products.parent_id', 0)
-                      ->whereIn('category_id', $categoriesToSearch)
-                    ->paginate(6, ['*'], 'page', $request->page ?? 1);
-
-
+            'prices.*',
+            'product_states.*',
+            'categories.name as category_name',
+            'colors.*',
+            'products.*',
+            'product_categories.category_id as category_id'
+        )->with(['categories', 'children' => function ($query) {
+            $query->select(
+                'prices.*',
+                'product_states.*',
+                'categories.name as category_name',
+                'colors.*',
+                'products.*',
+                'product_categories.category_id as category_id'
+            )
+                ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->where('products.parent_id', '!=', 0)
+                ->where('products.isActive', 1);
+        }])
+            ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+            ->join('product_states', 'products.id', '=', 'product_states.product_id')
+            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+            ->orderBy('products.created_at', 'desc')
+            ->where('products.parent_id', 0)
+            ->where('products.isActive', 1)
+            ->whereIn('category_id', $categoriesToSearch)
+            ->paginate(6, ['*'], 'page', $request->page ?? 1);
 
 
         $products = $this->formatProducts($paginatedProducts, true);
-       return response()->json([
-                    'data' => $products,
-                    'pagination' => [
-                        'total' => $paginatedProducts->total(),
-                        'per_page' => $paginatedProducts->perPage(),
-                        'current_page' => $paginatedProducts->currentPage(),
-                        'last_page' => $paginatedProducts->lastPage(),
-                        'next_page_url' => $paginatedProducts->nextPageUrl(),
-                        'prev_page_url' => $paginatedProducts->previousPageUrl(),
-                        'path' => $paginatedProducts->path(),
-                    ]
-                ]);
+        return response()->json([
+            'data' => $products,
+            'pagination' => [
+                'total' => $paginatedProducts->total(),
+                'per_page' => $paginatedProducts->perPage(),
+                'current_page' => $paginatedProducts->currentPage(),
+                'last_page' => $paginatedProducts->lastPage(),
+                'next_page_url' => $paginatedProducts->nextPageUrl(),
+                'prev_page_url' => $paginatedProducts->previousPageUrl(),
+                'path' => $paginatedProducts->path(),
+            ]
+        ]);
 
     }
 
@@ -579,17 +610,20 @@ class ProductController extends Controller
 
     public function delete($id)
     {
-
+        $orderProducts = Order_product::where('product_id', $id)->get();
+         if ($orderProducts->isNotEmpty()) {
+               // return error message
+               return response()->json(['error' => 'Produkt nelze smazat, protože je součástí objednávky.'], 400);
+           }
         $existingProduct = Product::find($id);
-
-        if ($existingProduct) {
-            $existingProduct->isActive = 0;
-            $existingProduct->save();
-            return "Product successfully updated";
-        } else {
-            return "Product not found";
+        //Find products where parent_id is the id of the product we want to delete and set parent_id to null and isActive to 0
+        $children = Product::where('parent_id', $id)->get();
+        foreach ($children as $child) {
+            $child->parent_id = null;
+            $child->isActive = 0;
+            $child->save();
         }
-        /* $existingProduct = Product::find($id);
+
           $existingColor = Color::find($existingProduct->color_id);
           $folderPath = 'products/';
 
@@ -617,12 +651,30 @@ class ProductController extends Controller
           } else {
               echo "Folder does not exist.";
           }
+          ProductCategory::where('product_id', $id)->delete();
+          Price::where('product_id', $id)->delete();
+          Images::where('product_id', $id)->delete();
+          Template::where('product_id', $id)->delete();
           if ($existingProduct) {
               $existingProduct->delete();
               return "Product successfully deleted";
           }
           return $existingProduct;
-           */
+
+    }
+
+    public function hideProduct($id): string
+    {
+
+        $existingProduct = Product::find($id);
+
+        if ($existingProduct) {
+            $existingProduct->isActive = $existingProduct->isActive ? 0 : 1;
+            $existingProduct->save();
+            return "Product successfully updated";
+        } else {
+            return "Product not found";
+        }
     }
 
     /**
@@ -723,7 +775,7 @@ class ProductController extends Controller
         if (File::exists($folderPath) && File::isDirectory($folderPath)) {
             $path = 'products/';
 
-            if (isset($request->color_name)) {
+            if (isset($request->color_name)) {;
                 $path .= $request->name . "-" . $request->color_name;
             } elseif (isset($request->variant)) {
                 $path .= $request->name . "-" . $request->variant;

@@ -35,7 +35,7 @@ export default {
       return JSON.parse(sessionStorage.getItem("user"));
     },
   },
-  created() {},
+  mounted() {},
 };
 </script>
 <style lang="scss">

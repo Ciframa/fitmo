@@ -13,7 +13,7 @@ export default {
   },
 
   methods: {},
-  created() {
+  mounted() {
     let splittedRoute = this.$route.path.split("/");
     let route = splittedRoute[splittedRoute.length - 1];
     console.log(

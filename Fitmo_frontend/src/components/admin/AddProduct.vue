@@ -391,7 +391,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     this.getCategories();
     this.getMainCategories();
     this.getMainProducts();

@@ -457,7 +457,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     this.loadItems();
   },
 };
