@@ -89,6 +89,7 @@ class ProductController extends Controller
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+            ->orderBy('products.variant', "asc")
             ->orderBy('products.created_at', "desc")
             ->where("products.url_name", $product_url_name)
             ->where('products.isActive', 1)
