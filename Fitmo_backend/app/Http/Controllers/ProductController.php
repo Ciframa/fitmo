@@ -81,8 +81,8 @@ class ProductController extends Controller
 
     public function getSingleProduct($product_url_name)
     {
-        $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+        $product = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
@@ -93,9 +93,9 @@ class ProductController extends Controller
             ->where("products.url_name", $product_url_name)
             ->where('products.isActive', 1)
             ->get();
-        return $this->formatProducts($products);
-    }
 
+        return $this->formatProducts($product);
+    }
     public function getTemplates($product_id)
     {
         $templates = Template::where("product_id", $product_id)->orderBy('sort', "asc")->get();
