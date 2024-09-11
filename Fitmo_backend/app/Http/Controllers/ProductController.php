@@ -185,8 +185,7 @@ class ProductController extends Controller
                     ->orWhereNull('products.parent_id');
             })->get();
 
-        return $products;
-        $products = $this->formatOnlyPhotos($products);
+        return $this->formatOnlyPhotos($products);
     }
 
 
