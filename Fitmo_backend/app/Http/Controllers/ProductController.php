@@ -293,7 +293,7 @@ class ProductController extends Controller
             'products.*',
 
         )
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
