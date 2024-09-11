@@ -46,7 +46,7 @@ class ProductController extends Controller
                 ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
                 ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
                 ->where('products.isActive', 1);
 
@@ -56,7 +56,7 @@ class ProductController extends Controller
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.created_at', 'desc')
             ->where('products.parent_id', 0)
             ->where('products.isActive', 1)
@@ -82,7 +82,7 @@ class ProductController extends Controller
     public function getSingleProduct($product_url_name)
     {
         $product = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id) AS image_urls')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
@@ -120,7 +120,7 @@ class ProductController extends Controller
             // Perform the product query for each word
             $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
                 ->with('categories')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                 ->join('product_states', 'products.id', '=', 'product_states.product_id')
                 ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
@@ -169,7 +169,7 @@ class ProductController extends Controller
                 ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
                 ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
                 ->whereNotNull('products.parent_id');
         }])
@@ -178,15 +178,15 @@ class ProductController extends Controller
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.name', 'asc')
             ->where(function($query) {
                 $query->where('products.parent_id', 0)
                     ->orWhereNull('products.parent_id');
             })->get();
 
-        $products = $this->formatOnlyPhotos($products);
         return $products;
+        $products = $this->formatOnlyPhotos($products);
     }
 
 
@@ -209,7 +209,7 @@ class ProductController extends Controller
     public function formatProducts($products, $shouldWorkWithChildren = false)
     {
         foreach ($products as $product) {
-            $product->image_urls = explode(',', $product->image_urls);
+            $product->image_urls = explode('|', $product->image_urls);
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
         }
         $newProducts = [];
@@ -227,7 +227,7 @@ class ProductController extends Controller
                 }
                 if ($shouldWorkWithChildren && $product->children->isNotEmpty()) {
                     foreach ($product->children as $child) {
-                        $child->image_urls = explode(',', $child->image_urls);
+                        $child->image_urls = explode('|', $child->image_urls);
                         $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
                         $child->isMain = 0; // Activate the product
                         $temp[] = $child;
@@ -245,7 +245,7 @@ class ProductController extends Controller
         $nullParentProducts = [];
         $finalProducts = [];
         foreach ($products as $product) {
-            $product->image_urls = explode(',', $product->image_urls);
+            $product->image_urls = explode('|', $product->image_urls);
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
 
             if ($product->parent_id === null) {
@@ -257,7 +257,7 @@ class ProductController extends Controller
 
             if ($product->children->isNotEmpty()) {
                 foreach ($product->children as $child) {
-                    $child->image_urls = explode(',', $child->image_urls);
+                    $child->image_urls = explode('|', $child->image_urls);
                     $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
                 }
             }
@@ -293,7 +293,7 @@ class ProductController extends Controller
             'products.*',
 
         )
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id) AS image_urls')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
@@ -304,7 +304,7 @@ class ProductController extends Controller
             ->get();
 
         foreach ($products as $product) {
-            $product->image_urls = explode(',', $product->image_urls);
+            $product->image_urls = explode('|', $product->image_urls);
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
         }
         return $products;
@@ -351,7 +351,7 @@ class ProductController extends Controller
                 ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
                 ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
                 ->where('products.isActive', 1);
         }])
@@ -360,7 +360,7 @@ class ProductController extends Controller
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-            ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+            ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.created_at', 'desc')
             ->where('products.parent_id', 0)
             ->where('products.isActive', 1)
