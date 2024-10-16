@@ -20,7 +20,7 @@
             :icon="['fa', 'angle-down']"
             rotation="270"
           />
-          <router-link :to="'/' + link.url_path">
+          <router-link :to="'/kategorie/' + link.url_path">
             {{ link.name }}
           </router-link>
         </li>
@@ -221,8 +221,10 @@ export default {
     };
   },
   watch: {
-    $route(to, from) {
+    $route() {
       this.url_path = this.$route.params.categoryname;
+      this.pagination = {};
+      this.products = [];
       this.getSubCategories();
       this.getCategoryProducts();
     },
@@ -257,7 +259,6 @@ export default {
       try {
         const response = await axios.get("/api/category/" + [this.url_path]);
         this.subCategories = response.data;
-        console.log(response.data);
         this.mainCategory = this.subCategories.pop();
         if (this.mainCategory.url_path === "ocr-vybaveni") {
           this.categoryText =
@@ -280,11 +281,11 @@ export default {
     },
     async getCategoryProducts() {
       this.isLoading = true;
+
       try {
         const url =
           this.pagination.next_page_url ??
           "/api/categoryProducts/" + [this.url_path];
-
         const response = await axios.get(url);
         this.products = [...this.products, ...response.data.data];
         this.pagination = response.data.pagination;
@@ -415,18 +416,18 @@ export default {
     //  border: none;
     //}
     & > img {
-      -webkit-box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
-      -moz-box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
-      box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
+      -webkit-box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
+      -moz-box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
+      box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
       border-radius: 2.5rem;
     }
 
     &__filters {
       padding-right: 1rem;
       img {
-        -webkit-box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
-        -moz-box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
-        box-shadow: 0px 0px 41px -4px rgba(0, 0, 0, 0.33);
+        -webkit-box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
+        -moz-box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
+        box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
         border-radius: 2.5rem;
         margin: 1rem 0;
       }
@@ -489,9 +490,9 @@ export default {
             width: 2.3rem;
             height: 2.3rem;
             border-radius: 0.8rem;
-            -webkit-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.25);
-            -moz-box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.25);
-            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.25);
+            -webkit-box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.25);
+            -moz-box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.25);
           }
           .caption > * {
             display: none;

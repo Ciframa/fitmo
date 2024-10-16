@@ -442,7 +442,7 @@ export default {
             display: flex;
             font-size: 2.8rem;
             gap: 0.8rem;
-            align-items: start;
+            align-items: flex-start;
 
             &__trough {
               font-size: 1.9rem;
