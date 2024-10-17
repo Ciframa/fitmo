@@ -96,6 +96,7 @@ class ProductController extends Controller
 
         return $this->formatProducts($product);
     }
+
     public function getTemplates($product_id)
     {
         $templates = Template::where("product_id", $product_id)->orderBy('sort', "asc")->get();
@@ -180,7 +181,7 @@ class ProductController extends Controller
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.name', 'asc')
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('products.parent_id', 0)
                     ->orWhereNull('products.parent_id');
             })->get();
@@ -250,17 +251,16 @@ class ProductController extends Controller
             if ($product->parent_id === null) {
                 $nullParentProducts[] = $product;
 
-            }
-            else{
+            } else {
 
 
-            if ($product->children->isNotEmpty()) {
-                foreach ($product->children as $child) {
-                    $child->image_urls = explode('|', $child->image_urls);
-                    $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
+                if ($product->children->isNotEmpty()) {
+                    foreach ($product->children as $child) {
+                        $child->image_urls = explode('|', $child->image_urls);
+                        $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
+                    }
                 }
-            }
-            $finalProducts[] = $product;
+                $finalProducts[] = $product;
             }
         }
         if (!empty($nullParentProducts)) {
@@ -610,10 +610,10 @@ class ProductController extends Controller
     public function delete($id)
     {
         $orderProducts = Order_product::where('product_id', $id)->get();
-         if ($orderProducts->isNotEmpty()) {
-               // return error message
-               return response()->json(['error' => 'Produkt nelze smazat, protože je součástí objednávky.'], 400);
-           }
+        if ($orderProducts->isNotEmpty()) {
+            // return error message
+            return response()->json(['error' => 'Produkt nelze smazat, protože je součástí objednávky.'], 400);
+        }
         $existingProduct = Product::find($id);
         //Find products where parent_id is the id of the product we want to delete and set parent_id to null and isActive to 0
         $children = Product::where('parent_id', $id)->get();
@@ -623,42 +623,41 @@ class ProductController extends Controller
             $child->save();
         }
 
-          $existingColor = Color::find($existingProduct->color_id);
-          $folderPath = 'products/';
+        $existingColor = Color::find($existingProduct->color_id);
+        $folderPath = 'products/';
 
-          if (isset($existingColor)) {
-              $folderPath .= $existingProduct["name"] . "-" . $existingColor["colorName"];
-          } elseif (isset($existingProduct["variant"])) {
-              $folderPath .= $existingProduct["name"] . "-" . $existingProduct["variant"];
-          } else {
-              $folderPath .= $existingProduct["name"];
-          }
+        if (isset($existingColor)) {
+            $folderPath .= $existingProduct["name"] . "-" . $existingColor["colorName"];
+        } elseif (isset($existingProduct["variant"])) {
+            $folderPath .= $existingProduct["name"] . "-" . $existingProduct["variant"];
+        } else {
+            $folderPath .= $existingProduct["name"];
+        }
 
 
+        if ($existingColor) {
+            $existingColor->delete();
+        }
 
-          if ($existingColor) {
-              $existingColor->delete();
-          }
-
-          if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-              // Folder exists, delete it
-              if (File::deleteDirectory($folderPath)) {
-                  echo "Folder deleted successfully.";
-              } else {
-                  echo "Unable to delete the folder.";
-              }
-          } else {
-              echo "Folder does not exist.";
-          }
-          ProductCategory::where('product_id', $id)->delete();
-          Price::where('product_id', $id)->delete();
-          Images::where('product_id', $id)->delete();
-          Template::where('product_id', $id)->delete();
-          if ($existingProduct) {
-              $existingProduct->delete();
-              return "Product successfully deleted";
-          }
-          return $existingProduct;
+        if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+            // Folder exists, delete it
+            if (File::deleteDirectory($folderPath)) {
+                echo "Folder deleted successfully.";
+            } else {
+                echo "Unable to delete the folder.";
+            }
+        } else {
+            echo "Folder does not exist.";
+        }
+        ProductCategory::where('product_id', $id)->delete();
+        Price::where('product_id', $id)->delete();
+        Images::where('product_id', $id)->delete();
+        Template::where('product_id', $id)->delete();
+        if ($existingProduct) {
+            $existingProduct->delete();
+            return "Product successfully deleted";
+        }
+        return $existingProduct;
 
     }
 
@@ -702,6 +701,21 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->description = $request->description;
         // $product->category_id = $request->category_id;
+        foreach ($request->categories as $category) {
+            $productCategory = ProductCategory::where('product_id', $product->id)->where('category_id', $category["id"] ?? $category["categoryId"])->first();
+            if (isset($category["categoryStatus"])) {
+
+                if (!$productCategory && $category["categoryStatus"] == "added") {
+                    $newProductCategories = new ProductCategory();
+                    $newProductCategories->product_id = $product->id;
+                    $newProductCategories->category_id = $category["id"] ?? $category["categoryId"];
+                    $newProductCategories->save();
+                }
+                if ($productCategory && $category["categoryStatus"] == "deleted") {
+                    $productCategory->delete();
+                }
+            }
+        }
         $product->parent_id = $request->parent_id;
 
         $product->variant = $request->variant;
@@ -774,7 +788,8 @@ class ProductController extends Controller
         if (File::exists($folderPath) && File::isDirectory($folderPath)) {
             $path = 'products/';
 
-            if (isset($request->color_name)) {;
+            if (isset($request->color_name)) {
+                ;
                 $path .= $request->name . "-" . $request->color_name;
             } elseif (isset($request->variant)) {
                 $path .= $request->name . "-" . $request->variant;

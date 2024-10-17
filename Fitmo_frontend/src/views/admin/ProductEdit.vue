@@ -93,11 +93,15 @@
           <div
             :key="category.id"
             v-for="(category, categoryIndex) in product.categories"
+            class="row category-row"
+            v-show="category?.categoryStatus !== 'deleted'"
           >
-            <div class="row category-row">
-              {{ category.name }}
+            {{ category.categoryId }}
+            <div>
+              {{ category?.name }}
               <select
                 :disabled="product.parent_id !== 0"
+                v-if="category?.categoryStatus"
                 :name="'add-product-category-' + index"
                 :id="'add-product-category-' + index"
                 v-for="(subCategory, index) in categoriesSelects"
@@ -114,12 +118,37 @@
                   :value="category.id"
                   :key="category.id"
                 >
-                  {{ category.name }}
+                  {{ category?.name }}
                 </option>
               </select>
+              <font-awesome-icon
+                :icon="['fa', 'times']"
+                :onClick="
+                  () => {
+                    if (this.product.categories[categoryIndex].categoryStatus) {
+                      // Remove the category at index `categoryIndex`
+                      this.product.categories.splice(categoryIndex, 1);
+                    } else {
+                      this.product.categories[categoryIndex].categoryStatus =
+                        'deleted';
+                    }
+                  }
+                "
+              />
             </div>
-          </div></template
-        >
+          </div>
+          <font-awesome-icon
+            :icon="['fa', 'plus']"
+            :onClick="
+              () => {
+                this.product.categories.push({
+                  categoryId: 0,
+                  categoryStatus: 'added',
+                });
+              }
+            "
+          />
+        </template>
         <div class="row admin__stateButtons">
           <span
             :class="product.discount ? 'btn-yellow' : 'btn-yellow-notActive'"
@@ -338,8 +367,9 @@
                       template.type === 'fotkyText' ||
                       template.type === 'bloky'
                     "
-                  /></div
-              ></template>
+                  />
+                </div>
+              </template>
             </div>
           </div>
         </template>
@@ -407,6 +437,7 @@ import axios from "../../api";
 import Editor from "primevue/editor";
 import TemplateProduct from "../../components/admin/TemplateProduct.vue";
 import { quillEditor } from "vue3-quill";
+
 export default {
   components: {
     ImagesSlider,
@@ -545,7 +576,7 @@ export default {
 
     getCategoryName(categoryId) {
       const category = this.categories.find((item) => item.id === categoryId);
-      return category ? category.name : "";
+      return category ? category?.name : "";
     },
     async getMainProducts() {
       try {
@@ -623,7 +654,7 @@ export default {
         });
     },
     async getSubCategory(id, index, categoryIndex) {
-      this.product.categories[categoryIndex] = id;
+      this.product.categories[categoryIndex].categoryId = id;
       this.categoriesSelects.splice(index + 1);
       try {
         const response = await axios.get("/api/subCategory/" + id);
@@ -710,9 +741,11 @@ export default {
   gap: 1rem;
   padding: 0.3rem 0;
 }
+
 .product__description {
   &__templateWrapper {
     position: relative;
+
     .deleteFromDb {
       position: absolute;
       top: 1rem;
@@ -728,27 +761,34 @@ export default {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+
     select {
       width: 15rem;
     }
+
     input[type="submit"] {
       margin-left: 2rem;
     }
+
     &__wrapper {
       width: 100%;
       border: 1px solid black;
     }
+
     .column {
       gap: 1rem;
     }
   }
+
   .column {
     display: flex;
     flex-direction: column;
   }
+
   .flex-end {
     justify-content: flex-end;
     gap: 1rem;
+
     & > * {
       padding: 2rem;
     }
