@@ -18,7 +18,7 @@
             v-if="element?.image?.tentativePath || element.image_path"
             :src="
               element?.image?.tentativePath ??
-              this.imageBasePath + element.image_path ??
+              this.imagesBasePath + element.image_path ??
               'No image'
             "
           />
@@ -66,7 +66,7 @@ export default {
   data() {
     return {
       depth: 2,
-        imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
     };
   },
   watch: {
