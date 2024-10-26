@@ -249,7 +249,7 @@ export default {
   methods: {
     async getCategories() {
       try {
-        const response = await axios.get("/api/categories");
+        const response = await axios.post("/api/categories");
         this.groupedCategories = this.groupByKeyReduce(response.data);
         this.categories = response.data;
       } catch (error) {

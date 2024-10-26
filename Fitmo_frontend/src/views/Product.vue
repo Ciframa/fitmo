@@ -213,7 +213,7 @@ export default {
       templates: [],
       parentProduct: null,
       isLoading: true,
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
+      imagesBasePath: `https://be.fitmo.cz/products/`,
     };
   },
   methods: {
@@ -314,7 +314,7 @@ export default {
     },
 
     async getCategories() {
-      const response = await axios.get("/api/categories");
+      const response = await axios.post("/api/categories");
       this.categories = response.data;
     },
   },

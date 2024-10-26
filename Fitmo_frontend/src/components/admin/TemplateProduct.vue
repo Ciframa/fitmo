@@ -192,7 +192,7 @@ export default {
   data() {
     return {
       products: [],
-      imageBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
+      imageBasePath: `https://be.fitmo.cz/products/`,
     };
   },
 

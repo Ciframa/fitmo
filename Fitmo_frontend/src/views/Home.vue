@@ -129,14 +129,14 @@ export default {
       products: [],
       pagination: {},
       isLoading: false,
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imageBasePath: `https://be.fitmo.cz/categories/`,
     };
   },
 
   methods: {
     getCategories() {
       axios
-        .get("/api/categories")
+        .post("/api/categories")
         .then((response) => {
           this.categories = this.groupByKeyReduce(response.data);
         })

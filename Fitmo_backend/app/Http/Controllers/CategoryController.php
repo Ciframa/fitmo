@@ -8,8 +8,8 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use File;
 use Imagick;
+use File;
 
 class CategoryController extends Controller
 {
@@ -18,25 +18,43 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Category::select("categories.id", "categories.name", "categories.id_parent", "categories.path", "map_table.path as url_path", "image_path")->join('map_table', 'categories.id', '=', 'map_table.category_id')
-            ->get();
+
+        $query = Category::select(
+            "categories.id",
+            "categories.name",
+            "categories.id_parent",
+            "categories.path",
+            "map_table.path as url_path",
+            "image_path"
+        )
+            ->join('map_table', 'categories.id', '=', 'map_table.category_id');
+
+// Apply filters dynamically if they exist
+        if ($request->filter) {
+            foreach ($request->filter as $condition) {
+                $query->where($condition['column'], $condition['operator'], $condition['value']);
+            }
+        }
+
+// Finalize the query and get the results
+        return $query->get();
     }
 
-   public function remap()
-{
-    $newCategoriesProducts = [];
-    $products = Product::get();
-    foreach ($products as $product) {
-        $newCategoriesProducts[] = [
-            "category_id" => $product->category_id,
-            "product_id" => $product->id
-        ];
+    public function remap()
+    {
+        $newCategoriesProducts = [];
+        $products = Product::get();
+        foreach ($products as $product) {
+            $newCategoriesProducts[] = [
+                "category_id" => $product->category_id,
+                "product_id" => $product->id
+            ];
+        }
+        ProductCategory::insert(array_values($newCategoriesProducts));
+        return $newCategoriesProducts;
     }
-     ProductCategory::insert(array_values($newCategoriesProducts));
-    return $newCategoriesProducts;
-}
 
 
     public function getMainCategories()
@@ -45,11 +63,10 @@ class CategoryController extends Controller
             "categories.id",
             "categories.name",
             "categories.id_parent",
-             "image_path",
+            "image_path",
             "map_table.path as url_path"
         )->join('map_table', 'categories.id', '=', 'map_table.category_id')
-
-        ->where("categories.id_parent", 0)
+            ->where("categories.id_parent", 0)
             ->get();
     }
 
@@ -59,9 +76,9 @@ class CategoryController extends Controller
             "categories.id",
             "categories.name",
             "categories.id_parent",
-             "image_path"
+            "image_path"
         )
-        ->where("categories.id_parent", $id)
+            ->where("categories.id_parent", $id)
             ->get();
     }
 
@@ -79,7 +96,7 @@ class CategoryController extends Controller
                     break;
                 }
                 if ($item["id_parent"] == $subItem["id"]) {
-                    $item["url"] .=  $subItem["url"] . "/" . $item["kebabCase"];
+                    $item["url"] .= $subItem["url"] . "/" . $item["kebabCase"];
                     $dataToInsert[$item["id"]] = ["path" => $item["url"], "category_id" => $item["id"]];
                     break;
                 }
@@ -111,6 +128,7 @@ class CategoryController extends Controller
     {
         //
     }
+
     public function getMaxId()
     {
         return Category::max('id');
@@ -125,7 +143,7 @@ class CategoryController extends Controller
                 $categoryFromDb["id"] = $category["id"];
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
-           if (isset($category["image"]) && $category["image"]) {
+                if (isset($category["image"]) && $category["image"]) {
                     $path = 'categories/';
                     if ($categoryFromDb["image_path"]) {
                         File::delete($path . $category["image_path"]);
@@ -144,13 +162,13 @@ class CategoryController extends Controller
 
                     $img->writeImage($path . "/" . $category['image']["image_path"]);
                 }
-              
+
             } else {
 
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
-            
-           if (isset($category["image"]) && $category["image"]) {
+
+                if (isset($category["image"]) && $category["image"]) {
                     $path = 'categories/';
                     if ($categoryFromDb["image_path"]) {
                         File::delete($path . $category["image_path"]);
@@ -169,7 +187,7 @@ class CategoryController extends Controller
 
                     $img->writeImage($path . "/" . $category['image']["image_path"]);
                 }
-              
+
             }
 
             $categoryFromDb->save();
@@ -197,7 +215,7 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -208,7 +226,7 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -219,7 +237,7 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -229,8 +247,8 @@ class CategoryController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -266,11 +284,35 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         //
+    }
+
+    public function delete($id)
+    {
+        $existingCategory = Category::find($id);
+        if(!$existingCategory) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+        if ($existingCategory) {
+            $existingCategory->delete();
+        }
+        // Get all subcategories
+        $subCategories = Category::where('id_parent', $id)->get();
+        // Set the parent id of all subcategories to null
+        $subCategories->each(function ($subCategory) {
+            $subCategory->id_parent = null;
+            $subCategory->save();
+        });
+
+        $productCategories = ProductCategory::where('category_id', $id)->delete();
+
+        $this->makeMapTable();
+
+        return $id;
     }
 }

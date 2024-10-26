@@ -25,7 +25,7 @@ use App\Http\Controllers\OrderController;
 
 Route::get('/categories/remap', [CategoryController::class, 'remap']);
 
-Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/categories', [CategoryController::class, 'index']);
 Route::get("/categories/maxId", [CategoryController::class, "getMaxId"]);
 Route::post("/categories/update", [CategoryController::class, "updateCategories"]);
 

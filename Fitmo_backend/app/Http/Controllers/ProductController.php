@@ -149,35 +149,26 @@ class ProductController extends Controller
 
     public function getAllProducts()
     {
-        $products = Product::select(
-//                     'prices.*',
-//                     'product_states.*',
+        $assignedCategory = Product::select(
             'categories.name as category_name',
             'colors.*',
             'products.*',
             'product_categories.category_id as category_id'
         )->with(['children' => function ($query) {
             $query->select(
-//                         'prices.*',
-//                         'product_states.*',
                 'categories.name as category_name',
                 'colors.*',
                 'products.*',
-//                         'product_categories.category_id as category_id'
             )
-//                         ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-//                         ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
                 ->whereNotNull('products.parent_id');
         }])
-//                     ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-//                     ->join('product_states', 'products.id', '=', 'product_states.product_id')
-            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
             ->orderBy('products.name', 'asc')
@@ -185,10 +176,8 @@ class ProductController extends Controller
                 $query->where('products.parent_id', 0)
                     ->orWhereNull('products.parent_id');
             })->get();
-
-        return $this->formatOnlyPhotos($products);
+        return $this->formatOnlyPhotos($assignedCategory);
     }
-
 
     public function setUrlNames()
     {
@@ -244,19 +233,27 @@ class ProductController extends Controller
     {
         $nullParentProducts = [];
         $finalProducts = [];
+        $categoryNullIds = [];
         foreach ($products as $product) {
-            $product->image_urls = explode('|', $product->image_urls);
+            if (isset($product->image_urls)) {
+                $product->image_urls = explode('|', $product->image_urls);
+            }
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
 
             if ($product->parent_id === null) {
                 $nullParentProducts[] = $product;
-
-            } else {
-
-
+            } else if ($product->category_id === null){
+                $categoryNullIds[] = $product;
+            }else {
                 if ($product->children->isNotEmpty()) {
                     foreach ($product->children as $child) {
-                        $child->image_urls = explode('|', $child->image_urls);
+                        if (isset($product->image_urls)) {
+                            if(gettype($child->image_urls) === "array"){
+                                //array to string
+                                $child->image_urls = implode("|", $child->image_urls);
+                            }
+                            $child->image_urls = explode('|', $child->image_urls);
+                        }
                         $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
                     }
                 }
@@ -275,33 +272,41 @@ class ProductController extends Controller
             // Convert back to collection
 
         }
+        if (!empty($categoryNullIds)) {
+            $unassignedCategory = new \stdClass();
+            $unassignedCategory->name = "Bez kategorií";
+            $unassignedCategory->children = $categoryNullIds;
+            // Convert collection to array
+
+            // Insert at the beginning of the array
+            array_unshift($finalProducts, $unassignedCategory);
+
+            // Convert back to collection
+
+        }
         return $finalProducts;
     }
 
     public function getProductById($id)
     {
-
-
-        // Convert the values to integers if needed
-
-
         $products = Product::select(
             'prices.*',
             'product_states.*',
             'colors.*',
             'products.*',
-
+            'categories.name as category_name',
+            'categories.id as category_id'
         )
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+            ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
             ->where('products.id', $id)
             ->addSelect(Product::raw('(CASE WHEN products.id IN (SELECT parent_id FROM products WHERE parent_id IS NOT NULL) THEN 1 ELSE 0 END) AS hasChildren'))
             ->with('categories')
             ->get();
-
         foreach ($products as $product) {
             $product->image_urls = explode('|', $product->image_urls);
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
@@ -433,7 +438,7 @@ class ProductController extends Controller
 
                     $img->setImageCompression(Imagick::COMPRESSION_JPEG);
 
-                    $img->setImageCompressionQuality(85);
+                    $img->setImgeCompressionQuality(85);
 
                     $img->stripImage();
 

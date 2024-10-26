@@ -217,7 +217,7 @@ export default {
       isLoading: false,
       pagination: {},
       categories: [],
-      imageBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imageBasePath: `https://be.fitmo.cz/categories/`,
     };
   },
   watch: {
@@ -252,7 +252,7 @@ export default {
       return navigation;
     },
     async getCategories() {
-      const response = await axios.get("/api/categories");
+      const response = await axios.post("/api/categories");
       this.categories = response.data;
     },
     async getSubCategories() {

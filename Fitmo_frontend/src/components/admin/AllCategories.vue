@@ -13,7 +13,7 @@
         value="Upravit stav kategorií"
         class="btn-yellow"
       />
-      <nested-draggable :categories="this.groupedCategories" />
+      <nested-draggable :categories="groupedCategories" />
     </div>
   </div>
 </template>
@@ -21,8 +21,11 @@
 <script>
 import axios from "../../api";
 import nestedDraggable from "./category/nested.vue";
+import summaryPriceC from "../buyComponents/SummaryPrice.vue";
+
 export default {
   components: {
+    summaryPriceC,
     nestedDraggable,
   },
   data() {
@@ -35,8 +38,23 @@ export default {
   methods: {
     async getCategories() {
       try {
-        const response = await axios.get("/api/categories");
-        this.groupedCategories = this.groupByKeyReduce(response.data);
+        const response = await axios.post("/api/categories");
+        const preGrouped = this.groupByKeyReduce(response.data);
+        const helper = {
+          name: "Nezařazeny",
+          id: "Nezařazeny",
+          children: [],
+        };
+        const groupedWithIdParentNull = [];
+        preGrouped.forEach((element) => {
+          if (element.id_parent === null) {
+            helper.children.push(element);
+          } else {
+            groupedWithIdParentNull.push(element);
+          }
+        });
+        groupedWithIdParentNull.unshift(helper);
+        this.groupedCategories = groupedWithIdParentNull;
         this.categories = response.data;
       } catch (error) {
         console.log(error);
@@ -59,9 +77,14 @@ export default {
         this.matchIdToParentRecursive(category.children, category.id);
       });
       const flattenedArray = this.flattenNestedArray(this.groupedCategories);
-      console.log(flattenedArray);
+      //Delete all with id or id_parent === "Nezařazeny
+
+      const finalArray = flattenedArray.filter(
+        (element) =>
+          element.id !== "Nezařazeny" && element.id_parent !== "Nezařazeny"
+      );
       axios
-        .post("/api/categories/update", [flattenedArray], {
+        .post("/api/categories/update", [finalArray], {
           headers: {
             //  Authorization: this.tokenData.data.token,
             "Content-Type": "multipart/form-data",
@@ -161,6 +184,7 @@ export default {
       return map["-"].children;
     },
   },
+
   mounted() {
     this.getCategories();
     this.getCategoryMaxId();
@@ -171,9 +195,11 @@ export default {
 ul {
   list-style-type: disc !important;
 }
+
 li {
   display: list-item !important;
   text-align: left !important;
+
   &::marker {
     unicode-bidi: isolate !important;
     font-variant-numeric: tabular-nums !important;

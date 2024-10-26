@@ -251,7 +251,7 @@ export default {
       priceListHidden: true,
       activePrice: "CZK",
       searchResults: [],
-      imageBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imageBasePath: `https://be.fitmo.cz/categories/`,
       search: "",
       credentials: {
         email: "",
@@ -266,7 +266,9 @@ export default {
   methods: {
     async getCategories() {
       try {
-        const response = await axios.get("/api/categories");
+        const response = await axios.post("/api/categories", {
+          filter: [{ column: "id_parent", operator: "!=", value: null }],
+        });
         this.categories = this.groupByKeyReduce(
           response.data.map((item) => {
             item.visible = false;

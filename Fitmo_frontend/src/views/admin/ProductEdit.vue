@@ -454,7 +454,7 @@ export default {
       categoriesSelects: [],
       categories: [],
       groupedCategories: [],
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/products/`,
+      imagesBasePath: `https://be.fitmo.cz/products/`,
     };
   },
 
@@ -566,7 +566,7 @@ export default {
     },
     async getCategories() {
       try {
-        const response = await axios.get("/api/categories");
+        const response = await axios.post("/api/categories");
         this.groupedCategories = this.groupByKeyReduce(response.data);
         this.categories = response.data;
       } catch (error) {

@@ -9,11 +9,26 @@
     <template #item="{ element }">
       <li
         :style="{
-          paddingLeft: `${depth * 20}px`,
+          marginLeft: `${depth * 20}px`,
+          backgroundColor: `rgba(30, 144, 255, ${Math.min(depth * 0.15, 1)})`,
+          listStyleType: 'none',
         }"
       >
-        <div class="row">
-          {{ element.id_parent }}
+        <div
+          class="row"
+          :style="{
+            backgroundColor: `rgba(30, 144, 255, ${Math.min(depth * 0.05, 1)})`,
+          }"
+        >
+          <div
+            :style="{
+              display: 'flex',
+              alignSelf: 'center',
+              margin: '0 0.5rem 0 0.4rem',
+            }"
+          >
+            {{ element.id_parent }}
+          </div>
           <img
             v-if="element?.image?.tentativePath || element.image_path"
             :src="
@@ -23,20 +38,22 @@
             "
           />
           <input type="text" v-model="element.name" />
-
           <input
+            v-if="element.id !== 'Nezařazeny'"
             type="file"
             @change="(e) => addPhoto(e, element)"
             id="upload"
             ref="upload"
           />
           <input
+            v-if="element.id !== 'Nezařazeny'"
             type="submit"
             v-on:click="updateCategory(element)"
             value="Upravit kategorii"
             class="btn-yellow"
           />
           <input
+            v-if="element.id !== 'Nezařazeny'"
             type="submit"
             v-on:click="deleteCategory(element)"
             value="Smazat kategorii"
@@ -51,6 +68,7 @@
 <script>
 import axios from "../../../api";
 import draggable from "vuedraggable";
+
 export default {
   props: {
     categories: {
@@ -59,6 +77,7 @@ export default {
     },
   },
 
+  computed: {},
   components: {
     draggable,
   },
@@ -66,7 +85,7 @@ export default {
   data() {
     return {
       depth: 2,
-      imagesBasePath: `${process.env.VUE_APP_FITMO_BACKEND_URL}/categories/`,
+      imagesBasePath: `https://be.fitmo.cz/categories/`,
     };
   },
   watch: {
@@ -103,21 +122,15 @@ export default {
     },
 
     async deleteCategory(category) {
-      this.$snackbar.add({
-        type: "error",
-        text: "Zatim se nic neděje protože marek je líná prdel. :P :P",
-      });
-      return;
       await axios
-        .delete("/api/category/" + category.id, category, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        .delete("/api/category/" + category.id)
         .then((response) => {
           if (response.status == 200) {
             this.$snackbar.add({
               type: "success",
               text: "Jsi moc šikovný kluk 🎸!",
             });
+            console.log("Emitting get-categories event");
           } else {
             this.$snackbar.add({
               type: "error",
@@ -162,12 +175,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 .dragArea {
-  min-height: 50px;
-  outline: 1px dashed;
-
   input {
     width: unset !important;
   }
+
   img {
     width: 50px;
     height: 50px;
