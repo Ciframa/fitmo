@@ -7,6 +7,7 @@ use App\Models\Image;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Price;
+use App\Models\Image;
 use App\Models\ProductCategory;
 use App\Models\Order_product;
 use App\Models\Template;
@@ -656,7 +657,7 @@ class ProductController extends Controller
         }
         ProductCategory::where('product_id', $id)->delete();
         Price::where('product_id', $id)->delete();
-        Images::where('product_id', $id)->delete();
+        Image::where('product_id', $id)->delete();
         Template::where('product_id', $id)->delete();
         if ($existingProduct) {
             $existingProduct->delete();
