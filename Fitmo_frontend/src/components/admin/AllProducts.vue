@@ -40,7 +40,12 @@
                 {{ product.variant ?? "" }}
               </span>
               <ul class="productsList__name__wrapper__buttons">
-                <template v-if="product.name !== 'Nezařazeny'">
+                <template
+                  v-if="
+                    product.name !== 'Nezařazeny' &&
+                    product.name !== 'Bez kategorií'
+                  "
+                >
                   <router-link :to="'/edit/' + product.id"
                     >Editovat</router-link
                   >
@@ -101,6 +106,7 @@
                   <li v-on:click="hideProduct(product.id)">
                     {{ product.isActive ? "Schovat" : "Zobrazovat" }}
                   </li>
+
                   <li v-on:click="deleteProduct(child?.id)">Smazat</li>
                 </ul>
               </span>

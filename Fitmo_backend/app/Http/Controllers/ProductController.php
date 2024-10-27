@@ -154,28 +154,33 @@ class ProductController extends Controller
             'colors.*',
             'products.*',
             'product_categories.category_id as category_id'
-        )->with(['children' => function ($query) {
-            $query->select(
-                'categories.name as category_name',
-                'colors.*',
-                'products.*',
-            )
-                ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
-                ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
-                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                ->where('products.parent_id', '!=', 0)
-                ->whereNotNull('products.parent_id');
-        }])
+        )
+            ->with(['children' => function ($query) {
+                $query->select(
+                    'categories.name as category_name',
+                    'colors.*',
+                    'products.*'
+                )
+                    ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
+                    ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->where('products.parent_id', '!=', 0)
+                    ->whereNotNull('products.parent_id')
+                    ->groupBy('products.id'); // Ensure each product is only once in children
+            }])
             ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->orderBy('products.name', 'asc')
             ->where(function ($query) {
                 $query->where('products.parent_id', 0)
                     ->orWhereNull('products.parent_id');
-            })->get();
+            })
+            ->groupBy('products.id') // Ensure each product appears only once in the main query
+            ->orderBy('products.name', 'asc')
+            ->get();
+
         return $this->formatOnlyPhotos($assignedCategory);
     }
 

@@ -294,6 +294,7 @@ class CategoryController extends Controller
 
     public function delete($id)
     {
+        $subCategories = Category::where('id_parent', $id)->get();
         $existingCategory = Category::find($id);
         if(!$existingCategory) {
             return response()->json(['message' => 'Category not found'], 404);
@@ -302,14 +303,15 @@ class CategoryController extends Controller
             $existingCategory->delete();
         }
         // Get all subcategories
-        $subCategories = Category::where('id_parent', $id)->get();
         // Set the parent id of all subcategories to null
+        if($subCategories->count() === 0) {
+            $this->makeMapTable();
+            return $id;
+        }
         $subCategories->each(function ($subCategory) {
             $subCategory->id_parent = null;
             $subCategory->save();
         });
-
-        $productCategories = ProductCategory::where('category_id', $id)->delete();
 
         $this->makeMapTable();
 
