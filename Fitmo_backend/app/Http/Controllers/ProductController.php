@@ -7,7 +7,6 @@ use App\Models\Image;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Price;
-use App\Models\Image;
 use App\Models\ProductCategory;
 use App\Models\Order_product;
 use App\Models\Template;
