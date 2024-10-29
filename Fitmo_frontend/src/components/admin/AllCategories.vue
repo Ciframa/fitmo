@@ -112,6 +112,7 @@ export default {
     },
 
     addCategory() {
+      this.categoryMaxId++;
       this.groupedCategories.unshift({
         id: this.categoryMaxId,
         name: "",
@@ -123,7 +124,6 @@ export default {
         image_path: "",
         children: [],
       });
-      this.categoryMaxId++;
     },
 
     flattenNestedArray(data) {
@@ -156,10 +156,9 @@ export default {
     },
     getCategoryMaxId() {
       axios
-        .get("/api/category/maxId")
+        .get("/api/categories/maxId")
         .then((response) => {
           this.categoryMaxId = response.data;
-          console.log(this.categoryMaxId);
         })
         .catch((error) => {
           console.log(error);

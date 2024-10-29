@@ -162,9 +162,7 @@ class CategoryController extends Controller
 
                     $img->writeImage($path . "/" . $category['image']["image_path"]);
                 }
-
             } else {
-
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
 
@@ -187,7 +185,6 @@ class CategoryController extends Controller
 
                     $img->writeImage($path . "/" . $category['image']["image_path"]);
                 }
-
             }
 
             $categoryFromDb->save();
@@ -203,6 +200,9 @@ class CategoryController extends Controller
             ->join('map_table', 'categories.id', '=', 'map_table.category_id')
             ->where('map_table.path', $categoryName)->first();
 
+        if(!$mainCategory) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
         $listOfCategories = Category::select('categories.id', 'categories.name', 'map_table.path as url_path', 'categories.image_path')
             ->join('map_table', 'categories.id', '=', 'map_table.category_id')
             ->where('categories.id_parent', $mainCategory["id"])->get();
