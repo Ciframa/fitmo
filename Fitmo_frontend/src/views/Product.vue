@@ -216,6 +216,15 @@ export default {
       imagesBasePath: `https://be.fitmo.cz/products/`,
     };
   },
+  watch: {
+    $route() {
+      this.productPathName = this.$route.params.productPath;
+      this.getCategories();
+      this.getProduct().then(() => {
+        return this.getTemplates();
+      });
+    },
+  },
   methods: {
     async getProduct() {
       try {
@@ -321,9 +330,6 @@ export default {
 
   computed: {},
   mounted() {
-    // Load items from sessionStorage when the component is mounted
-    const storedItems = JSON.parse(sessionStorage.getItem("items")) || [];
-    this.items = storedItems;
     this.getCategories();
     this.getProduct().then(() => {
       return this.getTemplates();

@@ -362,7 +362,8 @@ class ProductController extends Controller
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
-                ->where('products.isActive', 1);
+                ->where('products.isActive', 1)
+                ->whereNotNull('categories.id_parent');
         }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
@@ -374,10 +375,12 @@ class ProductController extends Controller
             ->where('products.parent_id', 0)
             ->where('products.isActive', 1)
             ->whereIn('category_id', $categoriesToSearch)
+            ->whereNotNull('categories.id_parent')
             ->paginate(6, ['*'], 'page', $request->page ?? 1);
 
 
         $products = $this->formatProducts($paginatedProducts, true);
+
         return response()->json([
             'data' => $products,
             'pagination' => [
