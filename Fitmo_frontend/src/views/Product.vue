@@ -20,7 +20,7 @@
             :icon="['fa', 'angle-down']"
             rotation="270"
           />
-          <router-link :to="'/' + link.url_path">
+          <router-link :to="'/kategorie/' + link.url_path">
             {{ link.name }}
           </router-link>
         </li>
