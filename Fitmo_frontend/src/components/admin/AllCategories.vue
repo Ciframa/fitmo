@@ -122,6 +122,7 @@ export default {
         image: null,
         url_path: "",
         image_path: "",
+        status: "created",
         children: [],
       });
     },

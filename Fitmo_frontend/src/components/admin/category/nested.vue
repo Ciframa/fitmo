@@ -46,19 +46,22 @@
             ref="upload"
           />
           <input
-            v-if="element.id !== 'Nezařazeny'"
+            v-if="element.id !== 'Nezařazeny' && element?.status !== 'created'"
             type="submit"
             v-on:click="updateCategory(element)"
             value="Upravit kategorii"
             class="btn-yellow"
           />
           <input
-            v-if="element.id !== 'Nezařazeny'"
+            v-if="element.id !== 'Nezařazeny' && element?.status !== 'created'"
             type="submit"
             v-on:click="deleteCategory(element)"
             value="Smazat kategorii"
             class="btn-red"
           />
+          <div v-if="element?.status === 'created'" class="btn-green">
+            NOVÁ KATEGORIE
+          </div>
         </div>
         <nested-draggable :categories="element.children" />
       </li>
