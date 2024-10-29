@@ -50,13 +50,17 @@ export default {
   },
   name: "Slider",
   mounted() {
-    this.slider = new KeenSlider(this.$refs.slider);
+    this.slider = new KeenSlider(this.$refs.slider, {
+      slides: {
+        perView: 1,
+      },
+    });
     this.thumbnail = new KeenSlider(
       this.$refs.thumbnail,
       {
         initial: 0,
         slides: {
-          perView: 4,
+          perView: 6,
           spacing: 10,
         },
       },
@@ -126,7 +130,7 @@ function ThumbnailPlugin(main) {
   margin-top: 10px;
   height: 100px !important;
   width: 100px !important;
-  min-width: 100px !important;
+  //min-width: 100px !important;
   min-height: unset !important;
 }
 .thumbnail .keen-slider__slide {

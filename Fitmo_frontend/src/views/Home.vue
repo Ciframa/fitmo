@@ -44,14 +44,14 @@
     <div class="home__trailer">
       <div class="row">
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/showRoom/prvni.png" alt="" />
+          <img src="../../public/assets/showRoom/prvni.jpg" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/quality.svg" alt="" />
             <span>KVALITA ZBOŽÍ</span>
           </div>
         </div>
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/showRoom/druhy.png" alt="" />
+          <img src="../../public/assets/showRoom/druhy.jpg" alt="" />
 
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/equipment.svg" alt="" />
@@ -59,14 +59,14 @@
           </div>
         </div>
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/showRoom/treti.png" alt="" />
+          <img src="../../public/assets/showRoom/treti.jpg" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/one_place.svg" alt="" />
             <span>VŠE NA JEDNOM MÍSTĚ</span>
           </div>
         </div>
         <div class="col-12-xs col-6-sm col-3-xl">
-          <img src="../../public/assets/showRoom/ctvrty.png" alt="" />
+          <img src="../../public/assets/showRoom/ctvrty.jpg" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/ocr.svg" alt="" />
             <span>SPECIALISTA NA OCR ZÁVODY!</span>
@@ -136,7 +136,9 @@ export default {
   methods: {
     getCategories() {
       axios
-        .post("/api/categories")
+        .post("/api/categories", {
+          filter: [{ column: "id_parent", operator: "!=", value: null }],
+        })
         .then((response) => {
           this.categories = this.groupByKeyReduce(response.data);
         })
@@ -234,7 +236,7 @@ export default {
 
         .category_wrapper {
           background: $white;
-          margin-top: 5rem;
+          margin-top: 7rem;
           display: flex;
           border-radius: 2rem;
           flex-direction: column;
@@ -248,11 +250,13 @@ export default {
           }
 
           img {
-            max-height: 22rem;
+            max-width: 22rem;
+            aspect-ration: 220/180;
+            object-fit: contain;
             position: absolute;
             top: 0;
             left: calc(50% - 11rem);
-            transform: translateY(-57%);
+            transform: translateY(-45%);
           }
 
           h3 {

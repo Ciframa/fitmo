@@ -404,6 +404,8 @@ export default {
             width: 7.5rem;
             border: 1px solid black;
             padding: 0.6rem;
+            aspect-ratio: 3 / 2;
+            object-fit: contain;
           }
         }
       }
@@ -493,7 +495,7 @@ export default {
   .product {
     &__header__item {
       position: relative;
-      max-width: 41rem;
+      //max-width: 41rem;
       padding-bottom: 7rem;
 
       &__footer {

@@ -103,7 +103,6 @@ export default {
     padding: 5rem;
     color: $black-headers;
     min-height: 200px !important;
-    min-width: 30rem;
     align-items: flex-start;
     &__header {
       display: flex;
