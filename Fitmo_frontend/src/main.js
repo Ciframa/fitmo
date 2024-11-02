@@ -17,6 +17,7 @@ import "@vueup/vue-quill/dist/vue-quill.core.css";
 
 import {
   faAngleDown,
+  faAngleLeft,
   faBars,
   faCheck,
   faFile,
@@ -37,6 +38,7 @@ library.add(faXmark);
 library.add(faStar);
 library.add(faCheck);
 library.add(faAngleDown);
+library.add(faAngleLeft);
 library.add(faStar);
 library.add(faSignOut);
 library.add(faSpinner);

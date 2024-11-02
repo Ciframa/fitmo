@@ -426,6 +426,7 @@ export default {
         display: flex;
         align-items: center;
         flex-direction: column;
+        overflow: hidden;
 
         &__subProducts {
           display: flex;
@@ -533,7 +534,7 @@ export default {
 
       &__name {
         font-size: 1.2rem;
-        line-height: 2rem;
+        line-height: 2.8rem;
         min-height: 1.8rem;
       }
 
@@ -608,6 +609,7 @@ export default {
         h4 {
           font-size: 2.2rem;
           line-height: 2.3rem;
+          color: $black-headers;
         }
       }
 
@@ -618,12 +620,13 @@ export default {
       }
 
       &__name {
-        font-size: 1.7rem;
+        font-size: 1.63rem;
         margin-top: 0.3rem;
       }
 
       &__price {
         font-size: 1.9rem;
+        color: $black-second;
 
         &__trough {
           font-size: 1.4rem;

@@ -140,14 +140,17 @@ class CategoryController extends Controller
 
     public function updateCategories(Request $categories)
     {
+        $alphabet = range('A', 'Z');
         foreach ($categories[0] as $category) {
             $categoryFromDb = Category::find($category["id"]);
             if (!$categoryFromDb) {
+                $parentCategory = Category::find($category["id_parent"]);
                 $categoryFromDb = new Category();
                 $categoryFromDb["id"] = $category["id"];
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
                 $categoryFromDb["childIndex"] = $category["index"];
+                $categoryFromDb["path"] = isset($parentCategory["path"]) ? $parentCategory["path"] . $alphabet[$category["index"]] : $alphabet[$category["index"]];
                 if (isset($category["image"]) && $category["image"]) {
                     $path = 'categories/';
                     if ($categoryFromDb["image_path"]) {
@@ -168,9 +171,11 @@ class CategoryController extends Controller
                     $img->writeImage($path . "/" . $category['image']["image_path"]);
                 }
             } else {
+                $parentCategory = Category::find($category["id_parent"]);
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
                 $categoryFromDb["childIndex"] = $category["index"];
+                $categoryFromDb["path"] = isset($parentCategory["path"]) ? $parentCategory["path"] . $alphabet[$category["index"]] : $alphabet[$category["index"]];
 
                 if (isset($category["image"]) && $category["image"]) {
                     $path = 'categories/';

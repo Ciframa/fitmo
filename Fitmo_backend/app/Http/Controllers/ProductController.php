@@ -323,7 +323,6 @@ class ProductController extends Controller
     public function getCategoryProducts($categoryName, Request $request)
     {
         $categoryName = join("/", explode(",", $categoryName));
-        $products = [];
         $categories = Category::where(
             'path',
             'LIKE',
@@ -376,7 +375,7 @@ class ProductController extends Controller
             ->where('products.isActive', 1)
             ->whereIn('category_id', $categoriesToSearch)
             ->whereNotNull('categories.id_parent')
-            ->paginate(6, ['*'], 'page', $request->page ?? 1);
+            ->paginate(15, ['*'], 'page', $request->page ?? 1);
 
 
         $products = $this->formatProducts($paginatedProducts, true);
