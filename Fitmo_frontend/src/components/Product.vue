@@ -87,7 +87,6 @@
             </div>
           </div>
         </div>
-        <div v-if="product.isMain === 1"></div>
         <h4>
           {{ product.name }}
         </h4>
@@ -109,7 +108,10 @@
           v-if="!getLowestPrice()['discounted']"
           class="home__eshop__wrapper__price"
         >
-          <span>od {{ getLowestPrice()["normalPrice"] }} Kč</span>
+          <span
+            >{{ this.products.length > 1 ? "od" : "" }}
+            {{ getLowestPrice()["normalPrice"] }} Kč</span
+          >
         </div>
         <div class="home__eshop__wrapper__discounts">
           <span v-if="product.discount" class="btn-yellow">Akce</span>
