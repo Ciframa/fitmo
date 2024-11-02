@@ -26,10 +26,14 @@ class CategoryController extends Controller
             "categories.name",
             "categories.id_parent",
             "categories.path",
+            "categories.childIndex",
             "map_table.path as url_path",
             "image_path"
         )
-            ->join('map_table', 'categories.id', '=', 'map_table.category_id');
+            ->join('map_table', 'categories.id', '=',  'map_table.category_id')
+        ->orderBy('categories.id_parent', 'asc')
+        ->orderBy('categories.childIndex', 'asc')
+        ->orderBy('categories.id', 'asc');
 
 // Apply filters dynamically if they exist
         if ($request->filter) {
@@ -143,6 +147,7 @@ class CategoryController extends Controller
                 $categoryFromDb["id"] = $category["id"];
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
+                $categoryFromDb["childIndex"] = $category["index"];
                 if (isset($category["image"]) && $category["image"]) {
                     $path = 'categories/';
                     if ($categoryFromDb["image_path"]) {
@@ -165,6 +170,7 @@ class CategoryController extends Controller
             } else {
                 $categoryFromDb["id_parent"] = $category["id_parent"];
                 $categoryFromDb["name"] = $category["name"];
+                $categoryFromDb["childIndex"] = $category["index"];
 
                 if (isset($category["image"]) && $category["image"]) {
                     $path = 'categories/';
