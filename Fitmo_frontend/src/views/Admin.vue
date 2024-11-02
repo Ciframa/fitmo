@@ -26,7 +26,7 @@ export default {
   components: { AddProduct, AllProducts, AllCategories, AllOrders },
   data() {
     return {
-      showedMain: 0,
+      showedMain: 2,
     };
   },
 
