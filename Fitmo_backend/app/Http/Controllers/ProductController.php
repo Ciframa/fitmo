@@ -445,7 +445,7 @@ class ProductController extends Controller
 
                     $img->setImageCompression(Imagick::COMPRESSION_JPEG);
 
-                    $img->setImgeCompressionQuality(85);
+                    $img->setImageCompressionQuality(85);
 
                     $img->stripImage();
 
