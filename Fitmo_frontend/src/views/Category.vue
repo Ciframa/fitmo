@@ -508,6 +508,7 @@ export default {
         justify-content: center;
 
         & > a {
+          width: 100%;
           img {
             height: 9rem;
             padding: 0.3rem 2rem 0.3rem 0.8rem;
