@@ -247,13 +247,13 @@ class ProductController extends Controller
 
             if ($product->parent_id === null) {
                 $nullParentProducts[] = $product;
-            } else if ($product->category_id === null){
+            } else if ($product->category_id === null) {
                 $categoryNullIds[] = $product;
-            }else {
+            } else {
                 if ($product->children->isNotEmpty()) {
                     foreach ($product->children as $child) {
                         if (isset($product->image_urls)) {
-                            if(gettype($child->image_urls) === "array"){
+                            if (gettype($child->image_urls) === "array") {
                                 //array to string
                                 $child->image_urls = implode("|", $child->image_urls);
                             }
@@ -599,23 +599,38 @@ class ProductController extends Controller
         $existingColor = Color::find($existingProduct->color_id);
         $existingTemplate = Template::find($templateId);
 
-        $folderPath = 'products/';
+        //here I need to check if there is more of that photo in other templates or in products
+        $existingSameImages = Image::where('image_path', $existingProduct["name"])->get();
+        $existingSameImagesInTemplates = Template::where('product_id', $existingProduct["id"])
+            ->where(function ($query) use ($existingProduct) {
+                $query->where('image1', $existingProduct["name"])
+                    ->orWhere('image2', $existingProduct["name"])
+                    ->orWhere('image3', $existingProduct["name"])
+                    ->orWhere('image4', $existingProduct["name"])
+                    ->orWhere('image5', $existingProduct["name"])
+                    ->orWhere('image6', $existingProduct["name"]);
+            })->get();
 
-        if (isset($existingColor)) {
-            $folderPath .= $existingProduct["name"] . "-" . $existingColor["colorName"];
-        } elseif (isset($existingProduct["variant"])) {
-            $folderPath .= $existingProduct["name"] . "-" . $existingProduct["variant"];
-        } else {
-            $folderPath .= $existingProduct["name"];
-        }
-        $imageFiles = glob($folderPath . '/*.jpg');
-        $folderPath .= "/";
-        foreach ($imageFiles as $imageFile) {
-            if ($imageFile == $folderPath . $existingTemplate->image1 || $imageFile == $folderPath . $existingTemplate->image2 || $imageFile == $folderPath . $existingTemplate->image3 || $imageFile == $folderPath . $existingTemplate->image4 || $imageFile == $folderPath . $existingTemplate->image5 || $imageFile == $folderPath . $existingTemplate->image6) {
-                File::delete($imageFile);
+        if (($existingSameImages->count() + $existingSameImagesInTemplates->count()) <= 1) {
+            $folderPath = 'products/';
+
+            if (isset($existingColor)) {
+                $folderPath .= $existingProduct["name"] . "-" . $existingColor["colorName"];
+            } elseif (isset($existingProduct["variant"])) {
+                $folderPath .= $existingProduct["name"] . "-" . $existingProduct["variant"];
+            } else {
+                $folderPath .= $existingProduct["name"];
             }
+            $imageFiles = glob($folderPath . '/*.jpg');
+            $folderPath .= "/";
+            foreach ($imageFiles as $imageFile) {
+                if ($imageFile == $folderPath . $existingTemplate->image1 || $imageFile == $folderPath . $existingTemplate->image2 || $imageFile == $folderPath . $existingTemplate->image3 || $imageFile == $folderPath . $existingTemplate->image4 || $imageFile == $folderPath . $existingTemplate->image5 || $imageFile == $folderPath . $existingTemplate->image6) {
+                    File::delete($imageFile);
+                }
 
+            }
         }
+
         $existingTemplate->delete();;
     }
 
