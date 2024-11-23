@@ -161,34 +161,6 @@
             <template-product :product="product" :template="{ template }" />
           </template></div
       ></template>
-      <h2>Popis produktu</h2>
-      <p>
-        Dřevěné válečky pro posílení úchopu, předloktí. Skvělá pomůcka pro
-        horolezce, závodníky překážkových závodů i borce, co cvičí street
-        workout. Silný úchop je klíčem k úspěchu, ať už děláte streetworkout,
-        powerlifting či horolezectví. Je to naprosto základní předpoklad pro
-        podání maximálního výkonu. Ani sebesilnější tělo nevyužijete bez
-        pořádného úchopu, ať už jde o mrtvé tahy, přítahy nebo ručkování!
-      </p>
-      <h2>Popis produktu</h2>
-      <div class="product__description__info">
-        <div>
-          <p>Kategorie</p>
-          <p>Dřevěné koule</p>
-        </div>
-        <div>
-          <p>Průměr</p>
-          <p>40 mm</p>
-        </div>
-        <div>
-          <p>Materiál</p>
-          <p>dřevo</p>
-        </div>
-        <div>
-          <p>Povrchová úprava</p>
-          <p>Lak</p>
-        </div>
-      </div>
     </div>
   </div>
   <div v-else>Nebyl nalezen zadaný produkt</div>
