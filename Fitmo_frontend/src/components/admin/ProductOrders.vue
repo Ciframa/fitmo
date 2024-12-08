@@ -119,7 +119,18 @@ export default {
           categories: this.productByCategories,
         })
         .then((response) => {
-          console.log(response);
+          if (response.status == 200 || response.status == 201) {
+            this.$snackbar.add({
+              type: "success",
+              text: "Jsi moc šikovný kluk 🎸!",
+            });
+          }
+        })
+        .catch((error) => {
+          this.$snackbar.add({
+            type: "error",
+            text: "Něco se 💩. Radši zavolej Márovi, než to celý rozbiješ.",
+          });
         });
     },
   },
