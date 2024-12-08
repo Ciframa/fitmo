@@ -30,8 +30,10 @@ class ProductController extends Controller
             'product_states.*',
             'categories.name as category_name',
             'colors.*',
+            'categories.*',
             'products.*',
-            'product_categories.category_id as category_id'
+            'product_categories.category_id as category_id',
+            'product_categories.product_order'
         )->with(['categories', 'children' => function ($query) {
             $query->select(
                 'prices.*',
@@ -48,8 +50,8 @@ class ProductController extends Controller
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
-                ->where('products.isActive', 1);
-
+                ->where('products.isActive', 1)
+                ->whereNotNull('categories.id_parent');
         }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
@@ -57,13 +59,17 @@ class ProductController extends Controller
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->orderBy('products.created_at', 'desc')
             ->where('products.parent_id', 0)
             ->where('products.isActive', 1)
+            ->whereNotNull('categories.id_parent')
+            ->orderBy('categories.id', 'asc')
+            ->orderBy('categories.id_parent', 'asc')
+            ->orderBy('categories.childIndex', 'asc')
+            ->orderBy('product_categories.product_order', 'asc')
             ->paginate(20, ['*'], 'page', $request->page ?? 1);
 
 
-        $products = $this->formatProducts($paginatedProducts, true);
+        $products = $this->formatProducts($paginatedProducts);
 
         return response()->json([
             'data' => $products,
@@ -92,6 +98,7 @@ class ProductController extends Controller
             ->orderBy('products.created_at', "asc")
             ->where("products.url_name", $product_url_name)
             ->where('products.isActive', 1)
+            ->groupBy('products.id') // Ensure each product is only once in children
             ->get();
 
         return $this->formatProducts($product);
@@ -246,6 +253,7 @@ class ProductController extends Controller
                 }
                 if ($shouldWorkWithChildren && $product->children->isNotEmpty()) {
                     foreach ($product->children as $child) {
+
                         $child->image_urls = explode('|', $child->image_urls);
                         $child->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($child["category_name"])))));
                         $child->isMain = 0; // Activate the product
@@ -771,6 +779,17 @@ class ProductController extends Controller
                 if ($productCategory && $category["categoryStatus"] == "deleted") {
                     $productCategory->delete();
                 }
+            }
+        }
+        if ($request->parent_id != 0 && $request->parent_id != null) {
+            // get productCategories and make them for this product aswell
+            ProductCategory::where('product_id', $product->id)->delete();
+            $productCategories = ProductCategory::where('product_id', $product->parent_id)->get();
+            foreach ($productCategories as $productCategory) {
+                $newProductCategories = new ProductCategory();
+                $newProductCategories->product_id = $product->id;
+                $newProductCategories->category_id = $productCategory->category_id;
+                $newProductCategories->save();
             }
         }
         $product->parent_id = $request->parent_id;
