@@ -33,6 +33,8 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/soloProducts', [ProductController::class, 'getAllProducts']);
 Route::get('/mainProducts', [ProductController::class, 'getMainProducts']);
 
+Route::get('/productsByCategories', [ProductController::class, 'getProductsForOrders']);
+
 Route::get('/productById/{id}', [ProductController::class, 'getProductById']);
 
 Route::get('/mainCategories', [CategoryController::class, 'getMainCategories']);
@@ -42,6 +44,7 @@ Route::get('/category/{categoryName}', [CategoryController::class, 'getCategory'
 Route::get('/categoryProducts/{categoryName}', [ProductController::class, 'getCategoryProducts']);
 
 
+Route::post('/updateOrderOfProducts', [ProductController::class, 'updateOrderOfProducts']);
 
 Route::get('/search/{query}', [ProductController::class, 'getSearchedItems']);
 

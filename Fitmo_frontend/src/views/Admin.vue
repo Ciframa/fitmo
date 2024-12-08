@@ -6,6 +6,7 @@
         <li v-on:click="showedMain = 2">Přehled produktů</li>
         <li v-on:click="showedMain = 3">Přehled kategorií</li>
         <li v-on:click="showedMain = 4">Přehled objednávek</li>
+        <li v-on:click="showedMain = 5">Pořadí produktů</li>
       </ul>
     </div>
     <div class="mainWrapper">
@@ -13,6 +14,7 @@
       <AllProducts v-if="showedMain === 2" />
       <AllCategories v-if="showedMain === 3" />
       <AllOrders v-if="showedMain === 4" />
+      <ProductOrders v-if="showedMain === 5" />
     </div>
   </div>
 </template>
@@ -22,8 +24,15 @@ import AddProduct from "../components/admin/AddProduct";
 import AllProducts from "../components/admin/AllProducts";
 import AllCategories from "../components/admin/AllCategories";
 import AllOrders from "../components/admin/AllOrders.vue";
+import ProductOrders from "../components/admin/ProductOrders.vue";
 export default {
-  components: { AddProduct, AllProducts, AllCategories, AllOrders },
+  components: {
+    AddProduct,
+    AllProducts,
+    AllCategories,
+    AllOrders,
+    ProductOrders,
+  },
   data() {
     return {
       showedMain: 2,

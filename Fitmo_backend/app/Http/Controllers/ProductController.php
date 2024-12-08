@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\Image;
 use App\Models\Category;
 use App\Models\Color;
-use App\Models\Price;
-use App\Models\ProductCategory;
+use App\Models\Image;
 use App\Models\Order_product;
-use App\Models\Template;
+use App\Models\Price;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductState;
-use Illuminate\Http\Request;
+use App\Models\Template;
 use File;
-use Imagick;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Imagick;
 
 class ProductController extends Controller
 {
@@ -184,6 +184,31 @@ class ProductController extends Controller
         return $this->formatOnlyPhotos($assignedCategory);
     }
 
+    public function getProductsForOrders()
+    {
+        //Select all products and categories from ProductCategory table, group by category
+        $categories = Category::select('categories.*')
+            ->with(['products' => function ($query) {
+                $query->select(
+                    'colors.*',
+                    'products.*',
+                )
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->where('products.parent_id', 0)
+                    ->whereNotNull('products.parent_id')
+                    ->orderBy('product_categories.product_order', 'asc');
+            }])
+            ->get();
+
+        $categories = $categories->map(function ($category) {
+            $category->products = $this->formatOnlyPhotos($category->products);
+            return $category;
+        });
+        return $categories;
+    }
+
+
     public function setUrlNames()
     {
         $products = Product::all();
@@ -343,8 +368,10 @@ class ProductController extends Controller
             'product_states.*',
             'categories.name as category_name',
             'colors.*',
+            'categories.*',
             'products.*',
-            'product_categories.category_id as category_id'
+            'product_categories.category_id as category_id',
+            'product_categories.product_order'
         )->with(['categories', 'children' => function ($query) {
             $query->select(
                 'prices.*',
@@ -370,11 +397,14 @@ class ProductController extends Controller
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-            ->orderBy('products.created_at', 'desc')
             ->where('products.parent_id', 0)
             ->where('products.isActive', 1)
             ->whereIn('category_id', $categoriesToSearch)
             ->whereNotNull('categories.id_parent')
+            ->orderBy('categories.id', 'asc')
+            ->orderBy('categories.id_parent', 'asc')
+            ->orderBy('categories.childIndex', 'asc')
+            ->orderBy('product_categories.product_order', 'asc')
             ->paginate(15, ['*'], 'page', $request->page ?? 1);
 
 
@@ -392,8 +422,8 @@ class ProductController extends Controller
                 'path' => $paginatedProducts->path(),
             ]
         ]);
-
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -833,6 +863,18 @@ class ProductController extends Controller
 //         }
         $this->setUrlNames();
         return $product->save();
+    }
+
+    public function updateOrderOfProducts(Request $request)
+    {
+        foreach ($request->categories as $category) {
+            foreach ($category["products"] as $product) {
+                $existingProductCategory = ProductCategory::where('product_id', $product["id"])->where('category_id', $category["id"])->first();
+                $existingProductCategory->product_order = $product["order"];
+                $existingProductCategory->save();
+            }
+        }
+        return "Products successfully updated";
     }
 
     /**
