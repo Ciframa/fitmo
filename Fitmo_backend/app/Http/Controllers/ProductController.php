@@ -792,6 +792,19 @@ class ProductController extends Controller
                 $newProductCategories->save();
             }
         }
+        //Get childrens
+        $children = Product::where('parent_id', $product->id)->get();
+        $productCategoriesOfThisProduct = ProductCategory::where('product_id', $product->id)->get();
+        foreach ($children as $child) {
+            // get productCategories and make them for this product aswell
+            ProductCategory::where('product_id', $child->id)->delete();
+            foreach ($productCategoriesOfThisProduct as $productCategory) {
+                $newProductCategories = new ProductCategory();
+                $newProductCategories->product_id = $child->id;
+                $newProductCategories->category_id = $productCategory->category_id;
+            }
+        }
+
         $product->parent_id = $request->parent_id;
 
         $product->variant = $request->variant;
