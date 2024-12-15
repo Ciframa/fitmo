@@ -229,7 +229,9 @@ class ProductController extends Controller
     public function getMainProducts()
     {
         return Product::select('categories.*', 'products.*')->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-            ->join('categories', 'categories.id', '=', 'product_categories.category_id')->orderBy("products.name")->where("products.parent_id", 0)->with('categories')->get();
+            ->join('categories', 'categories.id', '=', 'product_categories.category_id')->orderBy("products.name")->where("products.parent_id", 0)->with('categories')
+            ->groupBy('products.id') // Ensure each product is only once in children
+            ->get();
     }
 
     public function formatProducts($products, $shouldWorkWithChildren = false)
@@ -878,7 +880,6 @@ class ProductController extends Controller
             $path = 'products/';
 
             if (isset($request->color_name)) {
-                ;
                 $path .= $request->name . "-" . $request->color_name;
             } elseif (isset($request->variant)) {
                 $path .= $request->name . "-" . $request->variant;
