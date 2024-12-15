@@ -804,6 +804,7 @@ class ProductController extends Controller
                 $newProductCategories = new ProductCategory();
                 $newProductCategories->product_id = $child->id;
                 $newProductCategories->category_id = $productCategory->category_id;
+                $newProductCategories->save();
             }
         }
 
