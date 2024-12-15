@@ -399,7 +399,8 @@ class ProductController extends Controller
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', '!=', 0)
                 ->where('products.isActive', 1)
-                ->whereNotNull('categories.id_parent');
+                ->whereNotNull('categories.id_parent')
+                ->groupBy('products.id'); // Ensure each product is only once in children
         }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
