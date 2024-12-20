@@ -919,6 +919,36 @@ class ProductController extends Controller
                 }
                 $parent->name = $request->name;
                 $parent->save();
+
+                //rename their children
+                $children = Product::where('parent_id', $parent->id)->get();
+                foreach ($children as $child) {
+                    if (isset($child->color_id)) {
+                        $existingColor = Color::find($child->color_id);
+                        $folderPath .= $child->name . "-" . $existingColor->color_name;
+                    } elseif (isset($child->variant)) {
+                        $folderPath .= $child->name . "-" . $child->variant;
+                    } else {
+                        $folderPath .= $child->name;
+                    }
+                    if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                        $path = 'products/';
+
+                        if (isset($existingColor)) {
+                            $path .= $request->name . "-" . $existingColor->color_name;
+                        } elseif (isset($child->variant)) {
+                            $path .= $request->name . "-" . $child->variant;
+                        } else {
+                            $path .= $request->name;
+                        }
+
+                        rename($folderPath, $path);
+                    }
+
+
+                    $child->name = $request->name;
+                    $child->save();
+                }
             }
         } else {
             $children = Product::where('parent_id', $product->id)->get();
