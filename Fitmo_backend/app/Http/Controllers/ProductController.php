@@ -869,60 +869,93 @@ class ProductController extends Controller
             $newState->topProduct = (int)filter_var($request->topProduct, FILTER_VALIDATE_BOOLEAN);
             $newState->save();
         }
-        $folderPath = 'products/';
 
-        if (isset($existingColor)) {
-            $folderPath .= $productOriginalName . "-" . $originalColorName;
-        } elseif (isset($productOriginalVariant)) {
-            $folderPath .= $productOriginalName . "-" . $productOriginalVariant;
-        } else {
-            $folderPath .= $productOriginalName;
-        }
-        if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-            $path = 'products/';
+        if ($product->name != $request->name) {
+            $folderPath = 'products/';
 
-            if (isset($request->color_name)) {
-                $path .= $request->name . "-" . $request->color_name;
-            } elseif (isset($request->variant)) {
-                $path .= $request->name . "-" . $request->variant;
+            if (isset($existingColor)) {
+                $folderPath .= $productOriginalName . "-" . $originalColorName;
+            } elseif (isset($productOriginalVariant)) {
+                $folderPath .= $productOriginalName . "-" . $productOriginalVariant;
             } else {
-                $path .= $request->name;
+                $folderPath .= $productOriginalName;
             }
+            if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                $path = 'products/';
 
-            rename($folderPath, $path);
-        }
-        //rename all childrens / parents
-        if ($request->parent_id != 0) {
-            $parents = Product::where('id', $request->parent_id)->get();
-            foreach ($parents as $parent) {
-                $folderPath = 'products/';
-                //rename their folders
-                if (isset($parent->color_id)) {
-                    $existingColor = Color::find($parent->color_id);
-                    $folderPath .= $parent->name . "-" . $existingColor->color_name;
-                } elseif (isset($parent->variant)) {
-                    $folderPath .= $parent->name . "-" . $parent->variant;
+                if (isset($request->color_name)) {
+                    $path .= $request->name . "-" . $request->color_name;
+                } elseif (isset($request->variant)) {
+                    $path .= $request->name . "-" . $request->variant;
                 } else {
-                    $folderPath .= $parent->name;
+                    $path .= $request->name;
                 }
-                if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-                    $path = 'products/';
 
-                    if (isset($existingColor)) {
-                        $path .= $request->name . "-" . $existingColor->color_name;
+                rename($folderPath, $path);
+            }
+            //rename all childrens / parents
+            if ($request->parent_id != 0) {
+                $parents = Product::where('id', $request->parent_id)->get();
+                foreach ($parents as $parent) {
+                    $folderPath = 'products/';
+                    //rename their folders
+                    if (isset($parent->color_id)) {
+                        $existingColor = Color::find($parent->color_id);
+                        $folderPath .= $parent->name . "-" . $existingColor->color_name;
                     } elseif (isset($parent->variant)) {
-                        $path .= $request->name . "-" . $parent->variant;
+                        $folderPath .= $parent->name . "-" . $parent->variant;
                     } else {
-                        $path .= $request->name;
+                        $folderPath .= $parent->name;
                     }
+                    if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                        $path = 'products/';
 
-                    rename($folderPath, $path);
+                        if (isset($existingColor)) {
+                            $path .= $request->name . "-" . $existingColor->color_name;
+                        } elseif (isset($parent->variant)) {
+                            $path .= $request->name . "-" . $parent->variant;
+                        } else {
+                            $path .= $request->name;
+                        }
+
+                        rename($folderPath, $path);
+                    }
+                    $parent->name = $request->name;
+                    $parent->save();
+
+                    //rename their children
+                    $children = Product::where('parent_id', $parent->id)->get();
+                    foreach ($children as $child) {
+                        $folderPath = 'products/';
+                        if (isset($child->color_id)) {
+                            $existingColor = Color::find($child->color_id);
+                            $folderPath .= $child->name . "-" . $existingColor->color_name;
+                        } elseif (isset($child->variant)) {
+                            $folderPath .= $child->name . "-" . $child->variant;
+                        } else {
+                            $folderPath .= $child->name;
+                        }
+                        if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                            $path = 'products/';
+
+                            if (isset($existingColor)) {
+                                $path .= $request->name . "-" . $existingColor->color_name;
+                            } elseif (isset($child->variant)) {
+                                $path .= $request->name . "-" . $child->variant;
+                            } else {
+                                $path .= $request->name;
+                            }
+
+                            rename($folderPath, $path);
+                        }
+
+
+                        $child->name = $request->name;
+                        $child->save();
+                    }
                 }
-                $parent->name = $request->name;
-                $parent->save();
-
-                //rename their children
-                $children = Product::where('parent_id', $parent->id)->get();
+            } else {
+                $children = Product::where('parent_id', $product->id)->get();
                 foreach ($children as $child) {
                     $folderPath = 'products/';
                     if (isset($child->color_id)) {
@@ -951,36 +984,6 @@ class ProductController extends Controller
                     $child->name = $request->name;
                     $child->save();
                 }
-            }
-        } else {
-            $children = Product::where('parent_id', $product->id)->get();
-            foreach ($children as $child) {
-                $folderPath = 'products/';
-                if (isset($child->color_id)) {
-                    $existingColor = Color::find($child->color_id);
-                    $folderPath .= $child->name . "-" . $existingColor->color_name;
-                } elseif (isset($child->variant)) {
-                    $folderPath .= $child->name . "-" . $child->variant;
-                } else {
-                    $folderPath .= $child->name;
-                }
-                if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-                    $path = 'products/';
-
-                    if (isset($existingColor)) {
-                        $path .= $request->name . "-" . $existingColor->color_name;
-                    } elseif (isset($child->variant)) {
-                        $path .= $request->name . "-" . $child->variant;
-                    } else {
-                        $path .= $request->name;
-                    }
-
-                    rename($folderPath, $path);
-                }
-
-
-                $child->name = $request->name;
-                $child->save();
             }
         }
 //         if ($request->parent["category_id"] != 0) {
