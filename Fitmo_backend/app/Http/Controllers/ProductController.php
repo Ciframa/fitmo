@@ -895,6 +895,7 @@ class ProductController extends Controller
         if ($request->parent_id != 0) {
             $parents = Product::where('id', $request->parent_id)->get();
             foreach ($parents as $parent) {
+                $folderPath = 'products/';
                 //rename their folders
                 if (isset($parent->color_id)) {
                     $existingColor = Color::find($parent->color_id);
@@ -923,6 +924,7 @@ class ProductController extends Controller
                 //rename their children
                 $children = Product::where('parent_id', $parent->id)->get();
                 foreach ($children as $child) {
+                    $folderPath = 'products/';
                     if (isset($child->color_id)) {
                         $existingColor = Color::find($child->color_id);
                         $folderPath .= $child->name . "-" . $existingColor->color_name;
@@ -953,6 +955,7 @@ class ProductController extends Controller
         } else {
             $children = Product::where('parent_id', $product->id)->get();
             foreach ($children as $child) {
+                $folderPath = 'products/';
                 if (isset($child->color_id)) {
                     $existingColor = Color::find($child->color_id);
                     $folderPath .= $child->name . "-" . $existingColor->color_name;
