@@ -891,6 +891,20 @@ class ProductController extends Controller
 
             rename($folderPath, $path);
         }
+        //rename all childrens / parents
+        if ($request->parent_id != 0) {
+            $parents = Product::where('id', $request->parent_id)->get();
+            foreach ($parents as $parent) {
+                $parent->name = $request->name;
+                $parent->save();
+            }
+        } else {
+            $children = Product::where('parent_id', $product->id)->get();
+            foreach ($children as $child) {
+                $child->name = $request->name;
+                $child->save();
+            }
+        }
 //         if ($request->parent["category_id"] != 0) {
 //
 //             $product->category_id = $request->parent["category_id"];
