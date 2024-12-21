@@ -754,13 +754,6 @@ class ProductController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
@@ -870,29 +863,9 @@ class ProductController extends Controller
             $newState->save();
         }
 
-        if ($product->name != $request->name) {
-            $folderPath = 'products/';
 
-            if (isset($existingColor)) {
-                $folderPath .= $productOriginalName . "-" . $originalColorName;
-            } elseif (isset($productOriginalVariant)) {
-                $folderPath .= $productOriginalName . "-" . $productOriginalVariant;
-            } else {
-                $folderPath .= $productOriginalName;
-            }
-            if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-                $path = 'products/';
-
-                if (isset($request->color_name)) {
-                    $path .= $request->name . "-" . $request->color_name;
-                } elseif (isset($request->variant)) {
-                    $path .= $request->name . "-" . $request->variant;
-                } else {
-                    $path .= $request->name;
-                }
-
-                rename($folderPath, $path);
-            }
+        //rename folder
+        if ($product->name != $request->tempName) {
             //rename all childrens / parents
             if ($request->parent_id != 0) {
                 $parents = Product::where('id', $request->parent_id)->get();
@@ -955,6 +928,31 @@ class ProductController extends Controller
                     }
                 }
             } else {
+                //rename itself
+                $folderPath = 'products/';
+
+                if (isset($existingColor)) {
+                    $folderPath .= $productOriginalName . "-" . $existingColor->color_name;
+                } elseif (isset($productOriginalVariant)) {
+                    $folderPath .= $productOriginalName . "-" . $productOriginalVariant;
+                } else {
+                    $folderPath .= $productOriginalName;
+                }
+                if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                    $path = 'products/';
+
+                    if (isset($request->color_name)) {
+                        $path .= $request->name . "-" . $request->color_name;
+                    } elseif (isset($request->variant)) {
+                        $path .= $request->name . "-" . $request->variant;
+                    } else {
+                        $path .= $request->name;
+                    }
+
+                    rename($folderPath, $path);
+                }
+
+                //rename its children
                 $children = Product::where('parent_id', $product->id)->get();
                 foreach ($children as $child) {
                     $folderPath = 'products/';
@@ -985,6 +983,8 @@ class ProductController extends Controller
                     $child->save();
                 }
             }
+        } else {
+            return $product->name . " " . $request->name;
         }
 //         if ($request->parent["category_id"] != 0) {
 //
