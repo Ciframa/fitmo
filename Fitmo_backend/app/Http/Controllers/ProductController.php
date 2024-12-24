@@ -345,7 +345,7 @@ class ProductController extends Controller
             ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
             ->where('products.id', $id)
             ->addSelect(Product::raw('(CASE WHEN products.id IN (SELECT parent_id FROM products WHERE parent_id IS NOT NULL) THEN 1 ELSE 0 END) AS hasChildren'))
-            ->with('categories')
+            ->with('categories', 'images')
             ->get();
         foreach ($products as $product) {
             $product->image_urls = explode('|', $product->image_urls);
@@ -983,8 +983,71 @@ class ProductController extends Controller
                     $child->save();
                 }
             }
-        } else {
-            return $product->name . " " . $request->name;
+        }
+        foreach ($request->photos as $photo) {
+            if ($photo["state"] === 'added') {
+                $folderPath = 'products/';
+                if (isset($child->color_id)) {
+                    $existingColor = Color::find($child->color_id);
+                    $folderPath .= $child->name . "-" . $existingColor->color_name;
+                } elseif (isset($child->variant)) {
+                    $folderPath .= $child->name . "-" . $child->variant;
+                } else {
+                    $folderPath .= $child->name;
+                }
+                if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                    $newImg = new Image();
+                    $newImg->product_id = $product->id;
+                    $newImg->image_path = $photo["image_path"];
+                    $newImg->is_main = (int)filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
+
+                    $newImg->save();
+
+                    $img = new Imagick();
+
+                    $img->readImage($photo["file"]);
+
+                    $img->setImageCompression(Imagick::COMPRESSION_JPEG);
+
+                    $img->setImageCompressionQuality(85);
+
+                    $img->stripImage();
+
+                    $img->writeImage($folderPath . "/" . $photo["image_path"]);
+                }
+
+            } else if ($photo["state"] === "toDeleteFromDb") {
+                $existingImage = Image::where('image_path', $photo["image_path"])
+                    ->where('product_id', $product->id)
+                    ->first();
+                $existingImage->delete();
+                $folderPath = 'products/';
+                if (isset($child->color_id)) {
+                    $existingColor = Color::find($child->color_id);
+                    $folderPath .= $child->name . "-" . $existingColor->color_name;
+                } elseif (isset($child->variant)) {
+                    $folderPath .= $child->name . "-" . $child->variant;
+                } else {
+                    $folderPath .= $child->name;
+                }
+                if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                    $imageFiles = glob($folderPath . '/*.jpg');
+                    $folderPath .= "/";
+                    foreach ($imageFiles as $imageFile) {
+                        if ($imageFile == $folderPath . $photo["image_path"]) {
+                            File::delete($imageFile);
+                        }
+
+                    }
+                }
+            } // just update
+            else {
+                $existingImage = Image::where('image_path', $photo["image_path"])
+                    ->where('product_id', $product->id)
+                    ->first();
+                $existingImage->is_main = (int)filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
+                $existingImage->save();
+            }
         }
 //         if ($request->parent["category_id"] != 0) {
 //

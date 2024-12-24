@@ -166,49 +166,81 @@
             >Novinka</span
           >
         </div>
-
-        <!--  <div class="addPhoto__wrapper">
-       <div
-          class="addPhoto__wrapper__checkbox"
-          v-on:click="fileCropping = !fileCropping"
-        >
-          <font-awesome-icon
-            v-if="fileCropping"
-            :icon="['fa', 'check']"
-            class="addPhoto__wrapper__checkbox__svg"
-          />
-
-          <span v-if="fileCropping">S ořezem</span>
-          <span v-if="!fileCropping">Bez ořezu</span>
-        </div>
-        <upload-images
-          v-if="fileCropping"
-          ref="cropper"
-          @updateReview="(value) => (this.imageReview = value)"
-        ></upload-images>
-        <input type="file" v-if="!fileCropping" v-on:change="addPhoto2" />
-        <div class="home__eshop__wrapper">
-          <Product :products="this.product" />
-        </div>
-      </div>
-      <div class="addPhoto__tentativePhotos">
-        <label v-for="(image, index) in product.photos" :key="image.id">
-          <img :src="image.tentativePath" />
-          <div class="buttonsWrapper">
-            <input type="checkbox" :id="index" v-model="image.isMain" />
-            <button
-              type="button"
-              class="delete"
-              v-on:click="this.deleteImage(index)"
+        <div>
+          <div class="addPhoto__wrapper">
+            <div
+              class="addPhoto__wrapper__checkbox"
+              v-on:click="fileCropping = !fileCropping"
             >
-              X
-            </button>
-          </div>
-        </label>
-      </div>
-      <input type="submit" value="Přidat fotku" class="btn-yellow" />
+              <font-awesome-icon
+                v-if="fileCropping"
+                :icon="['fa', 'check']"
+                class="addPhoto__wrapper__checkbox__svg"
+              />
 
-      --><input
+              <span v-if="fileCropping">S ořezem</span>
+              <span v-if="!fileCropping">Bez ořezu</span>
+            </div>
+          </div>
+          <upload-images
+            v-if="fileCropping"
+            ref="cropper"
+            @updateReview="(value) => (this.imageReview = value)"
+          ></upload-images>
+          <input type="file" v-if="!fileCropping" v-on:change="addPhoto2" />
+          <form
+            class="admin__add-product"
+            @submit.prevent="addProductPhoto($event)"
+          >
+            <div class="addPhoto__tentativePhotos">
+              <label
+                v-for="(image, index) in product.photos"
+                v-show="
+                  image?.state !== 'toDeleteFromDb' &&
+                  image?.state !== 'deleted'
+                "
+                :key="image.id"
+              >
+                <img
+                  :src="
+                    image?.state !== 'fromDb'
+                      ? image.tentativePath
+                      : product.color_name
+                      ? this.imagesBasePath +
+                        product.name +
+                        '-' +
+                        product.color_name +
+                        '/' +
+                        image.image_path
+                      : product.variant
+                      ? this.imagesBasePath +
+                        product.name +
+                        '-' +
+                        product.variant +
+                        '/' +
+                        image.image_path
+                      : this.imagesBasePath +
+                        product.name +
+                        '/' +
+                        image.image_path
+                  "
+                />
+                <div class="buttonsWrapper">
+                  <input type="checkbox" :id="index" v-model="image.isMain" />
+                  <button
+                    type="button"
+                    class="delete"
+                    v-on:click="this.deleteImage(index)"
+                  >
+                    X
+                  </button>
+                </div>
+              </label>
+            </div>
+            <input type="submit" value="Přidat fotku" class="btn-yellow" />
+          </form>
+        </div>
+        <input
           type="submit"
           value="Změnit produkt"
           class="btn-yellow"
@@ -408,9 +440,13 @@ import axios from "../../api";
 import Editor from "primevue/editor";
 import TemplateProduct from "../../components/admin/TemplateProduct.vue";
 import { quillEditor } from "vue3-quill";
+import Product from "@/components/Product.vue";
+import UploadImages from "@/components/UploadImages.vue";
 
 export default {
   components: {
+    UploadImages,
+    Product,
     ImagesSlider,
     quillEditor,
     Editor,
@@ -424,8 +460,11 @@ export default {
       templates: [],
       categoriesSelects: [],
       categories: [],
+      fileCropping: false,
+      isNewProduct: {},
       groupedCategories: [],
-      imagesBasePath: `https://be.fitmo.cz/products/`,
+      // imagesBasePath: `https://be.fitmo.cz/products/`,
+      imagesBasePath: `http://localhost:8000/products/`,
     };
   },
 
@@ -436,6 +475,65 @@ export default {
     loggedUser() {
       return JSON.parse(sessionStorage.getItem("user"));
     },
+    addPhoto2(event) {
+      if (!this.product.isNewProduct) {
+        this.product.isNewProduct = new FormData();
+      }
+
+      const uploadedFile = event.target.files[0]; // Get the selected file
+      if (uploadedFile) {
+        var reader = new FileReader();
+        reader.readAsDataURL(uploadedFile);
+
+        reader.onload = () => {
+          // Use arrow function here
+          let file = new File([reader.result], uploadedFile.name);
+          let newProduct = {
+            file: uploadedFile,
+            image_path: uploadedFile.name,
+            tentativePath: URL.createObjectURL(uploadedFile),
+            isMain: false,
+            state: "added",
+          };
+          this.product?.photos?.push(newProduct);
+        };
+
+        reader.onerror = (error) => {
+          // Use arrow function here
+          console.log("Error: ", error);
+        };
+      }
+    },
+    deleteImage(index) {
+      if (this.product.photos[index].state === "fromDb") {
+        this.product.photos[index].state = "toDeleteFromDb";
+      } else {
+        this.product.photos[index].state = "deleted";
+      }
+    },
+    addProductPhoto() {
+      if (!this.product.newProduct) {
+        this.product.newProduct = new FormData();
+      }
+      let imageName = this.$refs.cropper.$refs.upload.files[0].name;
+      let img = this.$refs.cropper.$refs.cropper.getResult();
+
+      let file;
+
+      let newProduct;
+
+      img.canvas.toBlob((blob) => {
+        file = new File([blob], imageName);
+        newProduct = {
+          file: file,
+          image_path: imageName,
+          tentativePath: this.imageReview,
+          isMain: false,
+        };
+        this.product?.photos?.push(newProduct);
+      }, "image/png");
+    },
+
     addPhoto(event, i, template) {
       const uploadedFile = event.target.files[0]; // Get the selected file
       if (uploadedFile) {
@@ -560,7 +658,6 @@ export default {
     async getMainCategories() {
       try {
         const response = await axios.get("/api/mainCategories");
-        this.mainCategories = response.data;
         this.categoriesSelects.push(response.data);
       } catch (error) {
         console.log(error);
@@ -666,6 +763,10 @@ export default {
           "/api/productById/" + this.$route.params.productId
         );
         this.product = response.data[0];
+        //new photos
+        this.product.photos = response.data[0].images.map((image) => {
+          return { ...image, state: "fromDb", isMain: image.is_main === 1 };
+        });
         this.product.tempName = this.product.name;
         this.product.categoryName = this.getCategoryName(
           this.product.category_id

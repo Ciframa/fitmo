@@ -120,12 +120,14 @@
 
 <script>
 import axios from "../../api";
+
 export default {
   components: {},
   data() {
     return {
       products: [],
-      imagesBasePath: "https://be.fitmo.cz/products/",
+      // imagesBasePath: "https://be.fitmo.cz/products/",
+      imagesBasePath: "http://localhost:8000/products/",
     };
   },
 
@@ -215,13 +217,16 @@ export default {
     object-fit: contain;
     object-position: top;
   }
+
   &__nameImageWrapper {
     display: flex;
     gap: 1rem;
   }
+
   .rotated {
     transform: rotateX(180deg);
   }
+
   & > li {
     border-bottom: 1px solid $gray-second;
     padding: 1rem 0;
@@ -232,20 +237,24 @@ export default {
       display: flex;
       gap: 1rem;
       padding-left: 1rem;
+
       > ul {
         display: flex;
         flex-direction: column;
       }
     }
   }
+
   &__name {
     font-weight: 500;
     font-size: 1.5rem;
+
     &__wrapper {
       &__buttons {
         display: flex;
         gap: 0.5rem;
         font-size: 1.3rem;
+
         & > li {
           cursor: pointer;
         }
