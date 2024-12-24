@@ -118,29 +118,6 @@
           <img src="../../public/assets/logo.png" alt="Fitmo logo" />
         </a>
         <div class="content_wrapper__middle__search_wrapper">
-          <div class="search__items" v-show="this.search !== ''">
-            <div class="search__items__header"></div>
-            <div class="search__items__wrapper">
-              <div class="col-6-xs search__items__wrapper__categories">
-                <div class="col-5-xs"></div>
-                <div class="col-7-xs"></div>
-              </div>
-              <div class="col-6-xs search__items__wrapper__products">
-                <div class="search__items__wrapper__products__header">
-                  Produkty
-                </div>
-                <div class="search__items__wrapper__products__items">
-                  <Product
-                    v-for="product in searchResults"
-                    sizes="col-4-xs "
-                    :products="product"
-                    :key="product.id"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="search">
             <div class="search__wrapper">
               <input v-model="search" type="search" name="search" id="search" />
@@ -151,7 +128,30 @@
                 />
               </label>
             </div>
+            <div class="search__items">
+              <div class="search__items__header"></div>
+              <div class="search__items__wrapper">
+                <div class="col-6-xs search__items__wrapper__categories">
+                  <div class="col-5-xs"></div>
+                  <div class="col-7-xs"></div>
+                </div>
+                <div class="col-6-xs search__items__wrapper__products">
+                  <div class="search__items__wrapper__products__header">
+                    Produkty
+                  </div>
+                  <div class="search__items__wrapper__products__items">
+                    <Product
+                      v-for="product in searchResults"
+                      sizes="col-4-xs "
+                      :products="product"
+                      :key="product.id"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
           <div class="content_wrapper__right">
             <div class="content_wrapper__right__icons">
               <div class="content_wrapper__right__icons__wrapper">
@@ -520,7 +520,7 @@ header {
         padding: 0 20px;
         background: transparent;
         z-index: 999;
-        position: relative;
+        //position: relative;
 
         &__wrapper {
           z-index: 10;
@@ -529,7 +529,12 @@ header {
           position: relative;
         }
 
+        &:focus-within .search__items {
+          display: flex;
+        }
+
         &__items {
+          display: none;
           position: absolute;
           background: #fff;
           top: -3rem;
@@ -537,15 +542,11 @@ header {
           right: 0;
           // display: none;
           height: 1500px;
-          z-index: 99;
+          z-index: 3;
           /* margin-right: 20px; */
           border-radius: 16px 0 0 16px;
           overflow: hidden;
           flex-direction: column;
-
-          &.show {
-            display: block;
-          }
 
           &__header {
             width: 100%;
