@@ -987,13 +987,13 @@ class ProductController extends Controller
         foreach ($request->photos as $photo) {
             if ($photo["state"] === 'added') {
                 $folderPath = 'products/';
-                if (isset($child->color_id)) {
-                    $existingColor = Color::find($child->color_id);
-                    $folderPath .= $child->name . "-" . $existingColor->color_name;
-                } elseif (isset($child->variant)) {
-                    $folderPath .= $child->name . "-" . $child->variant;
+                if (isset($product->color_id)) {
+                    $existingColor = Color::find($product->color_id);
+                    $folderPath .= $product->name . "-" . $existingColor->color_name;
+                } elseif (isset($product->variant)) {
+                    $folderPath .= $product->name . "-" . $product->variant;
                 } else {
-                    $folderPath .= $child->name;
+                    $folderPath .= $product->name;
                 }
                 if (File::exists($folderPath) && File::isDirectory($folderPath)) {
                     $newImg = new Image();
@@ -1022,13 +1022,13 @@ class ProductController extends Controller
                     ->first();
                 $existingImage->delete();
                 $folderPath = 'products/';
-                if (isset($child->color_id)) {
-                    $existingColor = Color::find($child->color_id);
-                    $folderPath .= $child->name . "-" . $existingColor->color_name;
-                } elseif (isset($child->variant)) {
-                    $folderPath .= $child->name . "-" . $child->variant;
+                if (isset($product->color_id)) {
+                    $existingColor = Color::find($product->color_id);
+                    $folderPath .= $product->name . "-" . $existingColor->color_name;
+                } elseif (isset($product->variant)) {
+                    $folderPath .= $product->name . "-" . $product->variant;
                 } else {
-                    $folderPath .= $child->name;
+                    $folderPath .= $product->name;
                 }
                 if (File::exists($folderPath) && File::isDirectory($folderPath)) {
                     $imageFiles = glob($folderPath . '/*.jpg');
