@@ -1,15 +1,14 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\RatingController;
-use App\Http\Controllers\FonkoController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\PaymentTypeController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DeliveryTypeController;
+use App\Http\Controllers\FonkoController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentTypeController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RatingController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,28 +57,28 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::prefix('/category')->group(function () {
-  Route::post('/store', [CategoryController::class, 'store']);
-  Route::delete('/{id}', [CategoryController::class, 'delete']);
-  Route::post('/{id}', [CategoryController::class, 'update']);
+    Route::post('/store', [CategoryController::class, 'store']);
+    Route::delete('/{id}', [CategoryController::class, 'delete']);
+    Route::post('/{id}', [CategoryController::class, 'update']);
 });
 Route::prefix('/product')->group(function () {
-  Route::post('/store', [ProductController::class, 'store']);
-  Route::delete('/{id}', [ProductController::class, 'delete']);
-  Route::put('/{id}', [ProductController::class, 'update']);
-  Route::put('/{id}/hide', [ProductController::class, 'hideProduct']);
-  Route::post('/{id}/template/store', [ProductController::class, 'storeTemplate']);
-  Route::get('{id}/getTemplates/', [ProductController::class, 'getTemplates']);
-  Route::delete('{id}/template/{templateId}', [ProductController::class, 'deleteTemplate']);
+    Route::post('/store', [ProductController::class, 'store']);
+    Route::delete('/{id}', [ProductController::class, 'delete']);
+    Route::post('/{id}', [ProductController::class, 'update']);
+    Route::put('/{id}/hide', [ProductController::class, 'hideProduct']);
+    Route::post('/{id}/template/store', [ProductController::class, 'storeTemplate']);
+    Route::get('{id}/getTemplates/', [ProductController::class, 'getTemplates']);
+    Route::delete('{id}/template/{templateId}', [ProductController::class, 'deleteTemplate']);
 
-Route::get('/{product_url_name}', [ProductController::class, 'getSingleProduct']);
+    Route::get('/{product_url_name}', [ProductController::class, 'getSingleProduct']);
 });
 
 Route::get('/orders', [OrderController::class, 'index']);
 
 Route::prefix('/order')->group(function () {
-  Route::post('/store', [OrderController::class, 'store']);
-  Route::get('/{id}', [OrderController::class, 'getOrderById']);
-  Route::post('/updateStates', [OrderController::class, 'updateState']);
+    Route::post('/store', [OrderController::class, 'store']);
+    Route::get('/{id}', [OrderController::class, 'getOrderById']);
+    Route::post('/updateStates', [OrderController::class, 'updateState']);
 });
 
 

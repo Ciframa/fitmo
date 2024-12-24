@@ -461,7 +461,6 @@ export default {
       categoriesSelects: [],
       categories: [],
       fileCropping: false,
-      isNewProduct: {},
       groupedCategories: [],
       imagesBasePath: `https://be.fitmo.cz/products/`,
       // imagesBasePath: `http://localhost:8000/products/`,
@@ -476,10 +475,6 @@ export default {
       return JSON.parse(sessionStorage.getItem("user"));
     },
     addPhoto2(event) {
-      if (!this.product.isNewProduct) {
-        this.product.isNewProduct = new FormData();
-      }
-
       const uploadedFile = event.target.files[0]; // Get the selected file
       if (uploadedFile) {
         var reader = new FileReader();
@@ -529,6 +524,7 @@ export default {
           image_path: imageName,
           tentativePath: this.imageReview,
           isMain: false,
+          state: "added",
         };
         this.product?.photos?.push(newProduct);
       }, "image/png");
@@ -735,7 +731,12 @@ export default {
     },
     async editProduct() {
       await axios
-        .put("/api/product/" + this.product.id, this.product)
+        .post("/api/product/" + this.product.id, this.product, {
+          headers: {
+            //  Authorization: this.tokenData.data.token,
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           if (response.status == 200) {
             this.$snackbar.add({
