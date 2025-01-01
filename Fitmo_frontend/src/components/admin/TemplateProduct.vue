@@ -181,7 +181,6 @@
             <option value="jenText">Jen text</option>
 -->
 <script>
-import axios from "../../api";
 export default {
   props: {
     template: Object,
@@ -195,7 +194,6 @@ export default {
       imageBasePath: `https://be.fitmo.cz/products/`,
     };
   },
-
   methods: {},
 
   mounted() {},
@@ -205,26 +203,34 @@ export default {
 li.ql-indent-1 {
   margin-left: 1.5em !important;
 }
+
 li.ql-indent-2 {
   margin-left: 3em;
 }
+
 li.ql-indent-3 {
   margin-left: 4.5em;
 }
+
 li.ql-indent-4 {
   margin-left: 6em;
 }
+
 li.ql-indent-5 {
   margin-left: 7.5em;
 }
+
 li.ql-indent-6 {
   margin-left: 9em;
 }
+
 li.ql-indent-7 {
   margin-left: 10.5em;
 }
+
 li {
 }
+
 .templates {
   width: 100%;
   display: flex;
@@ -235,9 +241,11 @@ li {
   .row-reversed {
     flex-direction: row-reverse;
   }
+
   li {
     text-align: left;
   }
+
   ul {
     padding-left: 2.5rem;
     list-style: disc;
@@ -257,34 +265,42 @@ li {
   .jenText {
     padding: 2rem 5%;
   }
+
   .jenFotka {
     border-radius: 2rem;
   }
+
   .bloky {
     img {
       margin: auto;
     }
+
     p {
       text-align: left;
     }
+
     h2 {
       padding: 1rem 0 0.2rem 0;
     }
   }
+
   .textFotky {
     align-items: center;
     padding: 5rem 5% 5rem 5%;
+
     &.row-reversed {
       .text {
         padding: 0;
         padding-right: 5%;
       }
     }
+
     .text {
       padding: 0;
       padding-left: 5%;
     }
   }
+
   .fotkaText,
   .textFotka {
     // padding: 0 5%;
@@ -294,6 +310,7 @@ li {
       -moz-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
       box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
     }
+
     .text {
       padding: 0 5%;
       justify-content: center;
@@ -302,6 +319,7 @@ li {
         padding-top: 0;
       }
     }
+
     &.row-reversed {
       img {
       }
@@ -313,6 +331,7 @@ li {
     gap: 2rem;
     flex-direction: column;
   }
+
   .text {
     display: flex;
     flex-direction: column;
@@ -321,6 +340,7 @@ li {
     h2 {
       text-align: left;
     }
+
     h3 {
       text-align: left;
       padding: 2.4rem 0 1rem 0;
@@ -331,9 +351,11 @@ li {
       font-size: 1.4rem !important;
       max-width: 100rem;
     }
+
     li {
       max-width: 97.5rem;
     }
+
     & > div {
       width: 100%;
       display: flex;
@@ -342,26 +364,33 @@ li {
       img {
         object-fit: contain;
       }
+
       & > img {
         border-radius: 2rem;
       }
+
       &.row-reversed {
         flex-direction: row-reverse;
       }
     }
+
     &.textNaFotce {
       position: relative;
+
       .text {
         position: absolute;
       }
     }
   }
+
   .image-wrapper {
     display: flex;
     flex-wrap: wrap;
+
     & > div {
       padding: 1rem 0.5rem;
     }
+
     img {
       padding: 0.4rem;
       aspect-ratio: 1/1;
@@ -371,6 +400,7 @@ li {
       margin: auto;
       background: $gray-third;
     }
+
     p {
       background: $gray-third;
       border-radius: 0 0 2rem 2rem;
@@ -378,25 +408,31 @@ li {
       font-weight: 600;
     }
   }
+
   .column {
     text-align: center;
   }
 }
+
 .ql-align-center {
   text-align: center !important;
   width: 100%;
 }
+
 .ql-align-right {
   text-align: right !important;
 }
+
 .ql-align-justify {
   text-align: justify !important;
 }
+
 .editor {
   h2 {
     font-size: 2rem !important;
     text-align: left;
   }
+
   h3 {
     font-size: 2rem !important;
     text-align: left;

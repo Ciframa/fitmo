@@ -33,8 +33,8 @@
           <router-link :to="''">
             {{ products[0][0].name }}
           </router-link>
-        </li></template
-      >
+        </li>
+      </template>
     </ul>
     <div class="product__header">
       <template v-for="product in products[0]">
@@ -158,9 +158,13 @@
           class="templates__wrapper"
         >
           <template v-for="template in templates" :key="template.id">
-            <template-product :product="product" :template="{ template }" />
-          </template></div
-      ></template>
+            <template-product
+              :product="this.parentProduct"
+              :template="{ template }"
+            />
+          </template>
+        </div>
+      </template>
     </div>
   </div>
   <div v-else>Nebyl nalezen zadaný produkt</div>
@@ -170,6 +174,7 @@
 import axios from "../api";
 import ImagesSlider from "../components/ImagesSlider.vue";
 import TemplateProduct from "../components/admin/TemplateProduct.vue";
+
 export default {
   components: {
     ImagesSlider,
@@ -316,6 +321,7 @@ export default {
   .home__eshop__wrapper__discounts span {
     font-size: 1.3rem;
   }
+
   .category__header__navigation {
     border: 0;
 
@@ -324,6 +330,7 @@ export default {
       color: $gray-second;
     }
   }
+
   .home__eshop__wrapper__item_discount {
     height: 7rem;
     width: 7rem;
@@ -341,11 +348,13 @@ export default {
       font-size: 44px;
       margin-top: 2rem;
     }
+
     h1,
     h2,
     h3 {
       text-align: left;
     }
+
     h2 {
       font-weight: 100;
       color: $black;
@@ -371,6 +380,7 @@ export default {
           display: flex;
           gap: 1.3rem;
           margin-top: 1.6rem;
+
           img {
             height: 7.5rem;
             width: 7.5rem;
@@ -381,8 +391,10 @@ export default {
           }
         }
       }
+
       &__footer {
         margin-right: auto;
+
         &__variants {
           display: flex;
           gap: 0.8rem;
@@ -404,6 +416,7 @@ export default {
           line-height: 2rem;
           text-align: justify;
         }
+
         &__buy {
           margin-top: 2rem;
           display: flex;
@@ -428,21 +441,25 @@ export default {
               font-size: 1.9rem;
             }
           }
+
           &__discounts {
             justify-content: flex-start;
           }
         }
       }
+
       .home__eshop__wrapper {
         &__price {
           margin-top: 2rem;
         }
+
         &__discounts span {
           padding: 0.6rem 2rem;
         }
       }
     }
   }
+
   &__description {
     padding: 7rem 8%;
     background: $gray-third;
@@ -453,9 +470,11 @@ export default {
       text-align: left;
       padding: 3rem 0 2rem 0;
     }
+
     &__info {
       width: 100%;
       max-width: 35rem;
+
       & > div {
         display: flex;
         justify-content: space-between;
@@ -463,6 +482,7 @@ export default {
     }
   }
 }
+
 @media screen and (max-width: ($screen-md-min - 1px)) {
   .product {
     &__header__item {
@@ -491,6 +511,7 @@ export default {
             width: 100%;
           }
         }
+
         &__buy {
           order: 3;
           margin-left: auto;
@@ -509,6 +530,7 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-md-min) {
   .product {
     &__header__item {
@@ -517,10 +539,12 @@ export default {
         grid-row: 1 / span 3;
         overflow: hidden;
       }
+
       &__footer {
         grid-column: 2 / span 1;
         grid-row: 2 / span 1;
       }
+
       &__header {
         margin-top: 6rem;
       }
