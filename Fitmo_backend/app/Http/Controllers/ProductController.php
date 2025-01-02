@@ -1014,6 +1014,27 @@ class ProductController extends Controller
                     $img->stripImage();
 
                     $img->writeImage($folderPath . "/" . $photo["image_path"]);
+                } else {
+                    File::makeDirectory($folderPath);
+
+                    $newImg = new Image();
+                    $newImg->product_id = $product->id;
+                    $newImg->image_path = $photo["image_path"];
+                    $newImg->is_main = (int)filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
+
+                    $newImg->save();
+
+                    $img = new Imagick();
+
+                    $img->readImage($photo["file"]);
+
+                    $img->setImageCompression(Imagick::COMPRESSION_JPEG);
+
+                    $img->setImageCompressionQuality(85);
+
+                    $img->stripImage();
+
+                    $img->writeImage($folderPath . "/" . $photo["image_path"]);
                 }
 
             } else if ($photo["state"] === "toDeleteFromDb") {
