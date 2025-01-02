@@ -308,7 +308,7 @@
         type="submit"
         value="Přidat šablonu"
         class="btn-green"
-        v-if="this.product.hasChildren"
+        v-if="this.product.parent_id === 0"
         :onClick="() => pushTemplate(0)"
       />
       <div
@@ -426,7 +426,7 @@
         <input
           type="submit"
           value="Přidat šablonu"
-          v-if="this.product.hasChildren"
+          v-if="this.product.parent_id === 0"
           class="btn-green"
           :onClick="() => pushTemplate(index + 1)"
         />
