@@ -117,16 +117,20 @@ export default {
     width: 100%;
     align-items: flex-start;
   }
+
   .customMade {
     width: 100%;
     margin: 0;
   }
+
   &__form {
     background: $white;
     width: 100%;
+
     h2 {
       font-size: 2.2rem;
     }
+
     form {
       width: 80%;
       margin: auto;
@@ -136,10 +140,12 @@ export default {
       & > div {
         padding: 0 2rem;
         position: relative;
+
         label {
           width: 100%;
           display: block;
         }
+
         input,
         textarea {
           margin-bottom: 2rem;
@@ -149,6 +155,7 @@ export default {
           font-weight: 100;
           width: 100%;
         }
+
         textarea {
           padding: 1rem;
           width: 100%;
@@ -166,6 +173,7 @@ export default {
             z-index: -1;
             top: -9999px;
           }
+
           .btn {
             margin-bottom: 2rem;
             background: $gray-second;
@@ -185,6 +193,7 @@ export default {
           }
         }
       }
+
       .btn-yellow {
         margin: auto;
         padding: 1rem 4rem;
@@ -192,6 +201,7 @@ export default {
       }
     }
   }
+
   &__question {
     display: flex;
     width: 100%;
@@ -222,9 +232,11 @@ export default {
           padding: 0 2rem;
         }
       }
+
       label {
         color: $white;
       }
+
       input[type="text"],
       input[type="email"] {
         height: 3rem;
@@ -234,11 +246,13 @@ export default {
         padding-left: 1rem;
         border: 0;
       }
+
       input[type="submit"] {
         margin: auto;
         padding: 1rem 4rem;
         font-size: 1.6rem;
       }
+
       textarea {
         padding: 1rem;
         width: calc(100% - 4rem);
@@ -252,6 +266,7 @@ export default {
     }
   }
 }
+
 .icons {
   display: flex;
   margin-bottom: 2rem;
@@ -283,6 +298,7 @@ export default {
           height: 5rem;
           margin-right: 1.3rem;
         }
+
         span {
           font-weight: 800;
           font-size: 1.6rem;
@@ -291,12 +307,14 @@ export default {
       }
     }
   }
+
   h3 {
     font-size: 1.5rem;
     width: 100%;
     text-align: left;
   }
 }
+
 @media screen and (min-width: $screen-sm-min) {
   .info__question {
     input[type="search"] {
@@ -319,6 +337,7 @@ export default {
           min-width: 4.5rem;
           height: 4.5rem;
         }
+
         span {
           font-size: 1.3rem;
         }
@@ -330,6 +349,7 @@ export default {
 @media screen and (min-width: $screen-md-min) and (max-width: $screen-lg-min - 1px) {
   .icons__wrapper {
     flex-wrap: nowrap;
+
     &__item {
       padding: 1rem 0;
       display: flex;
@@ -337,6 +357,7 @@ export default {
       &:nth-child(2) {
         justify-content: center;
       }
+
       &:nth-child(3) {
         justify-content: flex-end;
       }
@@ -361,11 +382,13 @@ export default {
 
   .icons__wrapper__item {
     padding-left: 0;
+
     > a {
       img {
         width: 5rem;
         height: 5rem;
       }
+
       span {
         font-size: 1.4rem;
       }
@@ -380,6 +403,7 @@ export default {
   &__wrapper {
     background: $gray-third;
   }
+
   &__header {
     &__common {
       display: flex;
@@ -387,6 +411,7 @@ export default {
       margin: 2.2rem 0 5rem 0;
       align-items: center;
       color: $black-second;
+
       a {
         font-weight: 500;
         font-size: 2.5rem;
@@ -394,21 +419,25 @@ export default {
         &:first-child {
           margin-right: 1.5rem;
         }
+
         &:last-child {
           width: 100%;
           margin-top: 0.5rem;
         }
       }
+
       span {
         margin-top: 0.5rem;
         font-size: 1.6rem;
       }
     }
   }
+
   h1 {
     text-align: left;
     width: 100%;
   }
+
   ul.row {
     color: $black-headers;
     gap: 1rem;
@@ -418,20 +447,27 @@ export default {
       display: flex;
       flex-direction: column;
     }
-    .row {
+
+    .row,
+    .column {
+      display: flex;
       gap: 0 3rem;
+
       ul:first-child {
         margin-bottom: 0;
       }
+
       ul:last-child {
         margin-right: 2rem;
       }
     }
+
     h3 {
       text-align: left;
       font-weight: 700;
       font-size: 1.4rem;
     }
+
     li {
       font-size: 1.4rem;
       line-height: 2rem;

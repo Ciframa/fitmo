@@ -470,7 +470,7 @@ export default {
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 3.5rem;
       font-weight: 700;
       line-height: 3.3rem;
       text-align: center;
@@ -486,7 +486,8 @@ export default {
       max-width: 85rem;
 
       p {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        line-height: 2.2rem;
       }
 
       p:last-child {
@@ -509,6 +510,7 @@ export default {
 
         & > a {
           width: 100%;
+
           img {
             height: 9rem;
             padding: 0.3rem 2rem 0.3rem 0.8rem;
@@ -547,6 +549,7 @@ export default {
 
     h4 {
     }
+
     &__pagination {
       display: flex;
       width: 100%;

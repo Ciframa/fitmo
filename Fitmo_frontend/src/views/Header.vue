@@ -120,7 +120,14 @@
         <div class="content_wrapper__middle__search_wrapper">
           <div class="search">
             <div class="search__wrapper">
-              <input v-model="search" type="search" name="search" id="search" />
+              <input
+                v-model="search"
+                type="search"
+                name="search"
+                id="search"
+                @focusout="() => searchProducts()"
+                @focus="() => searchProducts(true)"
+              />
               <label for="search">
                 <img
                   src="../../public/assets/icons/search.svg"
@@ -131,21 +138,40 @@
             <div class="search__items">
               <div class="search__items__header"></div>
               <div class="search__items__wrapper">
-                <div class="col-6-xs search__items__wrapper__categories">
-                  <div class="col-5-xs"></div>
-                  <div class="col-7-xs"></div>
+                <div class="col-3-xs search__items__wrapper__categories">
+                  <div class="col-12-xs">
+                    <h4>Kategorie</h4>
+                    <ul>
+                      <li
+                        v-for="category in searchResults.categories"
+                        :key="category.id"
+                      >
+                        <router-link :to="'/kategorie/' + category.path">
+                          {{ category.name }}
+                        </router-link>
+                      </li>
+                    </ul>
+                  </div>
+                  <!--                  <div class="col-7-xs"></div>-->
                 </div>
-                <div class="col-6-xs search__items__wrapper__products">
+                <div class="col-9-xs search__items__wrapper__products">
                   <div class="search__items__wrapper__products__header">
-                    Produkty
+                    <h4>Produkty</h4>
                   </div>
                   <div class="search__items__wrapper__products__items">
                     <Product
-                      v-for="product in searchResults"
+                      v-for="product in searchResults?.products?.slice(0, 6)"
                       sizes="col-4-xs "
                       :products="product"
                       :key="product.id"
                     />
+                  </div>
+                  <div class="row" v-if="searchResults?.products?.length > 6">
+                    <button class="btn-yellow">
+                      <router-link :to="`/vysledek-hledani/${this.search}`"
+                        >Zobrazit vše
+                      </router-link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -224,7 +250,7 @@
                     }"
                   >
                     <img :src="this.imageBasePath + child.image_path" alt="" />
-                    {{ child.name }}
+                    <span>{{ child.name }}</span>
                   </router-link>
                 </li>
               </ul>
@@ -299,22 +325,28 @@ export default {
       }
     },
 
-    async searchProducts() {
-      if (this.search === "") {
+    //TODO FIX
+    async searchProducts(onFocus = false) {
+      let phraseToSearch = this.search;
+      if (this.search === "" && !onFocus) {
         this.searchResults = [];
-        return;
+        phraseToSearch = "byPopular";
       }
-      console.log("Search initiated:", this.search);
+      if (onFocus) {
+        if (this.search !== "" && this.searchResults.products.length > 0) {
+          return;
+        } else {
+          phraseToSearch = "byPopular";
+        }
+      }
       try {
-        const response = await axios.get(`/api/search/${this.search}`);
+        const response = await axios.get(`/api/search/${phraseToSearch}`);
         this.searchResults = response.data;
       } catch (error) {
         console.error("Error fetching search results:", error);
       }
     },
-    showForm() {
-      console.log("ted");
-    },
+
     debounce(func, wait) {
       let timeout;
       return function (...args) {
@@ -346,6 +378,7 @@ export default {
 
       return map["-"].children;
     },
+
     logout() {
       sessionStorage.removeItem("user");
       this.$store.commit("updateUser", null);
@@ -381,6 +414,7 @@ export default {
         });
     },
   },
+
   watch: {
     search: function () {
       if (this.debouncedSearch) {
@@ -501,14 +535,14 @@ header {
         width: auto;
         display: flex;
         align-items: center;
-        margin-left: 10%;
+        padding-left: 7%;
       }
 
       & > a {
         margin-left: 5%;
 
         > img {
-          height: 4rem;
+          height: 5.5rem;
           object-fit: contain;
           margin: 1rem 0;
         }
@@ -539,12 +573,13 @@ header {
           background: #fff;
           top: -3rem;
           left: -3rem;
-          right: 0;
-          // display: none;
-          height: 1500px;
+          right: 2rem;
           z-index: 3;
           /* margin-right: 20px; */
-          border-radius: 16px 0 0 16px;
+          -webkit-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
+          -moz-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
+          box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
+          border-radius: 2rem;
           overflow: hidden;
           flex-direction: column;
 
@@ -560,19 +595,32 @@ header {
             height: 100%;
             display: flex;
 
+            h4 {
+              font-size: 16px;
+              font-weight: 500;
+            }
+
             & > div {
               height: 100%;
             }
 
             &__categories {
               display: flex;
-
-              & > div {
-                border: 1px solid black;
-              }
+              padding-left: 2rem;
+              padding-top: 2rem;
             }
 
             &__products {
+              padding-left: 2rem;
+              padding-top: 2rem;
+
+              .row {
+                .btn-yellow {
+                  margin-bottom: 1rem;
+                  padding: 1rem 1.5rem !important;
+                }
+              }
+
               &__items {
                 display: flex;
                 flex-wrap: wrap;
@@ -594,15 +642,31 @@ header {
 
                   h4 {
                     text-align: center;
+                    line-height: 2rem;
+                    font-weight: 600;
+                    font-size: 1.8rem;
                   }
 
                   .home__eshop__wrapper__name {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                     text-align: center;
+                    width: 100%;
+                    font-size: 1.5rem;
                   }
 
-                  .home__eshop__wrapper__price {
-                    color: $yellow;
-                    font-weight: 1000;
+                  .home__eshop__wrapper {
+                    &__price {
+                      color: $yellow;
+                      font-weight: 1000;
+                    }
+
+                    &__img_wrapper {
+                      img {
+                        max-width: 24rem;
+                      }
+                    }
                   }
                 }
               }
@@ -1306,7 +1370,7 @@ header.Home .content_wrapper__footer > img {
         }
 
         .search {
-          width: 30%;
+          width: 40%;
           padding: 0;
           max-width: 45rem;
 
@@ -1349,9 +1413,9 @@ header.Home .content_wrapper__footer > img {
 
               > img {
                 margin: 0;
-                height: 35px;
+                height: 38px;
                 display: block;
-                width: 35px;
+                width: 38px;
                 margin-left: 0.3rem;
               }
 
@@ -1426,8 +1490,34 @@ header.Home .content_wrapper__footer > img {
               font-size: 1.8rem;
               margin-left: 5rem;
 
+              img {
+                width: 7rem;
+              }
+
               a {
-                font-size: 1.3rem;
+                span {
+                  font-size: 1.4rem;
+                  font-weight: 400;
+                  position: relative;
+
+                  &::before {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    bottom: 2px;
+                    left: 0%;
+                    transition: 0.2s ease width;
+                    height: 1px;
+                    background: $gray-second;
+                    width: 0%;
+                  }
+                }
+
+                &:hover {
+                  span::before {
+                    width: 100%;
+                  }
+                }
               }
             }
           }
@@ -1521,6 +1611,35 @@ header.Home .content_wrapper__footer > img {
               }
             }
           }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xl-min) {
+  header.Home .content_wrapper__footer nav > ul > li .wrapper h2 {
+    font-size: 2.8rem !important;
+  }
+}
+
+@media screen and (min-width: $screen-xxxl-min) {
+  header nav > ul > li {
+    .wrapper > a h2 {
+      font-size: 2.4rem !important;
+    }
+
+    ul {
+      row-gap: 4.5rem;
+      padding: 4.5rem 0;
+
+      li a {
+        span {
+          font-size: 1.5rem;
+        }
+
+        img {
+          width: 8rem;
         }
       }
     }

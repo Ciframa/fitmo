@@ -112,20 +112,41 @@ class ProductController extends Controller
 
     public function getSearchedItems($query)
     {
-        // Explode the search query into individual words
-        $searchWords = explode(' ', $query);
+        if ($query !== 'byPopular') {
 
-        // Initialize an array to store matched products
-        $matchedProducts = [];
+            // Explode the search query into individual words
+            $searchWords = explode(' ', $query);
 
-        // Loop through each search word
-        foreach ($searchWords as $word) {
-            // Skip empty words
-            if (empty($word)) {
-                continue;
+            // Initialize an array to store matched products
+            $matchedProducts = [];
+
+            // Loop through each search word
+            foreach ($searchWords as $word) {
+                // Skip empty words
+                if (empty($word)) {
+                    continue;
+                }
+
+                // Perform the product query for each word
+                $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
+                    ->with('categories')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                    ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                    ->orderBy('products.created_at', 'desc')
+                    ->where('products.isActive', 1)
+                    ->where('products.name', 'like', '%' . $word . '%')
+                    ->get();
+
+
+                // Merge the products into the matchedProducts array
+
             }
-
-            // Perform the product query for each word
+        } else {
             $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
                 ->with('categories')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
@@ -137,20 +158,51 @@ class ProductController extends Controller
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->orderBy('products.created_at', 'desc')
                 ->where('products.isActive', 1)
-                ->where('products.name', 'like', '%' . $word . '%')
+                ->where('products.name', 'like', '%' . 'ball' . '%')
                 ->get();
-
-            // Merge the products into the matchedProducts array
-            foreach ($products as $product) {
-                $matchedProducts[$product->id] = $product; // Use product id as key to avoid duplicates
-            }
         }
-
+        foreach ($products as $product) {
+            $matchedProducts[$product->id] = $product; // Use product id as key to avoid duplicates
+        }
         // Convert array of matched products back to a collection
         $matchedProducts = collect(array_values($matchedProducts));
+        // Sort the matched products by the number of search words they contain
+        if ($query !== 'byPopular') {
+            $matchedProducts = $matchedProducts->sortByDesc(function ($product) use ($searchWords) {
+                $count = 0;
+                foreach ($searchWords as $word) {
+                    if (stripos($product->name, $word) !== false) {
+                        $count++;
+                    }
+                }
+                return $count;
+            });
+        }
 
-        // Return formatted products
-        return $this->formatProducts($matchedProducts);
+        $categories = $matchedProducts
+            ->filter(function ($product) {
+                return $product->parent_id === 0; // Only include products with parent_id = 0
+            })
+            ->pluck('categories')
+            ->flatten()
+            ->unique('id')
+            ->filter(function ($category) use ($matchedProducts) {
+                return $matchedProducts->contains('category_id', $category->id);
+            })
+            ->map(function ($category) use ($matchedProducts) {
+                $category->path = $matchedProducts->firstWhere('category_id', $category->id)->category_path;
+                return $category;
+            })
+            ->sortByDesc(function ($category) use ($matchedProducts) {
+                return $matchedProducts->where('category_id', $category->id)->count();
+            })
+            ->values();
+
+
+        return [
+            'products' => $this->formatProducts($matchedProducts),
+            'categories' => $categories
+        ];
     }
 
 
@@ -366,7 +418,6 @@ class ProductController extends Controller
                 ->where('map_table.path', $categoryName)->first()["path"] . "%")->get();
 
         $categoriesToSearch = [];
-
 
         foreach ($categories as $category) {
             $categoriesToSearch[] = $category["id"];

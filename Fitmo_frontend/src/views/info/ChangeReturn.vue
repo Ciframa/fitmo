@@ -5,7 +5,7 @@
         <h1>Výměna a vrácení zboží</h1>
         <ul class="row">
           <li class="col-12-xs">
-            <div class="row">
+            <div class="column">
               <p>
                 Pokud Vám doručené zboží z nějakého důvodu nevyhovuje, zašlete
                 nám zboží zpět.
@@ -133,18 +133,27 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.row {
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.row,
+.column {
   > * {
     margin: 0.6rem 0;
   }
 }
+
 h1 {
   text-align: left;
   margin-bottom: 1rem;
 }
+
 .contact__header__common {
   margin-top: 2rem;
 }
+
 a.document {
   font-weight: 500;
 
@@ -153,6 +162,7 @@ a.document {
     padding-left: 0.6rem;
   }
 }
+
 .contact ul .documents {
   .row {
     gap: 0;

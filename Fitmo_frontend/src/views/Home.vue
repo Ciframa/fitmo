@@ -36,21 +36,40 @@
             </router-link>
           </div>
         </div>
-        <div class="home__header__showroom">
-          <img src="../../public/assets/banners/druhy.png" alt="" />
-        </div>
+
+        <!--        <div class="home__header__showroom">-->
+        <!--          <img src="../../public/assets/banners/druhy.png" alt="" />-->
+        <!--        </div>-->
+        <!--        <img src="../../public/assets/banners/druhy.png" alt="" />-->
       </div>
+    </div>
+    <div class="home__banner">
+      <img
+        src="../../public/assets/banners/zudesign_fitmo_banner_hlavni_banner_1_1_e.jpg"
+        alt=""
+      />
+      <!--      <img src="../../public/assets/banners/banner%20mobil%201+1.jpg" alt="" />-->
+      <!--      <img src="../../public/assets/banners/banner%20tablet%20.jpg" alt="" />-->
+      <!--      <img src="../../public/assets/banners/banner%20pc.jpg" alt="" />-->
+      <!--      <img-->
+      <!--        src="../../public/assets/banners/zudesign_fitmo_banner_hlavni_banner_1_1_c.jpg"-->
+      <!--        alt=""-->
+      <!--      />-->
+      <!--      <img-->
+      <!--        src="../../public/assets/banners/zudesign_fitmo_banner_hlavni_banner_1_1_f.jpg"-->
+      <!--        alt=""-->
+      <!--      />-->
     </div>
     <div class="home__trailer">
       <div class="row">
-        <div class="col-12-xs col-6-sm col-3-xl">
+        <div class="col-12-xs col-6-md col-3-xl">
           <img src="../../public/assets/showRoom/prvni.jpg" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/quality.svg" alt="" />
             <span>KVALITA ZBOŽÍ</span>
           </div>
         </div>
-        <div class="col-12-xs col-6-sm col-3-xl">
+        <div class="col-12-xs col-6-md col-3-xl">
           <img src="../../public/assets/showRoom/druhy.jpg" alt="" />
 
           <div class="img_text_wrapper">
@@ -58,14 +77,14 @@
             <span>VYBAVENÍ DO GYMŮ</span>
           </div>
         </div>
-        <div class="col-12-xs col-6-sm col-3-xl">
+        <div class="col-12-xs col-6-md col-3-xl">
           <img src="../../public/assets/showRoom/treti.jpg" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/one_place.svg" alt="" />
             <span>VŠE NA JEDNOM MÍSTĚ</span>
           </div>
         </div>
-        <div class="col-12-xs col-6-sm col-3-xl">
+        <div class="col-12-xs col-6-md col-3-xl">
           <img src="../../public/assets/showRoom/ctvrty.jpg" alt="" />
           <div class="img_text_wrapper">
             <img src="../../public/assets/icons/ocr.svg" alt="" />
@@ -233,6 +252,7 @@ export default {
         display: flex;
         justify-content: center;
         padding: 1rem;
+        margin: 0;
 
         .category_wrapper {
           background: $white;
@@ -326,6 +346,14 @@ export default {
     }
   }
 
+  &__banner {
+    img {
+      width: 100%;
+    }
+
+    margin: 4rem 0 4.5rem 0;
+  }
+
   &__trailer {
     color: $white;
     font-weight: 400;
@@ -336,7 +364,8 @@ export default {
       position: relative;
 
       > img {
-        padding: 0.5rem;
+        padding: 1rem;
+        border-radius: 2.5rem;
         object-fit: cover;
         min-height: 100%;
       }
@@ -353,7 +382,7 @@ export default {
         height: 100%;
 
         img {
-          height: 12rem;
+          height: 11rem;
           filter: drop-shadow(2px 4px 16px black);
         }
 
@@ -688,7 +717,7 @@ export default {
   .home {
     &__trailer .row > div {
       > img {
-        padding-left: 0.5rem;
+        padding-left: 1rem;
       }
 
       .img_text_wrapper {
@@ -697,6 +726,7 @@ export default {
         }
 
         img {
+          height: 12rem;
         }
       }
     }
@@ -750,9 +780,25 @@ export default {
     &__trailer .row > div {
       min-height: 28rem;
 
+      > img {
+        padding-left: 1rem;
+      }
+
+      &:last-of-type {
+        padding-right: 1rem;
+      }
+
+      &:first-of-type {
+        padding-left: 1rem;
+      }
+
       .img_text_wrapper {
+        img {
+          height: 11rem;
+        }
+
         span {
-          font-size: 2.2rem;
+          font-size: 1.9rem;
           text-align: center;
           width: 85%;
         }
@@ -789,6 +835,70 @@ export default {
             white-space: nowrap;
             margin-bottom: 2.5rem;
           }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-xxl-min) {
+  .home {
+    &__trailer .row > div {
+      .img_text_wrapper {
+        span {
+          font-size: 2.2rem;
+        }
+
+        img {
+          height: 12rem;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-sm-min) {
+  .home {
+    &__trailer .row > div {
+      .img_text_wrapper {
+        span {
+          font-size: 2.2rem;
+        }
+
+        img {
+          height: 12rem;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-md-min) {
+  .home {
+    &__trailer .row > div {
+      .img_text_wrapper {
+        span {
+          font-size: 2rem;
+        }
+
+        img {
+          height: 11rem;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $screen-fullHd-min) {
+  .home {
+    &__trailer .row > div {
+      .img_text_wrapper {
+        span {
+          font-size: 2.4rem;
+        }
+
+        img {
+          height: 13rem;
         }
       }
     }

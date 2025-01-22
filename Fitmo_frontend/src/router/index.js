@@ -18,95 +18,103 @@ import VerifyEmail from "@/views/VerifyEmail.vue";
 
 import Admin from "@/views/Admin.vue";
 import ProductEdit from "@/views/admin/ProductEdit.vue";
+import SearchResult from "@/views/SearchResult.vue";
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home,
-},
-{
+  },
+  {
     path: "/admin",
     name: "admin",
     component: Admin,
-},
-{
+  },
+  {
     path: "/edit/:productId",
     name: "ProductEdit",
     component: ProductEdit,
-},
-{
+  },
+  {
     path: "/registrace",
     name: "Registration",
     component: Registration,
-},
-{
+  },
+  {
     path: "/objednavka/doprava-a-platba",
     name: "PaymentDelivery",
     component: PaymentDelivery,
-},
-{
+  },
+  {
     path: "/objednavka/kosik",
     name: "Cart",
     component: Cart,
-},
-{
+  },
+  {
     path: "/objednavka/informace",
     name: "CustomerInfo",
     component: CustomerInfo,
-},
-{
+  },
+  {
     path: "/objednavka/potvrzeni/:orderId",
     name: "OrderConfirmation",
     component: OrderConfirmation,
-},
-{
+  },
+  {
     path: "/info/stav-objednavky",
     name: "stav-objednavky",
     component: OrderStatus,
-},
-{
+  },
+  {
     path: "/info/vymena-a-vraceni-zbozi",
     name: "vymena-a-vraceni-zbozi",
     component: ChangeReturn,
-},
-{
+  },
+  {
     path: "/info/kontakt",
     name: "kontakt",
     component: Contact,
-},
-{
+  },
+  {
     path: "/info/doprava",
     name: "doprava",
     component: PaymentDeliveryInfo,
-},
-{
+  },
+  {
     path: "/Fonko",
     name: "Fonko",
     component: SmazatPotom,
-},
-{
+  },
+  {
     path: "/VerifyEmail/:userToken+",
     name: "VerifyEmail",
     component: VerifyEmail,
-},
-{
+  },
+  {
     path: "/produkt/:productPath",
     name: "Product",
     component: Product,
     props: true,
-},
-{
+  },
+  {
     path: "/kategorie/:categoryname+",
     name: "Category",
     component: Category,
     props: true,
-},
+  },
+  {
+    path: "/vysledek-hledani/:search",
+    name: "Search",
+    component: SearchResult,
+    props: true,
+  },
 ];
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
-    scrollBehavior(to, from, savedPosition) {
-        return { left: 0, top: 0, behavior: "smooth" };
-    },
+  history: createWebHistory(),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    return { left: 0, top: 0, behavior: "smooth" };
+  },
 });
 export default router;

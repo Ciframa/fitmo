@@ -76,7 +76,6 @@ export default {
         ? [...Array(slider.value.track.details?.slides.length).keys()]
         : []
     );
-    console.log(slider);
     return { container, current, dotHelper, slider };
   },
   watch: {
@@ -93,8 +92,10 @@ export default {
   margin: auto;
   padding: 7rem 0 15rem 10%;
 }
+
 .keen-slider {
   align-items: flex-start;
+
   &__slide {
     background: $white;
     border-radius: 2rem;
@@ -104,15 +105,18 @@ export default {
     color: $black-headers;
     min-height: 200px !important;
     align-items: flex-start;
+
     &__header {
       display: flex;
       margin-bottom: 1rem;
+
       img {
         height: 4rem;
         width: 4rem;
         border-radius: 50%;
         margin-top: 0.3rem;
       }
+
       &__info {
         display: flex;
         flex-direction: column;
@@ -123,18 +127,22 @@ export default {
           white-space: nowrap;
           font-size: 1.5rem;
         }
+
         &__source {
           line-height: 0.6rem;
           font-size: 1.1rem;
         }
+
         &__stars {
           margin-top: 0.7rem;
+
           .checked {
             color: orange;
           }
         }
       }
     }
+
     &__article {
       font-size: 1.2rem;
       font-weight: 500;
@@ -142,6 +150,7 @@ export default {
     }
   }
 }
+
 .dots {
   display: none;
   @media screen and (min-width: $screen-md-min) {
@@ -150,6 +159,7 @@ export default {
     justify-content: center;
   }
 }
+
 .dot {
   border: none;
   width: 20px;
@@ -161,23 +171,16 @@ export default {
   position: relative;
   margin: 0 0.5rem;
 }
+
 .dot:focus {
   outline: none;
 }
+
 .dot.active {
   border: 1px solid black;
   background: $yellow;
-
-  div {
-    background: $black-headers;
-    height: 8px;
-    width: 8px;
-    position: absolute;
-    top: calc(50% - 4px);
-    left: calc(50% - 4px);
-    border-radius: 50%;
-  }
 }
+
 .arrow {
   width: 30px;
   height: 30px;
@@ -188,13 +191,16 @@ export default {
   fill: #fff;
   cursor: pointer;
 }
+
 .arrow--left {
   left: 5px;
 }
+
 .arrow--right {
   left: auto;
   right: 5px;
 }
+
 .arrow--disabled {
   fill: rgba(255, 255, 255, 0.5);
 }
