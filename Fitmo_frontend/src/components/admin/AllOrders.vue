@@ -1,5 +1,5 @@
 <template>
-  <div class="row actions">
+  <div class="my-row actions">
     <select v-model="this.activeAction">
       <option value="vytvorena">Změnit na Vytvořena</option>
       <option value="zpracovavaSe">Změnit na Expedice</option>

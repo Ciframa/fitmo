@@ -29,7 +29,7 @@
       <article>
         <p>{{ categoryText }}</p>
       </article>
-      <div class="category__header__list row">
+      <div class="category__header__list my-row">
         <div
           v-for="subCategory in subCategories"
           :key="subCategory.id"
@@ -49,7 +49,7 @@
         </div>
       </div>
     </div>
-    <div class="category__eshop row">
+    <div class="category__eshop my-row">
       <img src="../../public/assets/banners/druhy.png" alt="" />
 
       <div class="category__eshop__filters__order col-12-xs">
@@ -160,7 +160,7 @@
       <!--      </div>-->
       <div
         v-if="this.products.length !== 0"
-        class="home__eshop__wrapper row col-12-xs"
+        class="home__eshop__wrapper my-row col-12-xs"
       >
         <Product
           v-for="product in this.products"
@@ -171,7 +171,7 @@
       </div>
       <div
         v-if="this.products.length === 0"
-        class="home__eshop__wrapper row col-12-xs col-8-md col-9-lg"
+        class="home__eshop__wrapper my-row col-12-xs col-8-md col-9-lg"
       >
         Pro tuto kategorii nejsou žádné produkty.
       </div>

@@ -63,7 +63,7 @@ export default {
         const reader = new FileReader();
         // Define a callback function to run, when FileReader finishes its job
         reader.onload = (e) => {
-          // Note: arrow function used here, so that "this.image" refers to the image of Vue component
+          // Note: army-row function used here, so that "this.image" refers to the image of Vue component
           this.image = {
             // Set the image source (it will look like blob:http://example.com/2c5270a5-18b5-406e-a4fb-07427f5e7b94)
             src: blob,
@@ -108,6 +108,7 @@ export default {
     gap: 5rem;
   }
 }
+
 .cropper_ref {
   width: 33.2rem;
   max-width: 33.2rem;

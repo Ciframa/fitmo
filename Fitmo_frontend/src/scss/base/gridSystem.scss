@@ -15,7 +15,7 @@ $collumns-default: 12 !default;
   @return calc(100% / ($collumns-default / $col-number));
 }
 
-.row {
+.my-row {
   display: flex;
   flex-wrap: wrap;
   width: 100%;

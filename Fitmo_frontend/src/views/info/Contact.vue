@@ -1,6 +1,6 @@
 <template>
   <div class="contact__wrapper">
-    <div class="contact row">
+    <div class="contact my-row">
       <div class="col-12-xs col-9-lg info__header__main">
         <h1>Kontakty</h1>
         <div class="contact__header__common">
@@ -8,10 +8,10 @@
           <span>po-pá: 8.00 - 17.30</span>
           <a href="mailto:info@fitmo.cz">info@fitmo.cz</a>
         </div>
-        <ul class="row">
+        <ul class="my-row">
           <li class="col-12-xs col-6-md">
             <h3>Fakturační údaje</h3>
-            <div class="row">
+            <div class="my-row">
               <ul>
                 <li>Martin Kadrmas</li>
                 <li>Slatina 89</li>
@@ -50,7 +50,7 @@
     <form class="info__question">
       <h3>MÁTE DOTAZ?</h3>
       <div class="info__question__wrapper">
-        <div class="row">
+        <div class="my-row">
           <div>
             <label for="name">Jméno a příjmení</label>
             <input type="text" name="name" id="name" />
@@ -67,7 +67,7 @@
     <custom-made></custom-made>
     <div class="info__form" id="customMadeForm">
       <h2>Mám zájem o výrobu na míru</h2>
-      <form action="" class="row">
+      <form action="" class="my-row">
         <div class="col-12-xs col-6-md">
           <label for="">Jméno</label>
           <input type="text" />
@@ -224,7 +224,7 @@ export default {
       max-width: 100rem;
       padding: 2rem;
 
-      .row {
+      .my-row {
         & > div {
           display: flex;
           flex-direction: column;
@@ -438,7 +438,7 @@ export default {
     width: 100%;
   }
 
-  ul.row {
+  ul.my-row {
     color: $black-headers;
     gap: 1rem;
     margin-bottom: 2rem;
@@ -448,7 +448,7 @@ export default {
       flex-direction: column;
     }
 
-    .row,
+    .my-row,
     .column {
       display: flex;
       gap: 0 3rem;
@@ -481,7 +481,7 @@ export default {
 
 @media screen and (min-width: $screen-md-min) {
   .contact {
-    ul.row {
+    ul.my-row {
       gap: 0;
 
       li {

@@ -58,7 +58,7 @@
         </template>
         <label>Zadej cenu</label>
         <input type="number" v-model="this.product.price" />
-        <div class="row" v-if="this.product.discount">
+        <div class="my-row" v-if="this.product.discount">
           <label>Zadej zlevněnou cenu</label>
           <input
             v-on:change="
@@ -93,7 +93,7 @@
           <div
             :key="category.id"
             v-for="(category, categoryIndex) in product.categories"
-            class="row category-row"
+            class="my-row category-my-row"
             v-show="category?.categoryStatus !== 'deleted'"
           >
             {{ category.categoryId }}
@@ -149,7 +149,7 @@
             "
           />
         </template>
-        <div class="row admin__stateButtons">
+        <div class="my-row admin__stateButtons">
           <span
             :class="product.discount ? 'btn-yellow' : 'btn-yellow-notActive'"
             v-on:click="product.discount = !product.discount"
@@ -249,7 +249,7 @@
       </div>
     </div>
     <div class="product__header">
-      <div class="product__header__item row" :key="product.id">
+      <div class="product__header__item my-row" :key="product.id">
         <div class="product__header__item__header">
           <h1 v-if="!this.product.color_name">{{ this.product.name }}</h1>
           <h1 v-if="this.product.color_name">
@@ -335,7 +335,7 @@
             <option value="textNaFotce">Text na fotce</option>
             <option value="bloky">Bloky</option>
           </select>
-          <div class="row">
+          <div class="my-row">
             <div class="column">
               <input type="text" v-model="template.color" />
               <template
@@ -409,7 +409,7 @@
 
         <template-product :product="this.product" :template="{ template }" />
 
-        <div class="row flex-end" v-if="template.from !== 'db'">
+        <div class="my-row flex-end" v-if="template.from !== 'db'">
           <input
             type="submit"
             value="Smazat šablonu"
@@ -483,7 +483,7 @@ export default {
         reader.readAsDataURL(uploadedFile);
 
         reader.onload = () => {
-          // Use arrow function here
+          // Use army-row function here
           let file = new File([reader.result], uploadedFile.name);
           let newProduct = {
             file: uploadedFile,
@@ -496,7 +496,7 @@ export default {
         };
 
         reader.onerror = (error) => {
-          // Use arrow function here
+          // Use army-row function here
           console.log("Error: ", error);
         };
       }
@@ -539,7 +539,7 @@ export default {
         reader.readAsDataURL(uploadedFile);
 
         reader.onload = () => {
-          // Use arrow function here
+          // Use army-row function here
           let file = new File([reader.result], uploadedFile.name);
           let newPhoto = {
             file: uploadedFile,
@@ -551,7 +551,7 @@ export default {
         };
 
         reader.onerror = (error) => {
-          // Use arrow function here
+          // Use army-row function here
           console.log("Error: ", error);
         };
       }
@@ -812,7 +812,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.category-row {
+.category-my-row {
   gap: 1rem;
   padding: 0.3rem 0;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="row" style="flex-wrap: nowrap">
+  <div class="my-row" style="flex-wrap: nowrap">
     <div class="col-12-xs">
       <input
         type="submit"

@@ -6,8 +6,8 @@
     >
       <img src="../../../public/assets/icons/double_arrow_gray.svg" alt="" />
       <img src="../../../public/assets/icons/double_arrow_white.svg" alt="" />
-      Pokračovat v nakupování</router-link
-    >
+      Pokračovat v nakupování
+    </router-link>
     <router-link
       :to="this.$props.pageAfter"
       class="btn-yellow"

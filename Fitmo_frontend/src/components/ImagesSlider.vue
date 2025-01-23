@@ -1,5 +1,5 @@
 <template>
-  <div class="images-wrapper row">
+  <div class="images-wrapper my-row">
     <div ref="slider" class="keen-slider">
       <img
         class="keen-slider__slide"
@@ -72,6 +72,7 @@ export default {
     if (this.thumbnail) this.thumbnail.destroy();
   },
 };
+
 function ThumbnailPlugin(main) {
   return (slider) => {
     function removeActive() {
@@ -79,6 +80,7 @@ function ThumbnailPlugin(main) {
         slide.classList.remove("active");
       });
     }
+
     function addActive(idx) {
       slider.slides[idx].classList.add("active");
     }
@@ -133,12 +135,15 @@ function ThumbnailPlugin(main) {
   //min-width: 100px !important;
   min-height: unset !important;
 }
+
 .thumbnail .keen-slider__slide {
   cursor: pointer;
 }
+
 .thumbnail .keen-slider__slide.active {
   border: 2px dashed black;
 }
+
 @media screen and (min-width: $screen-md-min) {
   .keen-slider:not([data-keen-slider-disabled]) .keen-slider__slide {
     height: auto;

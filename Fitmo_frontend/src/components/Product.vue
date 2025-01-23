@@ -66,7 +66,7 @@
           />
         </div>
         <div
-          class="row center home__eshop__wrapper__img_wrapper__subProducts__wrapper"
+          class="my-row center home__eshop__wrapper__img_wrapper__subProducts__wrapper"
           v-on:mouseleave="changeProduct(variant, 'leave')"
         >
           <div v-for="variant in products" :key="variant.id">

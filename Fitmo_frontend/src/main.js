@@ -5,8 +5,21 @@ import router from "./router";
 import VueNumberInput from "@chenfengyuan/vue-number-input";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { far } from "@fortawesome/free-regular-svg-icons";
-import { fas } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDown,
+  faAngleLeft,
+  faBars,
+  faCheck,
+  faFile,
+  fas,
+  faSignOut,
+  faSpinner,
+  faStar,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
+
+import "bootstrap";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
@@ -14,18 +27,6 @@ import VueQuillEditor from "vue-quill-editor";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import "@vueup/vue-quill/dist/vue-quill.bubble.css";
 import "@vueup/vue-quill/dist/vue-quill.core.css";
-
-import {
-  faAngleDown,
-  faAngleLeft,
-  faBars,
-  faCheck,
-  faFile,
-  faSignOut,
-  faSpinner,
-  faStar,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
 import VueGoogleAutocomplete from "vue-google-autocomplete";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { SnackbarService } from "vue3-snackbar";

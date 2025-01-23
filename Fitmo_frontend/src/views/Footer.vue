@@ -1,5 +1,5 @@
 <template>
-  <footer class="row">
+  <footer class="my-row">
     <div class="logo col-12-xs col-6-md">
       <img src="../../public/assets/logo.png" />
     </div>
@@ -29,13 +29,14 @@
         </li>
         <li>
           <a href="../../assets/documents/Obchodní podmínky.pdf" download>
-            <font-awesome-icon icon="fa-regular fa-file" /> Obchodní podmínky</a
+            <font-awesome-icon icon="fa-regular fa-file" />
+            Obchodní podmínky</a
           >
         </li>
         <li>
           <router-link to="/info/vymena-a-vraceni-zbozi"
-            >Reklamace a vrácení zboží</router-link
-          >
+            >Reklamace a vrácení zboží
+          </router-link>
         </li>
       </ul>
     </div>
@@ -48,7 +49,7 @@
       </ul>
     </div>
     <div class="col-6-md">
-      <ul class="row">
+      <ul class="my-row">
         <li>
           <a href="https://www.instagram.com/fitmo.cz/">
             <img src="../../public/assets/icons/instagram.svg" alt="Login" />
@@ -84,9 +85,11 @@ footer {
   div:last-child {
     width: unset;
   }
+
   div:nth-child(4) {
     white-space: nowrap;
   }
+
   div {
     padding: 1rem 2rem;
   }
@@ -96,6 +99,7 @@ footer {
     max-width: 17rem;
     margin-bottom: 2rem;
   }
+
   h5 {
     font-size: 1.4rem;
     font-weight: 500;
@@ -105,6 +109,7 @@ footer {
   ul li {
     line-height: 1.5rem;
     padding-top: 1rem;
+
     a {
       img {
         margin: 0 0.5rem;
@@ -143,12 +148,13 @@ footer {
     & > :nth-child(5) {
       order: 5;
 
-      .row {
+      .my-row {
         justify-content: flex-end;
       }
     }
   }
 }
+
 @media screen and (max-width: $screen-md-min - 1px) {
   footer {
     & > :nth-child(1) {
@@ -160,12 +166,15 @@ footer {
     & > :nth-child(2) {
       order: 1;
     }
+
     & > :nth-child(3) {
       order: 2;
     }
+
     & > :nth-child(4) {
       order: 3;
     }
+
     & > :nth-child(5) {
       order: 4;
     }

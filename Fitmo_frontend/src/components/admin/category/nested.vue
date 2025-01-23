@@ -15,7 +15,7 @@
         }"
       >
         <div
-          class="row"
+          class="my-row"
           :style="{
             backgroundColor: `rgba(30, 144, 255, ${Math.min(depth * 0.05, 1)})`,
           }"
@@ -157,7 +157,7 @@ export default {
         reader.readAsDataURL(uploadedFile);
 
         reader.onload = () => {
-          // Use arrow function here
+          // Use army-row function here
           let file = new File([reader.result], uploadedFile.name);
           let newPhoto = {
             file: uploadedFile,
@@ -168,7 +168,7 @@ export default {
         };
 
         reader.onerror = (error) => {
-          // Use arrow function here
+          // Use army-row function here
           console.log("Error: ", error);
         };
       }

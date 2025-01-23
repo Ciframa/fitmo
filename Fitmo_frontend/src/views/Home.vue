@@ -2,7 +2,7 @@
   <div class="home">
     <div class="home__header">
       <h2>PŘIPRAVTE SE NA OCR ZÁVODY KOMPLEXNĚ. <br />STAČÍ SI JEN VYBRAT!</h2>
-      <div class="row">
+      <div class="my-row">
         <div
           v-for="category in categories"
           :key="category.id"
@@ -61,7 +61,7 @@
       <!--      />-->
     </div>
     <div class="home__trailer">
-      <div class="row">
+      <div class="my-row">
         <div class="col-12-xs col-6-md col-3-xl">
           <img src="../../public/assets/showRoom/prvni.jpg" alt="" />
           <div class="img_text_wrapper">
@@ -93,10 +93,10 @@
         </div>
       </div>
     </div>
-    <div class="home__eshop row">
+    <div class="home__eshop my-row">
       <h3 class="col-12-xs">E-SHOP</h3>
 
-      <div class="home__eshop__wrapper row col-12-xs">
+      <div class="home__eshop__wrapper my-row col-12-xs">
         <div v-for="product in products" :key="product.id"></div>
         <Product
           v-for="product in products"
@@ -244,7 +244,7 @@ export default {
       font-size: 3rem;
     }
 
-    .row {
+    .my-row {
       display: flex;
       margin-top: 5rem;
 
@@ -360,7 +360,7 @@ export default {
     font-size: 1.8rem;
     position: relative;
 
-    .row > div {
+    .my-row > div {
       position: relative;
 
       > img {
@@ -677,7 +677,7 @@ export default {
         display: block;
       }
 
-      .row > div .img_text_wrapper span {
+      .my-row > div .img_text_wrapper span {
         font-size: 1.8rem;
       }
     }
@@ -702,7 +702,7 @@ export default {
 }
 
 @media screen and (min-width: $screen-md-min) and (max-width: ($screen-xl-min - 1px)) {
-  .home__header .row > div {
+  .home__header .my-row > div {
     &:nth-child(odd) {
       justify-content: flex-end;
     }
@@ -715,7 +715,7 @@ export default {
 
 @media screen and (min-width: $screen-lg-min) {
   .home {
-    &__trailer .row > div {
+    &__trailer .my-row > div {
       > img {
         padding-left: 1rem;
       }
@@ -777,7 +777,7 @@ export default {
     &__eshop {
     }
 
-    &__trailer .row > div {
+    &__trailer .my-row > div {
       min-height: 28rem;
 
       > img {
@@ -814,7 +814,7 @@ export default {
         line-height: 4.3rem;
       }
 
-      .row > div {
+      .my-row > div {
         padding: 1.6rem;
 
         .category_wrapper {
@@ -843,7 +843,7 @@ export default {
 
 @media screen and (min-width: $screen-xxl-min) {
   .home {
-    &__trailer .row > div {
+    &__trailer .my-row > div {
       .img_text_wrapper {
         span {
           font-size: 2.2rem;
@@ -859,7 +859,7 @@ export default {
 
 @media screen and (min-width: $screen-sm-min) {
   .home {
-    &__trailer .row > div {
+    &__trailer .my-row > div {
       .img_text_wrapper {
         span {
           font-size: 2.2rem;
@@ -875,7 +875,7 @@ export default {
 
 @media screen and (min-width: $screen-md-min) {
   .home {
-    &__trailer .row > div {
+    &__trailer .my-row > div {
       .img_text_wrapper {
         span {
           font-size: 2rem;
@@ -891,7 +891,7 @@ export default {
 
 @media screen and (min-width: $screen-fullHd-min) {
   .home {
-    &__trailer .row > div {
+    &__trailer .my-row > div {
       .img_text_wrapper {
         span {
           font-size: 2.4rem;

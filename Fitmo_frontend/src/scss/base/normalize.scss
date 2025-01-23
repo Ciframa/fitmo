@@ -1,48 +1,53 @@
 @import "variables";
 //sass-lint:disable no-vendor-prefixes
 html {
-    -webkit-text-size-adjust: 100%;
-    box-sizing: border-box;
-    font-size: 62.5%;
+  -webkit-text-size-adjust: 100%;
+  box-sizing: border-box;
+  font-size: 62.5%;
 }
 
 body {
-    //sass-lint:disable no-misspelled-properties
-    -moz-font-smoothing: antialiased;
-    //sass-lint:enable no-misspelled-properties
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    margin: 0;
-    padding: 0;
-    text-rendering: optimizeLegibility;
+  //sass-lint:disable no-misspelled-properties
+  -moz-font-smoothing: antialiased;
+  //sass-lint:enable no-misspelled-properties
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+}
+
+.my-row {
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
 }
 
 *,
 *::after,
 *::before {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 strong {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 em {
-    font-style: italic;
+  font-style: italic;
 }
 
 img {
-    display: block;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-    max-width: 100%;
+  display: block;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  max-width: 100%;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 h1,
@@ -51,56 +56,58 @@ h3,
 h4,
 h5,
 h6 {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 blockquote,
 figure {
-    margin: 0;
+  margin: 0;
 }
 
 blockquote {
-    .quote {
-        quotes: "“" "”" "‘" "’";
-        &::before {
-            content: open-quote;
-        }
-        &::after {
-            content: close-quote;
-        }
+  .quote {
+    quotes: "“" "”" "‘" "’";
+
+    &::before {
+      content: open-quote;
     }
+
+    &::after {
+      content: close-quote;
+    }
+  }
 }
 
 button {
-    outline: 0;
-    background-color: $white;
-    cursor: pointer;
-    margin: auto;
-    font-family: "Poppins";
-    font-weight: 100;
-    border: none;
+  outline: 0;
+  background-color: $white;
+  cursor: pointer;
+  margin: auto;
+  font-family: "Poppins";
+  font-weight: 100;
+  border: none;
 }
 
 .ql-container {
-    font-family: "Poppins" !important;
+  font-family: "Poppins" !important;
 }
 
 table {
-    padding: 0;
-    width: 100%;
+  padding: 0;
+  width: 100%;
 }
 
 p {
-    margin: 0;
+  margin: 0;
 }
 
 ul {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 input {
-    -webkit-appearance: none;
-    outline: 0;
+  -webkit-appearance: none;
+  outline: 0;
 }

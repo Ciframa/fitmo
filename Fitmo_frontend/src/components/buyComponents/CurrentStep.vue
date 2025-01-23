@@ -41,16 +41,19 @@
     background: $yellow;
   }
 }
+
 .cart .paymentDelivery__currentStep__item {
   &:nth-child(1) span:first-child {
     background: $yellow;
   }
 }
+
 .paymentDeliveryC .paymentDelivery__currentStep__item {
   &:nth-child(3) span:first-child {
     background: $yellow;
   }
 }
+
 .paymentDelivery__currentStep {
   display: none;
   align-items: center;
@@ -81,15 +84,18 @@
       font-weight: 500;
       color: $white;
     }
+
     .active {
       background: $yellow;
     }
   }
+
   img {
     height: 4rem;
     color: $gray-second;
   }
 }
+
 @media screen and (min-width: $screen-lg-min) {
   .paymentDelivery__currentStep {
     padding-right: 2rem;

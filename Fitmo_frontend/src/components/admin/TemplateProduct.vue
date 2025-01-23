@@ -1,6 +1,6 @@
 <template>
   <div class="templates" :style="{ background: template.template.color }">
-    <div v-if="template.template.type === 'bloky'" class="bloky row">
+    <div v-if="template.template.type === 'bloky'" class="bloky my-row">
       <template v-for="i in 6" :key="i">
         <div class="col-4-xs column" v-if="template.template[`image${i}`]">
           <img
@@ -38,9 +38,9 @@
         template.template.type === 'fotkaText' ||
         template.template.type === 'textFotka'
       "
-      class="row"
+      class="my-row"
       :class="{
-        'row-reversed': template.template.type === 'textFotka',
+        'my-row-reversed': template.template.type === 'textFotka',
         [template.template.type]: true,
       }"
     >
@@ -130,13 +130,13 @@
         template.template.type === 'fotkyText' ||
         template.template.type === 'textFotky'
       "
-      class="row"
+      class="my-row"
       :class="{
-        'row-reversed': template.template.type === 'textFotky',
+        'my-row-reversed': template.template.type === 'textFotky',
         [template.template.type]: true,
       }"
     >
-      <div class="row image-wrapper col-12-xs col-6-lg">
+      <div class="my-row image-wrapper col-12-xs col-6-lg">
         <template v-for="i in 6" :key="i">
           <div class="col-4-xs column" v-if="template.template[`image${i}`]">
             <img
@@ -238,8 +238,8 @@ li {
   background: $white;
   border-radius: 2rem;
 
-  .row-reversed {
-    flex-direction: row-reverse;
+  .my-row-reversed {
+    flex-direction: my-row-reverse;
   }
 
   li {
@@ -288,7 +288,7 @@ li {
     align-items: center;
     padding: 5rem 5% 5rem 5%;
 
-    &.row-reversed {
+    &.my-row-reversed {
       .text {
         padding: 0;
         padding-right: 5%;
@@ -320,7 +320,7 @@ li {
       }
     }
 
-    &.row-reversed {
+    &.my-row-reversed {
       img {
       }
     }
@@ -369,8 +369,8 @@ li {
         border-radius: 2rem;
       }
 
-      &.row-reversed {
-        flex-direction: row-reverse;
+      &.my-row-reversed {
+        flex-direction: my-row-reverse;
       }
     }
 

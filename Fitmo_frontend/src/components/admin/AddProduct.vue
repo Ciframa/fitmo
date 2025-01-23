@@ -45,7 +45,7 @@
       </template>
       <label>Zadej cenu</label>
       <input type="text" v-model="this.product.prices.normal" />
-      <div class="row" v-if="this.product.isDiscount">
+      <div class="my-row" v-if="this.product.isDiscount">
         <label>Zadej zlevněnou cenu</label>
         <input
           v-on:change="
@@ -121,7 +121,7 @@
           "
         />
       </template>
-      <div class="row admin__stateButtons">
+      <div class="my-row admin__stateButtons">
         <span
           :class="
             product.stateButtons.discount
@@ -208,6 +208,7 @@
 import axios from "../../api";
 import UploadImages from "../../components/UploadImages.vue";
 import Product from "../../components/Product.vue";
+
 export default {
   components: { UploadImages, Product },
   data() {
@@ -278,7 +279,7 @@ export default {
         reader.readAsDataURL(uploadedFile);
 
         reader.onload = () => {
-          // Use arrow function here
+          // Use army-row function here
           let file = new File([reader.result], uploadedFile.name);
           let newProduct = {
             file: uploadedFile,
@@ -290,7 +291,7 @@ export default {
         };
 
         reader.onerror = (error) => {
-          // Use arrow function here
+          // Use army-row function here
           console.log("Error: ", error);
         };
       }
@@ -409,16 +410,19 @@ export default {
       border: 1px solid transparent;
       margin: 0.2rem;
       font-weight: 400;
+
       &.btn-yellow-notActive {
         background: #ffffff;
         color: #fdc300;
         border: 1px solid #fdc300;
       }
+
       &.btn-green-notActive {
         background: #ffffff;
         color: #00b649;
         border: 1px solid #00b649;
       }
+
       &.btn-blue-notActive {
         background: #ffffff;
         color: #0caff5;
@@ -427,6 +431,7 @@ export default {
     }
   }
 }
+
 .administration {
   form,
   & > div {
@@ -441,11 +446,13 @@ export default {
       margin-top: 1.2rem;
       display: block;
     }
+
     input {
       width: 100%;
       padding: 1rem;
     }
   }
+
   .addPhoto {
     &__wrapper {
       display: flex;
@@ -486,12 +493,14 @@ export default {
             background: green;
           }
         }
+
         img {
           border: 1px solid black;
         }
       }
     }
   }
+
   > .btn-yellow {
     padding: 1rem 2rem !important;
     margin-left: auto;
@@ -499,6 +508,7 @@ export default {
     justify-content: center;
   }
 }
+
 .isDiscount {
   border: 1px solid black;
   display: flex;
@@ -510,13 +520,16 @@ export default {
     background: green;
   }
 }
+
 input[type="color"] {
   margin-bottom: 1rem;
 }
+
 .buttonsWrapper {
   display: flex;
   justify-content: space-around;
 }
+
 .delete {
   background: red !important;
   color: white;

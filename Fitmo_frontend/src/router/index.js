@@ -13,7 +13,6 @@ import ChangeReturn from "@/views/info/ChangeReturn.vue";
 import Contact from "@/views/info/Contact.vue";
 import OrderStatus from "@/views/info/OrderStatus.vue";
 import PaymentDeliveryInfo from "@/views/info/PaymentDelivery.vue";
-import SmazatPotom from "@/views/SmazatPotom.vue";
 import VerifyEmail from "@/views/VerifyEmail.vue";
 
 import Admin from "@/views/Admin.vue";
@@ -80,11 +79,6 @@ const routes = [
     path: "/info/doprava",
     name: "doprava",
     component: PaymentDeliveryInfo,
-  },
-  {
-    path: "/Fonko",
-    name: "Fonko",
-    component: SmazatPotom,
   },
   {
     path: "/VerifyEmail/:userToken+",

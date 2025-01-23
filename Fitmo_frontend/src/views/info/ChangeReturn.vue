@@ -1,9 +1,9 @@
 <template>
   <div class="contact__wrapper">
-    <div class="contact row">
+    <div class="contact my-row">
       <div class="col-12-xs col-9-lg info__header__main">
         <h1>Výměna a vrácení zboží</h1>
-        <ul class="row">
+        <ul class="my-row">
           <li class="col-12-xs">
             <div class="column">
               <p>
@@ -36,7 +36,7 @@
                 balíčkem.
               </p>
               <div class="documents">
-                <div class="row">
+                <div class="my-row">
                   <a
                     class="document"
                     href="../../../assets/documents/Formulář%20pro%20odstoupení%20od%20smlouvy.docx"
@@ -46,7 +46,7 @@
                     <span>Formulář pro odstoupení od smlouvy</span></a
                   >
                 </div>
-                <div class="row">
+                <div class="my-row">
                   <a
                     class="document"
                     href="../../../assets/documents/Formulář pro uplatnění reklamace.docx"
@@ -76,7 +76,7 @@
     <form class="info__question">
       <h3>MÁTE DOTAZ?</h3>
       <div class="info__question__wrapper">
-        <div class="row">
+        <div class="my-row">
           <div>
             <label for="name">Jméno a příjmení</label>
             <input type="text" name="name" id="name" />
@@ -93,7 +93,7 @@
     <custom-made></custom-made>
     <div class="info__form">
       <h2>Mám zájem o výrobu na míru</h2>
-      <form action="" class="row">
+      <form action="" class="my-row">
         <div class="col-12-xs col-6-md">
           <label for="">Jméno</label>
           <input type="text" />
@@ -138,7 +138,7 @@ export default {
   flex-direction: column;
 }
 
-.row,
+.my-row,
 .column {
   > * {
     margin: 0.6rem 0;
@@ -164,7 +164,7 @@ a.document {
 }
 
 .contact ul .documents {
-  .row {
+  .my-row {
     gap: 0;
   }
 }

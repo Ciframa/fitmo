@@ -1,6 +1,6 @@
 <template>
-  <div class="info row">
-    <div class="info__header row">
+  <div class="info my-row">
+    <div class="info__header my-row">
       <div class="col-12-xs col-9-lg info__header__main"></div>
       <side-bar-links></side-bar-links>
     </div>

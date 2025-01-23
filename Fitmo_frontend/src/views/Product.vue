@@ -39,7 +39,7 @@
     <div class="product__header">
       <template v-for="product in products[0]">
         <div
-          class="product__header__item row"
+          class="product__header__item my-row"
           :key="product.id"
           v-if="product.isMain === 1"
         >
@@ -367,7 +367,7 @@ export default {
 
     &__item {
       display: grid !important;
-      grid-auto-flow: row;
+      grid-auto-flow: my-row;
       margin: auto;
       column-gap: 3rem;
 
@@ -536,13 +536,13 @@ export default {
     &__header__item {
       &__img_wrapper {
         grid-column: 1 / span 1;
-        grid-row: 1 / span 3;
+        grid-my-row: 1 / span 3;
         overflow: hidden;
       }
 
       &__footer {
         grid-column: 2 / span 1;
-        grid-row: 2 / span 1;
+        grid-my-row: 2 / span 1;
       }
 
       &__header {

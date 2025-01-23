@@ -42,6 +42,47 @@
             </span>
             -->
           </div>
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="exampleModalCenter"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalCenterTitle"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">
+                    Modal title
+                  </h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <font-awesome-icon :icon="['fa', 'times']" size="2x" />
+                  </button>
+                </div>
+                <div class="modal-body">...</div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="button" class="btn btn-primary">
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div
             class="content_wrapper__right__icons__absolute__loggedUser"
             v-if="this.loggedUser"
@@ -54,11 +95,17 @@
             />
           </div>
           <div
+            data-toggle="modal"
+            data-target="#exampleModalCenter"
+            type="button"
             class="content_wrapper__right__icons__absolute__form_wrapper"
             v-if="!this.loggedUser"
             v-on:mouseleave="showForm"
           >
-            <img src="../../public/assets/icons/login.svg" alt="Login icon" />
+            <img
+              src="../../public/assets/icons/login_unlogged.svg"
+              alt="Login icon"
+            />
             <form class="login" @submit.prevent="login(credentials)">
               <label for="email">E-mail</label>
               <input
@@ -94,6 +141,7 @@
               </div>
             </form>
           </div>
+
           <Cart />
           <font-awesome-icon
             :icon="['fa', 'bars']"
@@ -166,7 +214,10 @@
                       :key="product.id"
                     />
                   </div>
-                  <div class="row" v-if="searchResults?.products?.length > 6">
+                  <div
+                    class="my-row"
+                    v-if="searchResults?.products?.length > 6"
+                  >
                     <button class="btn-yellow">
                       <router-link :to="`/vysledek-hledani/${this.search}`"
                         >Zobrazit vše
@@ -181,6 +232,10 @@
           <div class="content_wrapper__right">
             <div class="content_wrapper__right__icons">
               <div class="content_wrapper__right__icons__wrapper">
+                <img
+                  src="../../public/assets/icons/phone.svg"
+                  alt="Phone icon"
+                />
                 <div class="content_wrapper__right__icons__wrapper__text">
                   <span>+420 702 064 265</span>
                   <span
@@ -188,10 +243,6 @@
                     >Kontaktujte nás</span
                   >
                 </div>
-                <img
-                  src="../../public/assets/icons/phone.svg"
-                  alt="Phone icon"
-                />
               </div>
               <Cart />
             </div>
@@ -614,7 +665,7 @@ header {
               padding-left: 2rem;
               padding-top: 2rem;
 
-              .row {
+              .my-row {
                 .btn-yellow {
                   margin-bottom: 1rem;
                   padding: 1rem 1.5rem !important;
@@ -727,6 +778,7 @@ header {
           align-items: center;
           position: relative;
           padding: 0;
+          gap: 0.5rem;
 
           img {
             height: 3.5rem;
@@ -749,6 +801,7 @@ header {
               line-height: 1.6rem;
               font-size: 1.4rem;
               color: $white;
+              text-align: left;
             }
           }
 
@@ -1413,20 +1466,19 @@ header.Home .content_wrapper__footer > img {
 
               > img {
                 margin: 0;
-                height: 38px;
+                height: 3.5rem;
                 display: block;
-                width: 38px;
                 margin-left: 0.3rem;
               }
 
-              &:hover {
-                background: $white;
-                border-radius: 0.8rem 0.8rem 0 0;
-
-                form.login {
-                  display: flex;
-                }
-              }
+              //&:hover {
+              //  background: $white;
+              //  border-radius: 0.8rem 0.8rem 0 0;
+              //
+              //  form.login {
+              //    display: flex;
+              //  }
+              //}
             }
 
             .cart {
@@ -1475,7 +1527,7 @@ header.Home .content_wrapper__footer > img {
             margin: 0;
             grid-template-columns: repeat(auto-fill, 30rem);
             grid-template-rows: auto;
-            row-gap: 3rem;
+            row-gap: 1rem;
             justify-items: stretch;
             align-items: stretch;
 
@@ -1485,7 +1537,7 @@ header.Home .content_wrapper__footer > img {
 
             li {
               display: flex;
-              height: 4rem;
+              height: 100%;
               align-items: center;
               font-size: 1.8rem;
               margin-left: 5rem;
@@ -1581,7 +1633,11 @@ header.Home .content_wrapper__footer > img {
       }
 
       &__right {
-        &__icons img {
+        img {
+          height: 4.3rem;
+        }
+
+        &__icons__absolute__form_wrapper img {
           height: 4.3rem;
         }
       }
@@ -1630,8 +1686,7 @@ header.Home .content_wrapper__footer > img {
     }
 
     ul {
-      row-gap: 4.5rem;
-      padding: 4.5rem 0;
+      padding: 2rem 0;
 
       li a {
         span {

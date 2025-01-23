@@ -11,7 +11,7 @@
         </p>
         <p>Vše s tebou rádi probereme, překážku ti navrheme a vyrobíme!</p>
       </article>
-      <div class="row customMade__content__showroom" id="customMade">
+      <div class="my-row customMade__content__showroom" id="customMade">
         <div class="col-12-xs col-3-md">
           <img src="../../public/assets/toChange/paty.jpeg" alt="" />
           <span
@@ -61,10 +61,12 @@
   &__showroom {
     margin-bottom: 0;
   }
+
   .btn-gray {
     display: none;
   }
 }
+
 .customMade {
   background: $white;
   margin: auto;
@@ -99,6 +101,7 @@
         font-size: 1.5rem;
         line-height: 1.3em;
       }
+
       p:last-child {
         font-weight: 600;
         margin-top: 2rem;
@@ -106,6 +109,7 @@
         color: $black-second;
       }
     }
+
     &__showroom {
       max-width: 1140px;
       display: flex;
@@ -131,6 +135,7 @@
           width: 19rem;
           object-fit: cover;
           border-radius: 50%;
+
           &:last-child {
             display: none;
           }
@@ -139,13 +144,16 @@
     }
   }
 }
+
 @media screen and (min-width: $screen-md-min) {
   .customMade__content__showroom {
     & > div {
       position: relative;
+
       img {
         width: 14rem;
         height: 14rem;
+
         &:last-child {
           height: 4rem;
           width: 4rem;
@@ -164,14 +172,17 @@
   .customMade__content {
     article {
       max-width: 90rem;
+
       p {
         &:last-child {
           font-size: 2.16rem;
         }
       }
     }
+
     &__showroom {
       margin-top: 11rem;
+
       & > div {
         img {
           width: 18rem;
@@ -187,6 +198,7 @@
     }
   }
 }
+
 @media screen and (min-width: $screen-xl-min) {
   .customMade__content__showroom {
     & > div {

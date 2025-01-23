@@ -10,7 +10,7 @@
         <h2>Osobní údaje</h2>
         <form>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.customerInfo.nameSurname }"
           >
             <label for="">Jméno a příjmení*</label>
@@ -22,7 +22,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.customerInfo.email }"
           >
             <label for="">E-mail*</label>
@@ -34,7 +34,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{
               'has-error':
                 validationErrors.customerInfo.phone ||
@@ -43,11 +43,11 @@
           >
             <label for="">Telefon*</label>
             <div
-              class="row__select_wrapper"
+              class="my-row__select_wrapper"
               :class="{ 'has-error': validationErrors.customerInfo.phone }"
             >
               <div
-                class="row__select_wrapper__phone"
+                class="my-row__select_wrapper__phone"
                 :class="{ 'has-error': validationErrors.customerInfo.prePhone }"
               >
                 <input
@@ -71,7 +71,7 @@
         <h2>Fakturační adresa</h2>
         <form>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.billingInfo.street }"
           >
             <label for="">Ulice a číslo popisné*</label>
@@ -94,7 +94,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.billingInfo.city }"
           >
             <label for="city">Město*</label>
@@ -116,7 +116,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.billingInfo.zip }"
           >
             <label for="zip">PSČ*</label>
@@ -129,7 +129,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.billingInfo.country }"
           >
             <label for="country">Země*</label>
@@ -153,8 +153,8 @@
           v-model="this.deliveryDetails.identicalAdresses"
         />
         <label for="identicalAdresses" class="billing_information__check">
-          <font-awesome-icon :icon="['fa', 'check']" />Fakturační údaje jsou
-          stejné jako dodací</label
+          <font-awesome-icon :icon="['fa', 'check']" />
+          Fakturační údaje jsou stejné jako dodací</label
         >
       </div>
       <div
@@ -164,7 +164,7 @@
         <h2>Doručovací adresa</h2>
         <form>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.deliveryInfo.street }"
           >
             <label for="">Ulice a číslo popisné*</label>
@@ -187,7 +187,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.deliveryInfo.city }"
           >
             <label for="city">Město*</label>
@@ -209,7 +209,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.deliveryInfo.zip }"
           >
             <label for="zip">PSČ*</label>
@@ -222,7 +222,7 @@
             />
           </div>
           <div
-            class="row"
+            class="my-row"
             :class="{ 'has-error': validationErrors.deliveryInfo.country }"
           >
             <label for="country">Země*</label>
@@ -257,6 +257,7 @@ import summaryPriceC from "../../components/buyComponents/SummaryPrice.vue";
 import navButtonsC from "../../components/buyComponents/NavButtons.vue";
 import VueGoogleAutocomplete from "vue-google-autocomplete";
 import axios from "../../api";
+
 export default {
   components: {
     currentStepC,
@@ -473,13 +474,16 @@ export default {
       color: red;
     }
   }
+
   &__form_wrapper {
     margin-top: 3rem;
+
     h2 {
       text-align: left;
       font-size: 2rem;
       margin-bottom: 1rem;
     }
+
     form {
       background: $white;
       border-radius: 2rem;
@@ -490,14 +494,16 @@ export default {
         color: $gray-second;
       }
 
-      .row {
+      .my-row {
         align-items: center;
         max-width: 48rem;
         margin: 1rem 0;
+
         &__select_wrapper {
           margin-left: auto;
           display: flex;
           width: 28rem;
+
           &__phone {
             display: flex;
             justify-content: center;
@@ -509,17 +515,20 @@ export default {
               width: 21rem;
             }
           }
+
           .prephone {
             width: 6rem;
           }
         }
       }
+
       input {
         width: 28rem;
         padding: 1rem 1.4rem;
         margin-left: auto;
       }
     }
+
     &__country {
       width: 28rem;
       padding: 1rem;
@@ -530,6 +539,7 @@ export default {
       div {
         margin: 0;
       }
+
       &:focus-visible {
         outline: 0;
       }
@@ -538,7 +548,7 @@ export default {
 }
 
 @media screen and (max-width: $screen-md-min - 1px) {
-  .customersInfo__form_wrapper form .row {
+  .customersInfo__form_wrapper form .my-row {
     flex-direction: column;
     align-items: flex-start;
 
@@ -548,6 +558,7 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-md-min) {
   .customersInfo__form_wrapper__country {
     margin-left: auto;
@@ -573,6 +584,7 @@ export default {
     }
   }
 }
+
 @media screen and (max-width: $screen-lg-min - 1px) {
   .customersInfo {
     .paymentDelivery__summary__wrapper {
@@ -580,6 +592,7 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-lg-min) {
   .customersInfo {
     display: flex;
@@ -590,6 +603,7 @@ export default {
       &__currentStep {
         padding-right: 0;
       }
+
       &__buttons {
         justify-content: center;
       }

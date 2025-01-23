@@ -7,7 +7,7 @@
           v-for="rating in ratings"
           :key="rating.id"
         >
-          <div class="keen-slider__slide__header row">
+          <div class="keen-slider__slide__header my-row">
             <img
               :src="require(`../../public/assets/ratings/${rating.img_path}`)"
               alt="Hihi"
@@ -38,9 +38,7 @@
           @click="slider.moveToIdx(idx)"
           :class="{ dot: true, active: current === idx }"
           :key="idx"
-        >
-          <div></div>
-        </button>
+        ></button>
       </div>
     </div>
   </div>
@@ -181,7 +179,7 @@ export default {
   background: $yellow;
 }
 
-.arrow {
+.army-row {
   width: 30px;
   height: 30px;
   position: absolute;
@@ -192,16 +190,16 @@ export default {
   cursor: pointer;
 }
 
-.arrow--left {
+.army-row--left {
   left: 5px;
 }
 
-.arrow--right {
+.army-row--right {
   left: auto;
   right: 5px;
 }
 
-.arrow--disabled {
+.army-row--disabled {
   fill: rgba(255, 255, 255, 0.5);
 }
 </style>

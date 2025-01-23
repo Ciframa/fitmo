@@ -1,5 +1,5 @@
 <template>
-  <div class="payment row">
+  <div class="payment my-row">
     <div class="col-12-xs col-9-lg info__header__main">
       <h1>Doprava a platba</h1>
       <article>
@@ -27,7 +27,7 @@
           Poslední možností jak vám můžeme doručit zásilku je doručení na adresu
           přostřednictvím společnosti Česká Pošta.
         </p>
-        <div class="row">
+        <div class="my-row">
           <img src="../../../public/assets/icons/logistics.svg" alt="" />
           <span>Doprava zdarma <br />při nákupu nad 3000 Kč</span>
         </div>
@@ -112,6 +112,7 @@
 <script>
 import SideBarLinks from "../../components/SideBarInfoLinks.vue";
 import axios from "../../api";
+
 export default {
   components: { SideBarLinks },
 
@@ -166,6 +167,7 @@ h1 {
 .payment {
   padding: 5rem 10% 4rem 10%;
   background: $gray-third;
+
   article {
     margin-top: 2.2rem;
     color: $black-second;
@@ -177,12 +179,15 @@ h1 {
       text-align: justify;
       font-size: 1.5rem;
     }
-    .row {
+
+    .my-row {
       align-items: center;
       margin: 5rem 0;
+
       img {
         height: 4rem;
       }
+
       span {
         margin-left: 2rem;
         font-size: 1.6rem;
@@ -191,6 +196,7 @@ h1 {
       }
     }
   }
+
   &__info_wrapper {
     width: 100%;
 
@@ -199,11 +205,13 @@ h1 {
         margin-top: 2.5rem;
       }
     }
+
     h2 {
       text-align: left;
       font-size: 1.5rem;
       margin-bottom: 0.6rem;
     }
+
     section {
       background: $white;
       border-radius: 2rem;
@@ -219,9 +227,11 @@ h1 {
       &:hover svg {
         color: $black-headers;
       }
+
       .rotate {
         transform: rotateX(180deg);
       }
+
       &__toShow {
         width: 100%;
         display: none;
@@ -229,10 +239,12 @@ h1 {
         margin-bottom: 1.3rem;
         flex-direction: column;
         gap: 0.5rem;
+
         a {
           display: contents;
           font-weight: 500;
         }
+
         &__shown {
           display: flex;
           width: calc(100% - 4.4rem);
@@ -243,9 +255,11 @@ h1 {
       > svg {
         color: $gray-second;
       }
+
       &__textImg {
         margin-left: 2.5rem;
         align-items: center;
+
         span {
           font-size: 1.2rem;
           display: block;
@@ -253,6 +267,7 @@ h1 {
           margin-top: 0.7rem;
           font-weight: 600;
         }
+
         img {
           height: 2.5rem;
           max-width: 15rem;
@@ -260,6 +275,7 @@ h1 {
           border-radius: 0.5rem;
         }
       }
+
       &__price {
         margin-left: auto;
         font-weight: 500;
@@ -267,12 +283,14 @@ h1 {
         white-space: nowrap;
       }
     }
+
     &:last-child {
       section {
         .payment__info_wrapper__item__textImg {
           span {
             padding-right: 2.5rem;
           }
+
           img {
             width: 3.5rem;
           }
@@ -281,6 +299,7 @@ h1 {
     }
   }
 }
+
 @media screen and (max-width: $screen-sm-min - 1px) {
   .payment__info_wrapper {
     &__item__textImg span {
@@ -288,6 +307,7 @@ h1 {
     }
   }
 }
+
 @media screen and (min-width: $screen-sm-min) {
   .payment__info_wrapper__item__textImg {
     img {
@@ -310,6 +330,7 @@ h1 {
     }
   }
 }
+
 @media screen and (min-width: $screen-lg-min) {
   .payment__info_wrapper__item__textImg span {
     font-size: 1.4rem;

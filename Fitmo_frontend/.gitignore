@@ -54,8 +54,9 @@ Thumbs.db
 *.tar.gz
 *.zip
 
+
+*.psd
 # Linting
 .eslintcache
 
 # Vue specific
-public/

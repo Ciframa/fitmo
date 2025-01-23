@@ -1,5 +1,5 @@
 <template>
-  <div class="registration row">
+  <div class="registration my-row">
     <div class="col-12-xs col-6-md">
       <h1>Registrace</h1>
       <form action="" @submit.prevent="registration(formData)">
@@ -84,8 +84,8 @@
             v-model="this.formData.identicalAdresses"
           />
           <label for="identicalAdresses" class="billing_information__check">
-            <font-awesome-icon :icon="['fa', 'check']" />Fakturační údaje jsou
-            stejné jako dodací</label
+            <font-awesome-icon :icon="['fa', 'check']" />
+            Fakturační údaje jsou stejné jako dodací</label
           >
         </div>
 
@@ -116,25 +116,25 @@
         </div>
 
         <div class="options">
-          <div class="row">
+          <div class="my-row">
             <input type="checkbox" name="Agrees" id="first" />
             <label for="first">
-              <font-awesome-icon :icon="['fa', 'check']" />Chci odebírat akční
-              nabídky a novinky</label
+              <font-awesome-icon :icon="['fa', 'check']" />
+              Chci odebírat akční nabídky a novinky</label
             >
           </div>
-          <div class="row">
+          <div class="my-row">
             <input type="checkbox" name="Agrees" id="second" />
             <label for="second">
-              <font-awesome-icon :icon="['fa', 'check']" />Souhlasím s
-              obchodními podmínkami</label
+              <font-awesome-icon :icon="['fa', 'check']" />
+              Souhlasím s obchodními podmínkami</label
             >
           </div>
-          <div class="row">
+          <div class="my-row">
             <input type="checkbox" name="Agrees" id="third" checked />
             <label for="third">
-              <font-awesome-icon :icon="['fa', 'check']" />Souhlasím se
-              zpracování osobních údajů</label
+              <font-awesome-icon :icon="['fa', 'check']" />
+              Souhlasím se zpracování osobních údajů</label
             >
           </div>
         </div>
@@ -252,13 +252,16 @@ export default {
 .billing_information {
   display: flex;
   margin-top: 1rem;
+
   input[type="checkbox"] {
     padding: 0;
+
     &:checked + label svg {
       background: $yellow;
       border-color: $yellow;
     }
   }
+
   &__check {
     display: flex;
     align-items: center;
@@ -286,6 +289,7 @@ export default {
     padding-left: 5%;
     padding-right: 5%;
   }
+
   & > div:last-child {
     display: flex;
     flex-direction: column;
@@ -296,11 +300,13 @@ export default {
     text-align: left;
     margin-bottom: 1rem;
   }
+
   h2 {
     text-align: left;
     font-size: 2rem;
     width: 100%;
   }
+
   form {
     display: flex;
     flex-wrap: wrap;
@@ -309,6 +315,7 @@ export default {
       font-size: 1.6rem;
       color: red;
     }
+
     h2 {
       font-size: 1.8rem;
       margin-top: 2rem;
@@ -325,12 +332,14 @@ export default {
       &__bar {
         align-items: center;
         display: flex;
+
         span {
           min-width: 4.2rem;
           font-weight: 400;
           text-align: right;
           margin-right: 0.5rem;
         }
+
         div {
           min-width: 10rem;
           display: block;
@@ -340,6 +349,7 @@ export default {
           position: relative;
           margin-right: 2rem;
         }
+
         &1 {
           &::before {
             content: "";
@@ -350,6 +360,7 @@ export default {
             border-radius: 1rem;
           }
         }
+
         &2 {
           &::before {
             content: "";
@@ -360,6 +371,7 @@ export default {
             border-radius: 1rem;
           }
         }
+
         &3 {
           &::after {
             content: "";
@@ -371,12 +383,15 @@ export default {
           }
         }
       }
+
       span {
         width: unset;
       }
+
       .fulfilled {
         color: lightgreen;
       }
+
       .unfulfilled {
         color: red;
       }
@@ -390,13 +405,16 @@ export default {
       div {
         margin-top: 1.2rem;
         width: 100%;
+
         &:nth-child(5) {
           width: 9rem;
           margin-left: 2rem;
         }
+
         input {
         }
       }
+
       &__check {
         padding-top: 1rem;
       }
@@ -408,25 +426,31 @@ export default {
       margin-top: 1.2rem;
       display: block;
     }
+
     span {
       width: 100%;
       font-size: 1.1rem;
     }
+
     input {
       width: 100%;
       padding: 1rem;
     }
+
     input[type="checkbox"] {
       padding: 0;
+
       &:checked + label svg {
         background: $yellow;
         border-color: $yellow;
       }
     }
+
     .options {
       margin: 1.5rem 0 2.5rem 0;
       width: 100%;
     }
+
     .options,
     .billing_information {
       label {
@@ -437,6 +461,7 @@ export default {
         line-height: 2.2rem;
         margin-top: 0;
       }
+
       svg {
         margin-right: 0.6rem;
         border: 1px solid $gray-second;
@@ -445,6 +470,7 @@ export default {
         color: $white;
       }
     }
+
     input[type="submit"] {
       padding: 0.75rem 8rem;
       line-height: 2.6rem;
@@ -463,6 +489,7 @@ export default {
     article {
       line-height: 2rem;
       margin: 1rem 0;
+
       p {
         font-size: 1.5rem;
       }
@@ -470,6 +497,7 @@ export default {
 
     ul {
       margin: 3rem 0 2rem 0;
+
       li {
         display: flex;
         align-items: center;
@@ -487,6 +515,7 @@ export default {
       }
     }
   }
+
   &__buttons {
     width: 80%;
     margin: 2rem 0 0 0;
@@ -497,6 +526,7 @@ export default {
       font-weight: 600;
     }
   }
+
   .btn-blue,
   .btn-google {
     min-width: 90%;
@@ -509,13 +539,16 @@ export default {
     line-height: 2.6rem;
     margin: 1rem 0;
   }
+
   .btn-blue {
     margin-top: 0.5rem;
   }
+
   .btn-google {
     margin-bottom: 0;
   }
 }
+
 @media screen and (max-width: $screen-sm-min - 1px) {
   .registration {
     form input[type="submit"],
@@ -525,23 +558,28 @@ export default {
     }
   }
 }
+
 @media screen and (min-width: $screen-md-min) {
   .registration {
     margin-bottom: 7rem;
+
     &__info {
       border-radius: 1.5rem;
       max-width: 45rem;
     }
+
     & > div:last-child {
       padding-right: 5%;
     }
   }
 }
+
 @media screen and (max-width: $screen-md-min - 1px) {
   .registration {
     input[type="submit"] {
       margin-bottom: 2.5rem;
     }
+
     & > div:last-child {
       display: flex;
       flex-direction: column-reverse;

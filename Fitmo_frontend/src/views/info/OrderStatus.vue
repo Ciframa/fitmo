@@ -1,5 +1,5 @@
 <template>
-  <div class="orderStatus row">
+  <div class="orderStatus my-row">
     <div class="col-12-xs col-9-lg info__header__main">
       <h1>Stav objednávky</h1>
     </div>
