@@ -56,7 +56,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLongTitle">
-                    Modal title
+                    Přihlášení
                   </h5>
                   <button
                     type="button"
@@ -67,18 +67,41 @@
                     <font-awesome-icon :icon="['fa', 'times']" size="2x" />
                   </button>
                 </div>
-                <div class="modal-body">...</div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                  <button type="button" class="btn btn-primary">
-                    Save changes
-                  </button>
+                <div class="modal-body">
+                  <form class="login" @submit.prevent="login(credentials)">
+                    <label for="email">E-mail</label>
+                    <input
+                      type="text"
+                      id="email"
+                      class="btn"
+                      v-model="this.credentials.email"
+                      required
+                    />
+
+                    <label for="password">Heslo</label>
+                    <input
+                      type="password"
+                      id="password"
+                      class="btn"
+                      v-model="this.credentials.password"
+                      required
+                    />
+                    {{ this.loginError }}
+                    {{ this.loginQuote }}
+                    <input
+                      class="btn-yellow"
+                      type="submit"
+                      value="Přihlásit se"
+                    /><span>Nebo</span>
+                    <a class="btn-blue" href="#">Přihlásit se přes Facebook</a>
+                    <a href="#">Zapomenuté heslo</a>
+                    <div class="no-acc">
+                      <span href="#">Ještě nemáš účet?</span>
+                      <a href="/registrace" class="btn-black"
+                        >Chci se zaregistrovat</a
+                      >
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -106,40 +129,6 @@
               src="../../public/assets/icons/login_unlogged.svg"
               alt="Login icon"
             />
-            <form class="login" @submit.prevent="login(credentials)">
-              <label for="email">E-mail</label>
-              <input
-                type="text"
-                id="email"
-                class="btn"
-                v-model="this.credentials.email"
-                required
-              />
-
-              <label for="password">Heslo</label>
-              <input
-                type="password"
-                id="password"
-                class="btn"
-                v-model="this.credentials.password"
-                required
-              />
-              {{ this.loginError }}
-              {{ this.loginQuote }}
-              <input
-                class="btn-yellow"
-                type="submit"
-                value="Přihlásit se"
-              /><span>Nebo</span>
-              <a class="btn-blue" href="#">Přihlásit se přes Facebook</a>
-              <a href="#">Zapomenuté heslo</a>
-              <div class="no-acc">
-                <span href="#">Ještě nemáš účet?</span>
-                <a href="/registrace" class="btn-black"
-                  >Chci se zaregistrovat</a
-                >
-              </div>
-            </form>
           </div>
 
           <Cart />
@@ -483,6 +472,14 @@ export default {
 };
 </script>
 <style lang="scss">
+.modal-header {
+  justify-content: space-between;
+
+  button {
+    margin: unset;
+  }
+}
+
 @media screen and (min-width: $screen-lg-min) {
   .category.fixed {
     padding-top: 14rem !important;
@@ -965,13 +962,9 @@ header {
 
           form.login {
             background: $white;
-            position: absolute;
-            top: 100%;
-            right: 0;
             padding: 2rem 3.3rem;
-            display: none; //hihi
+            display: flex;
             flex-direction: column;
-            z-index: 99;
             border-radius: 2rem 0 2rem 2rem;
 
             label {
