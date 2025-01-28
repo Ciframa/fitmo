@@ -9,8 +9,8 @@
         >
           <div class="keen-slider__slide__header my-row">
             <img
-              :src="require(`../../public/assets/ratings/${rating.img_path}`)"
-              alt="Hihi"
+              :src="`${imageBasePath}/${rating.img_path}`"
+              alt="default.png"
             />
             <div class="keen-slider__slide__header__info">
               <span class="keen-slider__slide__header__info__name">{{
@@ -76,6 +76,11 @@ export default {
     );
     return { container, current, dotHelper, slider };
   },
+  data() {
+    return {
+      imageBasePath: `https://be.fitmo.cz/ratings`,
+    };
+  },
   watch: {
     ratings: () => {
       slider.update();
@@ -102,6 +107,7 @@ export default {
     padding: 5rem;
     color: $black-headers;
     min-height: 200px !important;
+    min-width: 30rem;
     align-items: flex-start;
 
     &__header {
