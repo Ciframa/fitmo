@@ -1117,8 +1117,10 @@ class ProductController extends Controller
                 $existingImage = Image::where('image_path', $photo["image_path"])
                     ->where('product_id', $product->id)
                     ->first();
-                $existingImage->is_main = (int)filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
-                $existingImage->save();
+                if ($existingImage) {
+                    $existingImage->is_main = (int)filter_var($photo["isMain"], FILTER_VALIDATE_BOOLEAN);
+                    $existingImage->save();
+                }
             }
         }
 //         if ($request->parent["category_id"] != 0) {
