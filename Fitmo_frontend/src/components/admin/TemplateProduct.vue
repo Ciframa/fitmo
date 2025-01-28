@@ -239,7 +239,7 @@ li {
   border-radius: 2rem;
 
   .my-row-reversed {
-    flex-direction: my-row-reverse;
+    flex-direction: row-reverse;
   }
 
   li {
@@ -370,7 +370,7 @@ li {
       }
 
       &.my-row-reversed {
-        flex-direction: my-row-reverse;
+        flex-direction: row-reverse;
       }
     }
 

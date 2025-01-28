@@ -123,7 +123,6 @@
             type="button"
             class="content_wrapper__right__icons__absolute__form_wrapper"
             v-if="!this.loggedUser"
-            v-on:mouseleave="showForm"
           >
             <img
               src="../../public/assets/icons/login_unlogged.svg"
