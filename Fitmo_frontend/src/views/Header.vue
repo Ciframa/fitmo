@@ -154,15 +154,20 @@
           <img src="../../public/assets/logo.png" alt="Fitmo logo" />
         </a>
         <div class="content_wrapper__middle__search_wrapper">
-          <div class="search">
+          <div class="search" ref="searchContainer">
             <div class="search__wrapper">
               <input
                 v-model="search"
                 type="search"
                 name="search"
+                @focus="
+                  () => {
+                    searchProducts(true);
+                    showSearchResults = true;
+                  }
+                "
                 id="search"
-                @focusout="() => searchProducts()"
-                @focus="() => searchProducts(true)"
+                @blur="hideWithDelay"
               />
               <label for="search">
                 <img
@@ -171,7 +176,7 @@
                 />
               </label>
             </div>
-            <div class="search__items">
+            <div class="search__items" v-if="showSearchResults">
               <div class="search__items__header"></div>
               <div class="search__items__wrapper">
                 <div class="col-3-xs search__items__wrapper__categories">
@@ -194,7 +199,9 @@
                   <div class="search__items__wrapper__products__header">
                     <h4>Produkty</h4>
                   </div>
-                  <div class="search__items__wrapper__products__items">
+                  <div
+                    class="search__items__wrapper__products__items home__eshop__wrapper"
+                  >
                     <Product
                       v-for="product in searchResults?.products?.slice(0, 6)"
                       sizes="col-4-xs "
@@ -202,11 +209,16 @@
                       :key="product.id"
                     />
                   </div>
-                  <div
-                    class="my-row"
-                    v-if="searchResults?.products?.length > 6"
-                  >
-                    <button class="btn-yellow">
+                  <div class="my-row">
+                    <button
+                      class="btn-yellow"
+                      v-if="
+                        this.search &&
+                        searchResults?.products?.length > 6 &&
+                        this.phraseToSearch !== 'byPopular'
+                      "
+                      @click.native="showSearchResults = false"
+                    >
                       <router-link :to="`/vysledek-hledani/${this.search}`"
                         >Zobrazit vše
                       </router-link>
@@ -329,6 +341,7 @@ export default {
   },
   data() {
     return {
+      showSearchResults: false,
       menuHidden: true,
       showX: false,
       categories: [],
@@ -337,6 +350,7 @@ export default {
       searchResults: [],
       imageBasePath: `https://be.fitmo.cz/categories/`,
       search: "",
+      phraseToSearch: "",
       credentials: {
         email: "",
         password: "",
@@ -347,7 +361,20 @@ export default {
     };
   },
 
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
   methods: {
+    handleClickOutside(event) {
+      // Close search only if click is OUTSIDE the `.search` container
+      if (
+        this.$refs.searchContainer &&
+        !this.$refs.searchContainer.contains(event.target)
+      ) {
+        this.showSearchResults = false;
+      }
+    },
+
     async getCategories() {
       try {
         const response = await axios.post("/api/categories", {
@@ -364,22 +391,23 @@ export default {
       }
     },
 
-    //TODO FIX
     async searchProducts(onFocus = false) {
-      let phraseToSearch = this.search;
+      this.phraseToSearch = this.search;
       if (this.search === "" && !onFocus) {
-        this.searchResults = [];
-        phraseToSearch = "byPopular";
+        this.phraseToSearch = "byPopular";
       }
       if (onFocus) {
         if (this.search !== "" && this.searchResults.products.length > 0) {
           return;
         } else {
-          phraseToSearch = "byPopular";
+          this.phraseToSearch = "byPopular";
         }
       }
       try {
-        const response = await axios.get(`/api/search/${phraseToSearch}`);
+        const response = await axios.get(`/api/search/${this.phraseToSearch}`);
+        if (this.search === "" && !onFocus) {
+          this.searchResults = [];
+        }
         this.searchResults = response.data;
       } catch (error) {
         console.error("Error fetching search results:", error);
@@ -463,8 +491,13 @@ export default {
         this.searchProducts();
       }, 500); // Adjust the debounce time as needed (e.g., 500 milliseconds)
     },
+    $route(to, from) {
+      // Hide search results when the route changes
+      this.showSearchResults = false;
+    },
   },
   mounted() {
+    document.addEventListener("click", this.handleClickOutside);
     this.getCategories();
     this.getLoggedUser();
   },
@@ -484,7 +517,8 @@ export default {
     padding-top: 14rem !important;
   }
 
-  .Category .content_wrapper__footer {
+  .Category .content_wrapper__footer,
+  .Search .content_wrapper__footer {
     transition: top 0.4s ease; // Add transition for the top property
 
     &.fixed {
@@ -615,11 +649,10 @@ header {
         }
 
         &__items {
-          display: none;
           position: absolute;
           background: #fff;
-          top: -3rem;
-          left: -3rem;
+          top: -2rem;
+          left: 3rem;
           right: 2rem;
           z-index: 3;
           /* margin-right: 20px; */
@@ -654,17 +687,41 @@ header {
             &__categories {
               display: flex;
               padding-left: 2rem;
-              padding-top: 2rem;
             }
 
             &__products {
-              padding-left: 2rem;
-              padding-top: 2rem;
+              padding-left: 1.5rem;
+              position: relative;
+
+              &::before {
+                content: "";
+                position: absolute;
+                top: 5%;
+                left: 0;
+                width: 1px;
+                height: 90%;
+                background: $gray-second;
+                z-index: 2;
+              }
+
+              .home__eshop__wrapper {
+                &__name {
+                }
+
+                &__discounts {
+                  span {
+                    font-size: 1rem;
+                    padding: 0.5rem 0.7rem;
+                  }
+                }
+              }
 
               .my-row {
+                margin-top: 1rem;
+
                 .btn-yellow {
                   margin-bottom: 1rem;
-                  padding: 1rem 1.5rem !important;
+                  padding: 0.5rem 2rem !important;
                 }
               }
 
@@ -694,24 +751,29 @@ header {
                     font-size: 1.8rem;
                   }
 
+                  .home__eshop__wrapper__price {
+                    margin-top: 0.6rem;
+                  }
+
                   .home__eshop__wrapper__name {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     text-align: center;
                     width: 100%;
-                    font-size: 1.5rem;
+                    font-size: 1.4rem;
                   }
 
                   .home__eshop__wrapper {
                     &__price {
-                      color: $yellow;
-                      font-weight: 1000;
+                      color: $black-second;
+                      font-weight: 700;
                     }
 
                     &__img_wrapper {
                       img {
                         max-width: 24rem;
+                        height: unset;
                       }
                     }
                   }

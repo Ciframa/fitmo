@@ -180,7 +180,7 @@
       <button
         v-if="this.pagination.current_page < this.pagination.last_page"
         class="btn-yellow"
-        :onClick="() => this.getCategoryProducts()"
+        :onClick="() => this.getCategoryProducts(this.pagination.next_page_url)"
       >
         <VaProgressCircle v-show="this.isLoading" indeterminate />
         <span v-show="!this.isLoading">Zobrazit další produkty</span>
@@ -232,7 +232,9 @@
             >{{ this.pagination.current_page - 1 }}</span
           >
 
-          <span class="active">{{ this.pagination.current_page }}</span>
+          <span v-if="this.pagination.current_page" class="active">{{
+            this.pagination.current_page
+          }}</span>
 
           <span
             v-if="this.pagination.current_page + 1 < this.pagination.last_page"

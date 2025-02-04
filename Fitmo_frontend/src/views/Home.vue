@@ -36,29 +36,34 @@
             </router-link>
           </div>
         </div>
-
-        <!--        <div class="home__header__showroom">-->
-        <!--          <img src="../../public/assets/banners/druhy.png" alt="" />-->
-        <!--        </div>-->
-        <!--        <img src="../../public/assets/banners/druhy.png" alt="" />-->
       </div>
     </div>
-    <div class="home__banner">
+    <div class="banners">
       <img
-        src="../../public/assets/banners/zudesign_fitmo_banner_hlavni_banner_1_1_e.jpg"
+        class="xs-to-sm"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_576x1200_vyziva.png"
         alt=""
       />
-      <!--      <img src="../../public/assets/banners/banner%20mobil%201+1.jpg" alt="" />-->
-      <!--      <img src="../../public/assets/banners/banner%20tablet%20.jpg" alt="" />-->
-      <!--      <img src="../../public/assets/banners/banner%20pc.jpg" alt="" />-->
-      <!--      <img-->
-      <!--        src="../../public/assets/banners/zudesign_fitmo_banner_hlavni_banner_1_1_c.jpg"-->
-      <!--        alt=""-->
-      <!--      />-->
-      <!--      <img-->
-      <!--        src="../../public/assets/banners/zudesign_fitmo_banner_hlavni_banner_1_1_f.jpg"-->
-      <!--        alt=""-->
-      <!--      />-->
+      <img
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_768x1200_vyziva.png"
+        alt=""
+        class="sm-to-md"
+      />
+      <img
+        class="md-to-lg"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_975x1200_vyziva.png"
+        alt=""
+      />
+      <img
+        class="lg-to-fullHd"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1200x650_vyziva.png"
+        alt=""
+      />
+      <img
+        class="fullHd-to-"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1920x750_vyziva.png"
+        alt=""
+      />
     </div>
     <div class="home__trailer">
       <div class="my-row">
@@ -97,7 +102,6 @@
       <h3 class="col-12-xs">E-SHOP</h3>
 
       <div class="home__eshop__wrapper my-row col-12-xs">
-        <div v-for="product in products" :key="product.id"></div>
         <Product
           v-for="product in products"
           :key="product.id"
@@ -113,11 +117,6 @@
         <VaProgressCircle v-show="this.isLoading" indeterminate />
         <span v-show="!this.isLoading">Zobrazit další produkty</span>
       </button>
-      <!--      <div class="banners">-->
-      <!--        <img src="../../public/assets/banners/banner pc.jpg" alt="" />-->
-      <!--        <img src="../../public/assets/banners/banner tablet .jpg" alt="" />-->
-      <!--        <img src="../../public/assets/banners/banner mobil 1+1.jpg" alt="" />-->
-      <!--      </div>-->
     </div>
     <div class="home__gray_banner"></div>
     <CustomMade></CustomMade>
@@ -903,5 +902,9 @@ export default {
       }
     }
   }
+}
+
+.banners > img {
+  display: none;
 }
 </style>

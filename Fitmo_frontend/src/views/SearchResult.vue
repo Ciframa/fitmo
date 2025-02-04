@@ -2,19 +2,16 @@
   <div class="category searchResult">
     <div class="category__header">
       <h1>Výsledek hledání: {{ this.search }}</h1>
-      <article>
-        <p>text?</p>
-      </article>
       <div class="category__header__list my-row">
         <div
-          v-for="subCategory in subCategories"
+          v-for="subCategory in this.searchResult.categories"
           :key="subCategory.id"
           class="col-6-xs col-3-sm"
         >
           <router-link
             :to="{
               name: 'Category',
-              params: { categoryname: subCategory.url_path.split('/') },
+              params: { categoryname: subCategory.path.split('/') },
             }"
           >
             <div class="category__header__list__item">
@@ -35,18 +32,18 @@
         </ul>
       </div>
       <div
-        v-if="this.products.length !== 0"
+        v-if="this.searchResult.products?.length !== 0"
         class="home__eshop__wrapper my-row col-12-xs"
       >
         <Product
-          v-for="product in this.products"
+          v-for="product in this.searchResult?.products"
           :key="product.id"
           sizes="col-12-xs col-6-sm col-4-lg col-3-xl"
           :products="product"
         />
       </div>
       <div
-        v-if="this.products.length === 0"
+        v-if="this.searchResult.products?.length === 0"
         class="home__eshop__wrapper my-row col-12-xs col-8-md col-9-lg"
       >
         Pro tuto kategorii nejsou žádné produkty.
@@ -108,7 +105,9 @@
             >{{ this.pagination.current_page - 1 }}</span
           >
 
-          <span class="active">{{ this.pagination.current_page }}</span>
+          <span class="active" v-if="this.pagination.current_page">{{
+            this.pagination.current_page
+          }}</span>
 
           <span
             v-if="this.pagination.current_page + 1 < this.pagination.last_page"
@@ -175,51 +174,60 @@
 import axios from "../api";
 import Product from "@/components/Product.vue";
 import CustomMade from "@/components/CustomMade.vue";
+import { VaProgressCircle } from "vuestic-ui";
 
 export default {
   components: {
+    VaProgressCircle,
     Product,
     CustomMade,
     /*CategoryInfo*/
   },
   data() {
     return {
-      search: this.$route.params.search,
       mainCategory: "",
       subCategories: [],
-      products: [],
       provizorniCheck: false,
       showFilters: false,
       barMinValue: 10,
       barMaxValue: 5000,
       categoryText: "",
+      searchResult: [],
       isLoading: false,
+      search: this.$route.params.search,
       pagination: {},
-      categories: [],
+      products: [],
       imageBasePath: `https://be.fitmo.cz/categories/`,
     };
   },
+
+  mounted() {
+    // Run the search logic on page load (refresh or initial load)
+    this.getSearchResult();
+  },
   watch: {
-    $route() {
-      this.search = this.$route.params.search;
-      this.pagination = {};
-      this.products = [];
-      this.getSubCategories();
-      this.getCategoryProducts();
+    $route(to, from) {
+      if (to.params.search !== from.params.search) {
+        // Update search and reset products on route change
+        this.search = to.params.search;
+        this.pagination = {};
+        this.products = [];
+        this.getSearchResult();
+      }
     },
   },
 
   methods: {
-    async getSubCategories() {
+    async getSearchResult() {
       try {
-        const response = await axios.get("/api/category/" + [this.url_path]);
-        this.subCategories = response.data;
+        const response = await axios.get(`/api/search/${this.search}`);
+        this.searchResult = response.data;
+        console.log(response.data);
       } catch (error) {
         console.log(error);
       }
     },
   },
-  mounted() {},
 };
 </script>
 <style lang="scss"></style>

@@ -110,7 +110,7 @@ class ProductController extends Controller
         return $templates;
     }
 
-    public function getSearchedItems($query)
+    public function getSearchedItems(Request $request, $query)
     {
         if ($query !== 'byPopular') {
 
@@ -128,80 +128,175 @@ class ProductController extends Controller
                 }
 
                 // Perform the product query for each word
-                $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
-                    ->with('categories')
-                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                $products = Product::select(
+                    'prices.*',
+                    'product_states.*',
+                    'categories.name as category_name',
+                    'colors.*',
+                    'categories.*',
+                    'products.*',
+                    'product_categories.category_id as category_id',
+                    'product_categories.product_order'
+                )->with(['categories', 'children' => function ($query) {
+                    $query->select(
+                        'prices.*',
+                        'product_states.*',
+                        'categories.name as category_name',
+                        'colors.*',
+                        'products.*',
+                        'product_categories.category_id as category_id'
+                    )
+                        ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                        ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                        ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                        ->where('products.parent_id', '!=', 0)
+                        ->where('products.isActive', 1)
+                        ->whereNotNull('categories.id_parent');
+                }])
                     ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                     ->join('product_states', 'products.id', '=', 'product_states.product_id')
                     ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
                     ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                    ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
                     ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                    ->orderBy('products.created_at', 'desc')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->where('products.parent_id', 0)
                     ->where('products.isActive', 1)
+                    ->whereNotNull('categories.id_parent')
+                    ->orderBy('categories.id', 'asc')
+                    ->orderBy('categories.id_parent', 'asc')
+                    ->orderBy('categories.childIndex', 'asc')
+                    ->orderBy('product_categories.product_order', 'asc')
                     ->where('products.name', 'like', '%' . $word . '%')
-                    ->get();
+                    ->paginate($request->pageSize, ['*'], 'page', $request->page ?? 1);
 
 
-                // Merge the products into the matchedProducts array
-
+                $searchedCategories = Category::select('categories.*')
+                    ->where('categories.name', 'like', '%' . $word . '%')
+                    ->groupBy('categories.id')->get();
             }
         } else {
-            $products = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
-                ->with('categories')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+            $products = Product::select(
+                'prices.*',
+                'product_states.*',
+                'categories.name as category_name',
+                'colors.*',
+                'categories.*',
+                'products.*',
+                'product_categories.category_id as category_id',
+                'product_categories.product_order'
+            )->with(['categories', 'children' => function ($query) {
+                $query->select(
+                    'prices.*',
+                    'product_states.*',
+                    'categories.name as category_name',
+                    'colors.*',
+                    'products.*',
+                    'product_categories.category_id as category_id'
+                )
+                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->where('products.parent_id', '!=', 0)
+                    ->where('products.isActive', 1)
+                    ->whereNotNull('categories.id_parent');
+            }])
                 ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                 ->join('product_states', 'products.id', '=', 'product_states.product_id')
                 ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
                 ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                ->orderBy('products.created_at', 'desc')
+                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                ->where('products.parent_id', 0)
                 ->where('products.isActive', 1)
+                ->whereNotNull('categories.id_parent')
+                ->orderBy('categories.id', 'asc')
+                ->orderBy('categories.id_parent', 'asc')
+                ->orderBy('categories.childIndex', 'asc')
+                ->orderBy('product_categories.product_order', 'asc')
                 ->where('products.name', 'like', '%' . 'ball' . '%')
-                ->get();
-        }
-        foreach ($products as $product) {
-            $matchedProducts[$product->id] = $product; // Use product id as key to avoid duplicates
-        }
-        // Convert array of matched products back to a collection
-        $matchedProducts = collect(array_values($matchedProducts));
-        // Sort the matched products by the number of search words they contain
-        if ($query !== 'byPopular') {
-            $matchedProducts = $matchedProducts->sortByDesc(function ($product) use ($searchWords) {
-                $count = 0;
-                foreach ($searchWords as $word) {
-                    if (stripos($product->name, $word) !== false) {
-                        $count++;
-                    }
-                }
-                return $count;
-            });
+                ->paginate($request->pageSize, ['*'], 'page', $request->page ?? 1);
+
+            $searchedCategories = Category::select('categories.*')
+                ->where('categories.name', 'like', '%' . "v" . '%')
+                ->groupBy('categories.id')->get();
         }
 
-        $categories = $matchedProducts
-            ->filter(function ($product) {
-                return $product->parent_id === 0; // Only include products with parent_id = 0
-            })
-            ->pluck('categories')
-            ->flatten()
-            ->unique('id')
-            ->filter(function ($category) use ($matchedProducts) {
-                return $matchedProducts->contains('category_id', $category->id);
-            })
-            ->map(function ($category) use ($matchedProducts) {
-                $category->path = $matchedProducts->firstWhere('category_id', $category->id)->category_path;
-                return $category;
-            })
-            ->sortByDesc(function ($category) use ($matchedProducts) {
-                return $matchedProducts->where('category_id', $category->id)->count();
-            })
-            ->values();
-
-
+//        foreach ($products as $product) {
+//            $matchedProducts[$product->id] = $product; // Use product id as key to avoid duplicates
+//        }
+//        // Convert array of matched products back to a collection
+//        $matchedProducts = collect(array_values($matchedProducts));
+//        // Sort the matched products by the number of search words they contain
+//        if ($query !== 'byPopular') {
+//            $matchedProducts = $matchedProducts->sortByDesc(function ($product) use ($searchWords) {
+//                $count = 0;
+//                foreach ($searchWords as $word) {
+//                    if (stripos($product->name, $word) !== false) {
+//                        $count++;
+//                    }
+//                }
+//                return $count;
+//            });
+//        }
+//        $matchedCategories = [];
+//        foreach ($searchedCategories as $category) {
+//            $matchedCategories[$category->id] = $category; // Use product id as key to avoid duplicates
+//        }
+//        // Convert array of matched products back to a collection
+//        $matchedCategories = collect(array_values($matchedCategories));
+//        // Sort the matched products by the number of search words they contain
+//        if ($query !== 'byPopular') {
+//            $matchedCategories = $matchedCategories->sortByDesc(function ($category) use ($searchWords) {
+//                $count = 0;
+//                foreach ($searchWords as $word) {
+//                    if (stripos($category->name, $word) !== false) {
+//                        $count++;
+//                    }
+//                }
+//                return $count;
+//            });
+//        }
+//
+//        $categories = $matchedProducts
+//            ->filter(function ($product) {
+//                return $product->parent_id === 0; // Only include products with parent_id = 0
+//            })
+//            ->pluck('categories')
+//            ->flatten()
+//            ->unique('id')
+//            ->filter(function ($category) use ($matchedProducts) {
+//                return $matchedProducts->contains('category_id', $category->id);
+//            })
+//            ->map(function ($category) use ($matchedProducts) {
+//                $category->path = $matchedProducts->firstWhere('category_id', $category->id)->category_path;
+//                return $category;
+//            })
+//            ->sortByDesc(function ($category) use ($matchedProducts) {
+//                return $matchedProducts->where('category_id', $category->id)->count();
+//            })
+//            ->values();
+//
+//        $allCategories = $matchedCategories->concat($categories) // Append $categories to $matchedCategories
+//        ->unique('id') // Ensure uniqueness based on category ID
+//        ->values(); // Reset the array keys
         return [
-            'products' => $this->formatProducts($matchedProducts),
-            'categories' => $categories
+            'products' => $this->formatProducts($products),
+            'pagination' => [
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'next_page_url' => $products->nextPageUrl(),
+                'prev_page_url' => $products->previousPageUrl(),
+                'path' => $products->path(),
+            ],
+            'categories' => []
         ];
     }
 
@@ -467,7 +562,7 @@ class ProductController extends Controller
             ->orderBy('categories.id_parent', 'asc')
             ->orderBy('categories.childIndex', 'asc')
             ->orderBy('product_categories.product_order', 'asc')
-            ->paginate(15, ['*'], 'page', $request->page ?? 1);
+            ->paginate(16, ['*'], 'page', $request->page ?? 1);
 
 
         $products = $this->formatProducts($paginatedProducts, true);
