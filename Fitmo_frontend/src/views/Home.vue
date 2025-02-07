@@ -55,12 +55,12 @@
         alt=""
       />
       <img
-        class="lg-to-fullHd"
+        class="lg-to-xl"
         src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1200x650_vyziva.png"
         alt=""
       />
       <img
-        class="fullHd-to-"
+        class="xl-to-"
         src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1920x750_vyziva.png"
         alt=""
       />
