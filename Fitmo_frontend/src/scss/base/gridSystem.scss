@@ -40,14 +40,16 @@ $displaySizes: ("xs": 0px, "sm": 520px, "md": 768px, "lg": 992px, "xl": 1200px, 
   .#{$start-name}-to- {
     @media screen and (min-width: $start-pixel) {
       display: block !important; // You can change this to any property you need
-      width: 100%;
+
     }
   }
   @each $end-name, $end-pixel in $displaySizes {
     @if $start-pixel < $end-pixel {
       .#{$start-name}-to-#{$end-name} {
         @media screen and (min-width: $start-pixel) and (max-width: $end-pixel - 1px) {
-          display: block !important; // You can change this to any property you need
+          display: block !important;
+
+          // You can change this to any property you need
         }
       }
     }

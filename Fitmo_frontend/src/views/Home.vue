@@ -904,7 +904,18 @@ export default {
   }
 }
 
-.banners > img {
-  display: none;
+.banners {
+  margin: 5rem 0 1rem 0;
+  padding: 0 1rem;
+
+  & > img {
+    display: none;
+    margin: auto;
+    border-radius: 2.5rem;
+  }
+
+  @media screen and (min-width: $screen-xl-min) {
+    padding: 0 2rem;
+  }
 }
 </style>
