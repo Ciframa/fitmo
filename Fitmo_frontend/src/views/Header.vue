@@ -1,11 +1,102 @@
 <template>
   <header :class="$route.name">
+    <!-- Modal -->
+    <div
+      class="modal fade loginModal"
+      id="loginModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="loginModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body my-row">
+            <form class="login" @submit.prevent="login(credentials)">
+              <h2>Přihlášení</h2>
+              <label for="email">E-mail</label>
+              <input
+                type="text"
+                id="email"
+                v-model="this.credentials.email"
+                required
+              />
+
+              <label for="password">Heslo</label>
+              <input
+                type="password"
+                id="password"
+                v-model="this.credentials.password"
+                required
+              />
+              {{ this.loginError }}
+              {{ this.loginQuote }}
+              <input class="btn-yellow" type="submit" value="Přihlásit se" />
+              <!--                    <span>Nebo</span>-->
+              <!--                    <a class="btn-blue" href="#">Přihlásit se přes Facebook</a>-->
+              <a href="#">Zapomenuté heslo</a>
+            </form>
+            <div class="registration registration__info">
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <font-awesome-icon :icon="['fa', 'times']" size="2x" />
+              </button>
+              <h2>Proč se registrovat?</h2>
+              <article>
+                <p>Ještě nemáš vytvořený účet?</p>
+                <p>Zaregistruj se a získej spousty výhod</p>
+              </article>
+              <ul>
+                <li>
+                  <img
+                    src="../../public/assets/icons/check_transparent.svg"
+                    alt=""
+                  />
+                  <span>Rychlejší nakupování</span>
+                </li>
+                <li>
+                  <img
+                    src="../../public/assets/icons/check_transparent.svg"
+                    alt=""
+                  />
+                  <span>Historie všech svých objednávek</span>
+                </li>
+
+                <li>
+                  <img
+                    src="../../public/assets/icons/check_transparent.svg"
+                    alt=""
+                  />
+                  <span>Nemusíš vyplňovat své údaje</span>
+                </li>
+                <li>
+                  <img
+                    src="../../public/assets/icons/check_transparent.svg"
+                    alt=""
+                  />
+                  <span>FITMO novinky z první ruky</span>
+                </li>
+              </ul>
+              <div class="no-acc">
+                <a href="/registrace" class="btn-black"
+                  >Chci se zaregistrovat</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="content_wrapper">
       <div class="content_wrapper__upper">
         <a href="/">
           <img src="../../public/assets/logo.png" alt="Fitmo logo" />
         </a>
-        <ul>
+        <ul class="content_wrapper__upper__navigation-links">
           <!--<li>O NÁS</li>-->
           <li>
             <router-link to="/info/doprava">DOPRAVA A PLATBA</router-link>
@@ -43,69 +134,6 @@
             -->
           </div>
 
-          <!-- Modal -->
-          <div
-            class="modal fade"
-            id="exampleModalCenter"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="exampleModalCenterTitle"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">
-                    Přihlášení
-                  </h5>
-                  <button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <font-awesome-icon :icon="['fa', 'times']" size="2x" />
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form class="login" @submit.prevent="login(credentials)">
-                    <label for="email">E-mail</label>
-                    <input
-                      type="text"
-                      id="email"
-                      class="btn"
-                      v-model="this.credentials.email"
-                      required
-                    />
-
-                    <label for="password">Heslo</label>
-                    <input
-                      type="password"
-                      id="password"
-                      class="btn"
-                      v-model="this.credentials.password"
-                      required
-                    />
-                    {{ this.loginError }}
-                    {{ this.loginQuote }}
-                    <input
-                      class="btn-yellow"
-                      type="submit"
-                      value="Přihlásit se"
-                    /><span>Nebo</span>
-                    <a class="btn-blue" href="#">Přihlásit se přes Facebook</a>
-                    <a href="#">Zapomenuté heslo</a>
-                    <div class="no-acc">
-                      <span href="#">Ještě nemáš účet?</span>
-                      <a href="/registrace" class="btn-black"
-                        >Chci se zaregistrovat</a
-                      >
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
           <div
             class="content_wrapper__right__icons__absolute__loggedUser"
             v-if="this.loggedUser"
@@ -119,7 +147,7 @@
           </div>
           <div
             data-toggle="modal"
-            data-target="#exampleModalCenter"
+            data-target="#loginModal"
             type="button"
             class="content_wrapper__right__icons__absolute__form_wrapper"
             v-if="!this.loggedUser"
@@ -467,6 +495,7 @@ export default {
           sessionStorage.setItem("user", JSON.stringify(response.data));
           this.$store.commit("updateUser", response.data);
           this.loggedUser = response.data;
+
         })
         .catch((error) => {
           if (error.response?.status === 401) {
@@ -512,7 +541,82 @@ export default {
   }
 }
 
+header .loginModal {
+  &.modal {
+    border-radius: 2rem;
+  }
+
+  .modal-content {
+    border-radius: 2rem;
+  }
+
+  .registration {
+    position: relative;
+
+    .close {
+      position: absolute;
+      background: transparent;
+      top: 2rem;
+      right: 2rem;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    & > div:last-child {
+      padding: 0;
+    }
+
+    &__info {
+      margin: unset;
+      padding: 4rem;
+      border-radius: 0 2rem 2rem 0;
+    }
+
+    .btn-black {
+      width: 100%;
+      text-decoration: none;
+      font-weight: 100;
+      font-size: 1.6rem;
+      white-space: nowrap;
+      padding: 0.75rem 4rem;
+    }
+  }
+
+  .no-acc {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+
+    span {
+      font-size: 1.4rem;
+      display: block;
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
+    a {
+      text-decoration: none;
+      text-align: center;
+    }
+  }
+
+  .modal-body {
+    padding: 0;
+    flex-wrap: wrap;
+  }
+}
+
 @media screen and (min-width: $screen-lg-min) {
+  header .loginModal .modal-body {
+    flex-wrap: nowrap;
+  }
+
+  header .loginModal .modal-dialog {
+    max-width: fit-content !important;
+  }
+
   .category.fixed {
     padding-top: 14rem !important;
   }
@@ -556,6 +660,78 @@ header {
   position: relative;
   min-height: 14.2rem;
 
+  form.login {
+    background: $white;
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 40rem;
+    border-radius: 2rem;
+
+    h2 {
+      text-align: left;
+      font-size: 2rem;
+      width: 100%;
+    }
+
+    label {
+      color: $black-second;
+      margin-top: 1.2rem;
+
+      &:first-child {
+        margin: 0;
+      }
+    }
+
+    input,
+    .btn-black {
+      border: 1px solid $gray-second;
+      padding: 0.75rem 1rem;
+      font-weight: 100;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      font-size: 1.4rem;
+    }
+
+    .btn-blue,
+    .btn-black {
+      width: 100%;
+      text-decoration: none;
+      font-weight: 100;
+      font-size: 1.6rem;
+      white-space: nowrap;
+      padding: 0.75rem 4rem;
+    }
+
+    .btn-yellow {
+      font-size: 1.7rem;
+      padding: 0.75rem 4rem;
+    }
+
+    .btn-yellow,
+    .btn-blue {
+      line-height: 2.6rem;
+      margin: 0;
+    }
+
+    input[type="password"] {
+      margin-bottom: 2rem;
+    }
+
+    span {
+      margin: 1rem auto;
+    }
+
+    a {
+      text-decoration: underline;
+      margin: auto;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+  }
+
   .content_wrapper {
     display: flex;
     margin: auto;
@@ -564,7 +740,7 @@ header {
     flex-wrap: wrap;
 
     &__upper {
-      ul {
+      &__navigation-links {
         display: flex;
 
         li {
@@ -1020,87 +1196,6 @@ header {
               }
             }
           }
-
-          form.login {
-            background: $white;
-            padding: 2rem 3.3rem;
-            display: flex;
-            flex-direction: column;
-            border-radius: 2rem 0 2rem 2rem;
-
-            label {
-              color: $black-second;
-              margin-top: 1.2rem;
-
-              &:first-child {
-                margin: 0;
-              }
-            }
-
-            input,
-            .btn-black {
-              border: 1px solid $gray-second;
-              padding: 0.75rem 1rem;
-              font-weight: 100;
-            }
-
-            input[type="text"],
-            input[type="password"] {
-              font-size: 1.4rem;
-            }
-
-            .btn-blue,
-            .btn-black {
-              width: 100%;
-              text-decoration: none;
-              font-weight: 100;
-              font-size: 1.6rem;
-              white-space: nowrap;
-              padding: 0.75rem 4rem;
-            }
-
-            .btn-yellow {
-              font-size: 1.7rem;
-              padding: 0.75rem 4rem;
-            }
-
-            .btn-yellow,
-            .btn-blue {
-              line-height: 2.6rem;
-              margin: 0;
-            }
-
-            input[type="password"] {
-              margin-bottom: 2rem;
-            }
-
-            span {
-              margin: 1rem auto;
-            }
-
-            a {
-              text-decoration: underline;
-              margin: auto;
-              margin-top: 1rem;
-              font-weight: 500;
-            }
-
-            .no-acc {
-              margin-top: 2rem;
-              margin-bottom: 1rem;
-
-              span {
-                font-size: 1.6rem;
-                display: block;
-                text-align: center;
-              }
-
-              a {
-                text-decoration: none;
-                text-align: center;
-              }
-            }
-          }
         }
       }
     }
@@ -1209,6 +1304,18 @@ header.Home .content_wrapper__footer {
 }
 
 @media screen and (max-width: $screen-lg-min) {
+  header .loginModal .modal-dialog {
+    form.login {
+      width: 100%;
+    }
+
+    .registration {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0 0 2rem 2rem;
+    }
+  }
+
   header {
     max-height: 62px;
     min-height: 62px;
@@ -1380,7 +1487,7 @@ header.Home .content_wrapper__footer > img {
         flex-wrap: wrap;
         justify-content: space-between;
 
-        & > ul {
+        &__navigation-links {
           display: none;
         }
       }
@@ -1458,7 +1565,7 @@ header.Home .content_wrapper__footer > img {
         margin: auto;
         justify-content: space-between;
 
-        ul {
+        &__navigation-links {
           display: flex;
           flex-direction: row;
           align-items: flex-start;
@@ -1665,7 +1772,7 @@ header.Home .content_wrapper__footer > img {
   header {
     .content_wrapper {
       &__upper {
-        ul li {
+        &__navigation-links li {
           font-size: 1.6rem;
         }
       }

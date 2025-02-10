@@ -1,46 +1,51 @@
 .btn {
-    border-radius: 2rem;
-    padding: 0.5rem;
-    text-align: center;
-    font-size: 12px;
+  border-radius: 2rem;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 12px;
+
+
 }
 
 .btn-gray {
-    @extend .btn;
-    border: 1px solid $gray-second;
-    transition: 0.2s ease all;
-    display: inline-block;
-    padding: 0.4rem 2rem;
-    &:hover {
-        background: $gray-second;
-        color: $white;
-    }
+  @extend .btn;
+  border: 1px solid $gray-second;
+  transition: 0.2s ease all;
+  display: inline-block;
+  padding: 0.4rem 2rem;
+
+  &:hover {
+    background: $gray-second;
+    color: $white;
+  }
 }
 
 .btn-red {
-    @extend .btn;
-    border: 1px solid transparent;
-    transition: 0.2s ease all;
-    display: inline-block;
-    padding: 0.4rem 2rem;
-    color: white;
-    background-color: red;
+  @extend .btn;
+  border: 1px solid transparent;
+  transition: 0.2s ease all;
+  display: inline-block;
+  padding: 0.4rem 2rem;
+  color: white;
+  background-color: red;
 }
 
 input[type="search"] {
-    font-weight: 100;
-    &::-webkit-search-cancel-button {
-        display: none;
-    }
-    &::-webkit-input-placeholder {
-        color: $gray-second;
-    }
+  font-weight: 100;
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  &::-webkit-input-placeholder {
+    color: $gray-second;
+  }
 }
 
 input[type="submit"] {
-    outline: 0;
-    border: 0 !important;
-    font-size: 1.4rem;
+  outline: 0;
+  border: 0 !important;
+  font-size: 1.4rem;
 }
 
 input[type="text"],
@@ -48,44 +53,70 @@ input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="tel"] {
-    &.invalid {
-        border-color: red;
-        +span {
-            color: red;
-        }
+  &.invalid {
+    border-color: red;
+
+    + span {
+      color: red;
     }
-    @extend .btn;
-    border: 1px solid $gray-second;
-    text-align: left;
-    border-radius: 1rem;
+  }
+
+  @extend .btn;
+  border: 1px solid $gray-second;
+  text-align: left;
+  border-radius: 1rem;
 }
 
 .btn-green {
-    @extend .btn;
-    background: $green;
-    color: $white;
+  @extend .btn;
+  background: $green;
+  color: $white;
 }
 
 .btn-black {
-    @extend .btn;
-    background: $black-second;
-    color: $white;
+  @extend .btn;
+  background: $black-second;
+  color: $white;
+
+  &:hover {
+    cursor: pointer;
+    // background little darker
+    background: darken($black-second, 5%);
+  }
+}
+
+.btn-blue-main {
+  @extend .btn;
+  background: $blue-main;
+  color: $white;
+
+  &:hover {
+    cursor: pointer;
+    // background little darker
+    background: darken($blue-main, 5%);
+  }
 }
 
 .btn-yellow {
-    @extend .btn;
-    color: $white;
-    background: $yellow;
+  @extend .btn;
+  color: $white;
+  background: $yellow;
+
+  &:hover {
+    cursor: pointer;
+    // background little darker
+    background: darken($yellow, 3%);
+  }
 }
 
 .btn-blue {
-    @extend .btn;
-    color: $white;
-    background: $blue;
+  @extend .btn;
+  color: $white;
+  background: $blue;
 }
 
 .btn-google {
-    @extend .btn;
-    color: $white;
-    background: red;
+  @extend .btn;
+  color: $white;
+  background: red;
 }

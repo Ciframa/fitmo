@@ -6,10 +6,10 @@ use App\Models\Category;
 use App\Models\Map_table;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Imagick;
-use File;
 
 class CategoryController extends Controller
 {
@@ -30,10 +30,10 @@ class CategoryController extends Controller
             "map_table.path as url_path",
             "image_path"
         )
-            ->join('map_table', 'categories.id', '=',  'map_table.category_id')
-        ->orderBy('categories.id_parent', 'asc')
-        ->orderBy('categories.childIndex', 'asc')
-        ->orderBy('categories.id', 'asc');
+            ->join('map_table', 'categories.id', '=', 'map_table.category_id')
+            ->orderBy('categories.id_parent', 'asc')
+            ->orderBy('categories.childIndex', 'asc')
+            ->orderBy('categories.id', 'asc');
 
 // Apply filters dynamically if they exist
         if ($request->filter) {
@@ -164,7 +164,7 @@ class CategoryController extends Controller
 
                     $img->setImageCompression(Imagick::COMPRESSION_JPEG);
 
-                    $img->setImageCompressionQuality(85);
+                    $img->setImageCompressionQuality(75);
 
                     $img->stripImage();
 
@@ -190,7 +190,7 @@ class CategoryController extends Controller
 
                     $img->setImageCompression(Imagick::COMPRESSION_JPEG);
 
-                    $img->setImageCompressionQuality(85);
+                    $img->setImageCompressionQuality(75);
 
                     $img->stripImage();
 
@@ -211,7 +211,7 @@ class CategoryController extends Controller
             ->join('map_table', 'categories.id', '=', 'map_table.category_id')
             ->where('map_table.path', $categoryName)->first();
 
-        if(!$mainCategory) {
+        if (!$mainCategory) {
             return response()->json(['message' => 'Category not found'], 404);
         }
         $listOfCategories = Category::select('categories.id', 'categories.name', 'map_table.path as url_path', 'categories.image_path')
@@ -280,7 +280,7 @@ class CategoryController extends Controller
 
             $img->setImageCompression(Imagick::COMPRESSION_JPEG);
 
-            $img->setImageCompressionQuality(85);
+            $img->setImageCompressionQuality(75);
 
             $img->stripImage();
 
@@ -307,7 +307,7 @@ class CategoryController extends Controller
     {
         $subCategories = Category::where('id_parent', $id)->get();
         $existingCategory = Category::find($id);
-        if(!$existingCategory) {
+        if (!$existingCategory) {
             return response()->json(['message' => 'Category not found'], 404);
         }
         if ($existingCategory) {
@@ -315,7 +315,7 @@ class CategoryController extends Controller
         }
         // Get all subcategories
         // Set the parent id of all subcategories to null
-        if($subCategories->count() === 0) {
+        if ($subCategories->count() === 0) {
             $this->makeMapTable();
             return $id;
         }
