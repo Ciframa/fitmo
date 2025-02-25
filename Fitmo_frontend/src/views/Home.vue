@@ -41,27 +41,32 @@
     <div class="banners">
       <img
         class="xs-to-sm"
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_576x1200_vyziva.png"
+        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20moibil%20576x1200.png"
         alt=""
       />
       <img
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_768x1200_vyziva.png"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_768x1200_regenerace.png"
         alt=""
         class="sm-to-md"
       />
       <img
         class="md-to-lg"
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_975x1200_vyziva.png"
+        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20tablet%20992x1200.png"
+        alt=""
+      />
+      <img
+        class="md-to-lg"
+        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20tablet%20992x1050.png"
         alt=""
       />
       <img
         class="lg-to-xl"
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1200x650_vyziva.png"
+        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20desktop%20n.%202%201200x650.png"
         alt=""
       />
       <img
         class="xl-to-"
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1920x750_vyziva.png"
+        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20desktop%201920x750.png"
         alt=""
       />
     </div>
