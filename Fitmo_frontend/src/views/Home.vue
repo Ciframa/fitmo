@@ -56,11 +56,11 @@
       <!--      </b-carousel>-->
       <img
         class="xs-to-sm"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20moibil%20576x1200.png"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_576x1200_vyziva.png"
         alt=""
       />
       <img
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_768x1200_regenerace.png"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_768x1200_vyziva.png"
         alt=""
         class="sm-to-md"
       />
