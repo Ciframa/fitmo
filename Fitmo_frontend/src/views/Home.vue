@@ -149,8 +149,6 @@ import Product from "@/components/Product.vue";
 
 export default {
   components: {
-    BCarousel,
-    BCarouselSlide,
     CustomMade,
     Slider,
     Product,
