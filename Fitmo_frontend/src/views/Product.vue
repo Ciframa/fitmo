@@ -367,7 +367,7 @@ export default {
 
     &__item {
       display: grid !important;
-      grid-auto-flow: my-row;
+      grid-auto-flow: row;
       margin: auto;
       column-gap: 3rem;
 
