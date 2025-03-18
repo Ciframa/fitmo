@@ -38,7 +38,7 @@
         template.template.type === 'fotkaText' ||
         template.template.type === 'textFotka'
       "
-      class="my-row"
+      class="my-row-wrapReverse"
       :class="{
         'my-row-reversed': template.template.type === 'textFotka',
         [template.template.type]: true,
@@ -130,13 +130,13 @@
         template.template.type === 'fotkyText' ||
         template.template.type === 'textFotky'
       "
-      class="my-row"
+      class="my-row-wrapReverse"
       :class="{
         'my-row-reversed': template.template.type === 'textFotky',
         [template.template.type]: true,
       }"
     >
-      <div class="my-row image-wrapper col-12-xs col-6-lg">
+      <div class="my-row-wrapReverse image-wrapper col-12-xs col-6-lg">
         <template v-for="i in 6" :key="i">
           <div class="col-4-xs column" v-if="template.template[`image${i}`]">
             <img
@@ -242,6 +242,11 @@ li {
     flex-direction: row-reverse;
   }
 
+  .my-row-wrapReverse {
+    display: flex;
+    flex-wrap: wrap-reverse;
+  }
+
   li {
     text-align: left;
   }
@@ -312,7 +317,7 @@ li {
     }
 
     .text {
-      padding: 0 5%;
+      padding: 3rem;
       justify-content: center;
 
       h2 {
@@ -338,11 +343,11 @@ li {
     padding-top: 5rem;
 
     h2 {
-      text-align: left;
+      text-align: center;
     }
 
     h3 {
-      text-align: left;
+      text-align: center;
       padding: 2.4rem 0 1rem 0;
     }
 
@@ -406,6 +411,7 @@ li {
       border-radius: 0 0 2rem 2rem;
       padding-bottom: 0.8rem;
       font-weight: 600;
+      font-size: 1.3rem;
     }
   }
 

@@ -1,6 +1,6 @@
 <template>
   <div :class="sizes">
-    <div v-for="product in products" :key="product.id">
+    <template v-for="product in products" :key="product.id">
       <router-link
         :to="{
           name: 'Product',
@@ -65,61 +65,63 @@
             alt=""
           />
         </div>
-        <div
-          class="my-row center home__eshop__wrapper__img_wrapper__subProducts__wrapper"
-          v-on:mouseleave="changeProduct(variant, 'leave')"
-        >
-          <div v-for="variant in products" :key="variant.id">
-            <div
-              class="home__eshop__wrapper__img_wrapper__subProducts"
-              :class="{ active: variant.isMain == 1 }"
-              v-on:mouseover="changeProduct(variant, 'over')"
-              v-if="variant.color_id"
-            >
+        <div class="info_wrapper">
+          <div
+            class="my-row center home__eshop__wrapper__img_wrapper__subProducts__wrapper"
+            v-on:mouseleave="changeProduct(variant, 'leave')"
+          >
+            <div v-for="variant in products" :key="variant.id">
               <div
-                v-if="variant.color_primary"
-                :style="{ backgroundColor: variant.color_primary }"
-              ></div>
-              <div
-                v-if="variant.color_secondary"
-                :style="{ backgroundColor: variant.color_secondary }"
-              ></div>
+                class="home__eshop__wrapper__img_wrapper__subProducts"
+                :class="{ active: variant.isMain == 1 }"
+                v-on:mouseover="changeProduct(variant, 'over')"
+                v-if="variant.color_id"
+              >
+                <div
+                  v-if="variant.color_primary"
+                  :style="{ backgroundColor: variant.color_primary }"
+                ></div>
+                <div
+                  v-if="variant.color_secondary"
+                  :style="{ backgroundColor: variant.color_secondary }"
+                ></div>
+              </div>
             </div>
           </div>
-        </div>
-        <h4>
-          {{ product.name }}
-        </h4>
-        <span class="home__eshop__wrapper__name"
-          >{{ product.description }}
-        </span>
-        <div
-          v-if="getLowestPrice()['discounted']"
-          class="home__eshop__wrapper__price"
-        >
-          <span class="home__eshop__wrapper__price__trough"
-            >{{ getLowestPrice()["discounted"] }} Kč</span
+          <h4>
+            {{ product.name }}
+          </h4>
+          <span class="home__eshop__wrapper__name"
+            >{{ product.description }}
+          </span>
+          <div
+            v-if="getLowestPrice()['discounted']"
+            class="home__eshop__wrapper__price"
           >
-          <span class="home__eshop__wrapper__price__discount"
-            >{{ getLowestPrice()["normalPrice"] }} Kč</span
+            <span class="home__eshop__wrapper__price__trough"
+              >{{ getLowestPrice()["discounted"] }} Kč</span
+            >
+            <span class="home__eshop__wrapper__price__discount"
+              >{{ getLowestPrice()["normalPrice"] }} Kč</span
+            >
+          </div>
+          <div
+            v-if="!getLowestPrice()['discounted']"
+            class="home__eshop__wrapper__price"
           >
-        </div>
-        <div
-          v-if="!getLowestPrice()['discounted']"
-          class="home__eshop__wrapper__price"
-        >
-          <span
-            >{{ this.products.length > 1 ? "od" : "" }}
-            {{ getLowestPrice()["normalPrice"] }} Kč</span
-          >
-        </div>
-        <div class="home__eshop__wrapper__discounts">
-          <span v-if="product.discount" class="btn-yellow">Akce</span>
-          <span v-if="product.topProduct" class="btn-green">Top produkt</span>
-          <span v-if="product.newProduct" class="btn-blue">Novinka</span>
+            <span
+              >{{ this.products.length > 1 ? "od" : "" }}
+              {{ getLowestPrice()["normalPrice"] }} Kč</span
+            >
+          </div>
+          <!--        <div class="home__eshop__wrapper__discounts">-->
+          <!--          <span v-if="product.discount" class="btn-yellow">Akce</span>-->
+          <!--          <span v-if="product.topProduct" class="btn-green">Top produkt</span>-->
+          <!--          <span v-if="product.newProduct" class="btn-blue">Novinka</span>-->
+          <!--        </div>-->
         </div>
       </router-link>
-    </div>
+    </template>
   </div>
 </template>
 <script>
@@ -174,5 +176,15 @@ export default {
 .center {
   justify-content: center;
   gap: 0.6rem;
+}
+
+.info_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+a {
+  height: 100%;
 }
 </style>

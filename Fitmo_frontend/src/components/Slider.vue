@@ -1,6 +1,14 @@
 <template>
   <div>
     <div class="ratings-wrapper">
+      <div v-if="slider" class="dots">
+        <button
+          v-for="(_slide, idx) in dotHelper"
+          @click="slider.moveToIdx(idx)"
+          :class="{ dot: true, active: current === idx }"
+          :key="idx"
+        ></button>
+      </div>
       <div ref="container" class="keen-slider">
         <div
           class="keen-slider__slide"
@@ -31,14 +39,6 @@
           </div>
           <p class="keen-slider__slide__article">{{ rating.article }}</p>
         </div>
-      </div>
-      <div v-if="slider" class="dots">
-        <button
-          v-for="(_slide, idx) in dotHelper"
-          @click="slider.moveToIdx(idx)"
-          :class="{ dot: true, active: current === idx }"
-          :key="idx"
-        ></button>
       </div>
     </div>
   </div>
@@ -93,7 +93,7 @@ export default {
 .ratings-wrapper {
   position: relative;
   margin: auto;
-  padding: 7rem 0 15rem 10%;
+  padding: 7rem 1rem 15rem 1rem;
 }
 
 .keen-slider {
@@ -104,7 +104,8 @@ export default {
     border-radius: 2rem;
     display: flex;
     flex-wrap: wrap;
-    padding: 5rem;
+    padding: 2rem;
+    padding-bottom: 3rem;
     color: $black-headers;
     min-height: 200px !important;
     min-width: 30rem;
@@ -115,8 +116,8 @@ export default {
       margin-bottom: 1rem;
 
       img {
-        height: 4rem;
-        width: 4rem;
+        height: 5.5rem;
+        width: 5.5rem;
         border-radius: 50%;
         margin-top: 0.3rem;
       }
@@ -134,7 +135,7 @@ export default {
 
         &__source {
           line-height: 0.6rem;
-          font-size: 1.1rem;
+          font-size: 1.2rem;
         }
 
         &__stars {
@@ -148,7 +149,7 @@ export default {
     }
 
     &__article {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 500;
       line-height: 1.7rem;
     }
@@ -159,7 +160,7 @@ export default {
   display: none;
   @media screen and (min-width: $screen-md-min) {
     display: flex;
-    margin-top: 4rem;
+    margin-bottom: 4rem;
     justify-content: center;
   }
 }

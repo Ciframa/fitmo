@@ -50,8 +50,9 @@
       </div>
     </div>
     <div class="category__eshop my-row">
-      <img src="../../public/assets/banners/druhy.png" alt="" />
-
+      <div class="banners-centered">
+        <img src="../../public/assets/banners/druhy.png" alt="" />
+      </div>
       <div class="category__eshop__filters__order col-12-xs">
         <ul>
           <li>nejlevnější</li>
@@ -437,6 +438,10 @@ export default {
 };
 </script>
 <style lang="scss">
+.banners-centered {
+  margin: auto;
+}
+
 .category {
   background: $gray-third;
   position: relative;
@@ -560,7 +565,7 @@ export default {
       position: relative;
       height: 60px;
       background: $white;
-      padding-bottom: 9rem;
+      padding-bottom: 14rem;
 
       .btn-yellow {
         //  color: #525358;
@@ -575,11 +580,12 @@ export default {
 
       &__pages {
         position: absolute;
-        right: 5%;
+        left: 50%;
+        right: 50%;
+        top: 7rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        top: 0;
 
         svg {
           color: $black-headers;
@@ -626,7 +632,7 @@ export default {
       }
     }
 
-    & > img {
+    & .banners-centered > img {
       -webkit-box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
       -moz-box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
       box-shadow: 0 0 41px -4px rgba(0, 0, 0, 0.33);
@@ -940,8 +946,20 @@ export default {
 }
 
 @media screen and (min-width: $screen-lg-min) {
-  .category__eshop__filters__order ul {
-    width: 75%;
+  .category__eshop {
+    &__pagination {
+      padding-bottom: 9rem;
+
+      &__pages {
+        left: unset;
+        right: 5%;
+        top: 0;
+      }
+    }
+
+    &__filters__order ul {
+      width: 75%;
+    }
   }
 }
 

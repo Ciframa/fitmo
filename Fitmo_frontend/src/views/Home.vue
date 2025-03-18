@@ -39,6 +39,21 @@
       </div>
     </div>
     <div class="banners">
+      <!--      <b-carousel-->
+      <!--        id="banners-carousel"-->
+      <!--        v-model="slide"-->
+      <!--        :interval="1000"-->
+      <!--        controls-->
+      <!--        indicators-->
+      <!--        style="text-shadow: 1px 1px 2px #333"-->
+      <!--        @sliding-start="onSlideStart"-->
+      <!--        @sliding-end="onSlideEnd"-->
+      <!--      >-->
+      <!--        &lt;!&ndash; Text slides with image &ndash;&gt;-->
+      <!--        <b-carousel-slide-->
+      <!--          img-src="https://picsum.photos/1024/480/?image=52"-->
+      <!--        ></b-carousel-slide>-->
+      <!--      </b-carousel>-->
       <img
         class="xs-to-sm"
         src="../../public/assets/banners/Banner%20-%20Výživa%20-%20moibil%20576x1200.png"
@@ -51,22 +66,17 @@
       />
       <img
         class="md-to-lg"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20tablet%20992x1200.png"
-        alt=""
-      />
-      <img
-        class="md-to-lg"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20tablet%20992x1050.png"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_975x1200_vyziva.png"
         alt=""
       />
       <img
         class="lg-to-xl"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20desktop%20n.%202%201200x650.png"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1200x650_vyziva.png"
         alt=""
       />
       <img
         class="xl-to-"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20desktop%201920x750.png"
+        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_1920x750_vyziva.png"
         alt=""
       />
     </div>
@@ -139,6 +149,8 @@ import Product from "@/components/Product.vue";
 
 export default {
   components: {
+    BCarousel,
+    BCarouselSlide,
     CustomMade,
     Slider,
     Product,
@@ -146,6 +158,8 @@ export default {
 
   data() {
     return {
+      slide: 0,
+      sliding: null,
       page: 0,
       categories: [],
       ratings: [],
@@ -157,6 +171,12 @@ export default {
   },
 
   methods: {
+    onSlideStart(slide) {
+      this.sliding = true;
+    },
+    onSlideEnd(slide) {
+      this.sliding = false;
+    },
     getCategories() {
       axios
         .post("/api/categories", {
@@ -455,7 +475,7 @@ export default {
       &__img_wrapper {
         position: relative;
         width: 100%;
-        height: 100%;
+        //height: 100%;
         display: flex;
         align-items: center;
         flex-direction: column;

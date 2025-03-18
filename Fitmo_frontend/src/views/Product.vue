@@ -461,10 +461,10 @@ export default {
   }
 
   &__description {
-    padding: 7rem 8%;
+    padding: 7rem 5%;
     background: $gray-third;
     margin: auto;
-    text-align: justify;
+    text-align: center;
 
     h2 {
       text-align: left;

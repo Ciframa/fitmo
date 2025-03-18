@@ -124,9 +124,6 @@ class ProductController extends Controller
             // Explode the search query into individual words
             $searchWords = explode(' ', $query);
 
-            // Initialize an array to store matched products
-            $matchedProducts = [];
-
             // Loop through each search word
             foreach ($searchWords as $word) {
                 // Skip empty words
@@ -182,7 +179,6 @@ class ProductController extends Controller
                     ->orderBy('categories.childIndex', 'asc')
                     ->orderBy('product_categories.product_order', 'asc')
                     ->where('products.name', 'like', '%' . $word . '%')
-                    ->groupBy('products.id') // Ensure each product is only once in children
                     ->paginate($request->pageSize, ['*'], 'page', $request->page ?? 1);
 
 
