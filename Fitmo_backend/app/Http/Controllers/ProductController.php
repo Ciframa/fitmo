@@ -94,13 +94,21 @@ class ProductController extends Controller
 
     public function getSingleProduct($product_url_name)
     {
-        $product = Product::select('prices.*', 'product_states.*', 'categories.name as category_name', 'product_categories.category_id as category_id', 'map_table.path as category_path', 'colors.*', 'products.*')
+        $products = Product::select(
+            'prices.*',
+            'product_states.*',
+            'categories.name as category_name',
+            'product_categories.category_id as category_id',
+            'map_table.path as category_path',
+            'colors.*',
+            'products.*'
+        )
             ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id) AS image_urls')
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-            ->join('product_states', 'products.id', '=', 'product_states.product_id')
-            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-            ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-            ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
+            ->leftJoin('product_states', 'products.id', '=', 'product_states.product_id')
+            ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->leftJoin('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->orderBy('products.created_at', "asc")
             ->where("products.url_name", $product_url_name)
@@ -108,7 +116,7 @@ class ProductController extends Controller
             ->groupBy('products.id') // Ensure each product is only once in children
             ->get();
 
-        return $this->formatProducts($product);
+        return $this->formatProducts($products);
     }
 
     public function getTemplates($product_id)
@@ -119,6 +127,7 @@ class ProductController extends Controller
 
     public function getSearchedItems(Request $request, $query)
     {
+        $searchedProducts = [];
         if ($query !== 'byPopular') {
 
             // Explode the search query into individual words
@@ -132,128 +141,117 @@ class ProductController extends Controller
                 }
 
                 // Perform the product query for each word
-                $products = Product::select(
-                    'product_states.discount',
-                    'product_states.topProduct',
-                    'product_states.newProduct',
-                    'categories.name as category_name',
-                    'prices.price',
-                    'prices.discounted',
-                    'prices.discountedPercent',
-                    'colors.color_primary',
-                    'colors.color_secondary',
-                    'colors.color_name',
-                    'products.*',
-                    'product_categories.category_id as category_id',
-                    'product_categories.product_order'
-                )->with(['categories', 'children' => function ($query) {
+                $searchedProducts[] = Product::select(
+                    'products.id',
+                )
+                    ->where('products.name', 'like', '%' . $word . '%')
+                    ->where('products.isActive', 1)
+                    ->where('products.parent_id', 0)
+                    ->get();
+
+
+//                $searchedCategories = Category::select('categories.*')
+//                    ->where('categories.name', 'like', '%' . $word . '%')
+//                    ->groupBy('categories.id')->get();
+            }
+        } else {
+            $searchedProducts[] = Product::select(
+                'products.id',
+            )
+                ->where('products.name', 'like', '%' . 'ball' . '%')
+                ->where('products.isActive', 1)
+                ->where('products.parent_id', 0)
+                ->get();
+
+        }
+        // if the search query is empty try to search categories
+        if (count($searchedProducts) === 0) {
+            if ($query !== 'byPopular') {
+                // Explode the search query into individual words
+                $searchWords = explode(' ', $query);
+
+                // Loop through each search word
+                foreach ($searchWords as $word) {
+                    // Skip empty words
+                    if (empty($word)) {
+                        continue;
+                    }
+                    $searchedCategories = Category::select('categories.*')
+                        ->where('categories.name', 'like', '%' . "v" . '%')
+                        ->groupBy('categories.id')->get();
+                }
+            }
+            $searchedCategories = Category::select('categories.*')
+                ->where('categories.name', 'like', '%' . "v" . '%')
+                ->groupBy('categories.id')->get();
+
+        } else {
+            $flatArray = collect($searchedProducts)->flatten(1)->toArray();
+            $ids = array_column($flatArray, 'id');
+
+            // Count occurrences
+            $idCounts = array_count_values($ids);
+            // Sort by occurrences in descending order
+            arsort($idCounts);
+            // Get the top 6 product IDs
+            $topProductIds = array_slice(array_keys($idCounts), 0, 6);
+
+
+            // Fetch the actual product objects in one query
+            $finalProducts = Product::select(
+                'product_states.discount',
+                'product_states.topProduct',
+                'product_states.newProduct',
+                'prices.price',
+                'prices.discounted',
+                'prices.discountedPercent',
+                'colors.color_primary',
+                'colors.color_secondary',
+                'colors.color_name',
+                'products.*',
+            )
+                ->with(['children' => function ($query) {
                     $query->select(
                         'prices.*',
                         'product_states.*',
-                        'categories.name as category_name',
                         'colors.*',
                         'products.*',
-                        'product_categories.category_id as category_id'
                     )
                         ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                         ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                         ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                         ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                         ->where('products.parent_id', '!=', 0)
-                        ->where('products.isActive', 1)
-                        ->whereNotNull('categories.id_parent');
+                        ->where('products.isActive', 1);
                 }])
-                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                    ->where('products.parent_id', 0)
-                    ->where('products.isActive', 1)
-                    ->whereNotNull('categories.id_parent')
-                    ->orderBy('categories.id', 'asc')
-                    ->orderBy('categories.id_parent', 'asc')
-                    ->orderBy('categories.childIndex', 'asc')
-                    ->orderBy('product_categories.product_order', 'asc')
-                    ->where('products.name', 'like', '%' . $word . '%')
-                    ->paginate($request->pageSize, ['*'], 'page', $request->page ?? 1);
-
-
-                $searchedCategories = Category::select('categories.*')
-                    ->where('categories.name', 'like', '%' . $word . '%')
-                    ->groupBy('categories.id')->get();
-            }
-        } else {
-            $products = Product::select(
-                'prices.*',
-                'product_states.*',
-                'categories.name as category_name',
-                'colors.*',
-                'categories.*',
-                'products.*',
-                'product_categories.category_id as category_id',
-                'product_categories.product_order'
-            )->with(['categories', 'children' => function ($query) {
-                $query->select(
-                    'prices.*',
-                    'product_states.*',
-                    'categories.name as category_name',
-                    'colors.*',
-                    'products.*',
-                    'product_categories.category_id as category_id'
-                )
-                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                    ->where('products.parent_id', '!=', 0)
-                    ->where('products.isActive', 1)
-                    ->whereNotNull('categories.id_parent');
-            }])
                 ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                 ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->where('products.parent_id', 0)
                 ->where('products.isActive', 1)
-                ->whereNotNull('categories.id_parent')
-                ->orderBy('categories.id', 'asc')
-                ->orderBy('categories.id_parent', 'asc')
-                ->orderBy('categories.childIndex', 'asc')
-                ->orderBy('product_categories.product_order', 'asc')
-                ->where('products.name', 'like', '%' . 'ball' . '%')
-                ->paginate($request->pageSize, ['*'], 'page', $request->page ?? 1);
+                ->whereIn('products.id', $topProductIds)
+                ->groupBy('products.id')
+                ->get();
 
-            $searchedCategories = Category::select('categories.*')
-                ->where('categories.name', 'like', '%' . "v" . '%')
-                ->groupBy('categories.id')->get();
+
+            $finalProducts = $finalProducts->sortBy(function ($product) use ($topProductIds) {
+                return array_search($product->id, $topProductIds);
+            })->values(); // Reset the keys
+
+
         }
 
 
         return [
-            'products' => $this->formatProducts($products, true),
-            'pagination' => [
-                'total' => $products->total(),
-                'per_page' => $products->perPage(),
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'next_page_url' => $products->nextPageUrl(),
-                'prev_page_url' => $products->previousPageUrl(),
-                'path' => $products->path(),
-            ],
-            'categories' => [$searchedCategories[0]]
+            'products' => $this->formatProducts($finalProducts, true),
+            'categories' => []
         ];
     }
 
 
-    public function getAllProducts()
+    public
+    function getAllProducts()
     {
         $assignedCategory = Product::select(
             'categories.name as category_name',
@@ -290,7 +288,8 @@ class ProductController extends Controller
         return $this->formatOnlyPhotos($assignedCategory);
     }
 
-    public function getProductsForOrders()
+    public
+    function getProductsForOrders()
     {
         //Select all products and categories from ProductCategory table, group by category
         $categories = Category::select('categories.*')
@@ -315,7 +314,8 @@ class ProductController extends Controller
     }
 
 
-    public function setUrlNames()
+    public
+    function setUrlNames()
     {
         $products = Product::all();
 
@@ -325,7 +325,8 @@ class ProductController extends Controller
         }
     }
 
-    public function getMainProducts()
+    public
+    function getMainProducts()
     {
         return Product::select('categories.*', 'products.*')->join('product_categories', 'products.id', '=', 'product_categories.product_id')
             ->join('categories', 'categories.id', '=', 'product_categories.category_id')->orderBy("products.name")->where("products.parent_id", 0)->with('categories')
@@ -333,7 +334,8 @@ class ProductController extends Controller
             ->get();
     }
 
-    public function formatProducts($products, $shouldWorkWithChildren = false)
+    public
+    function formatProducts($products, $shouldWorkWithChildren = false)
     {
         foreach ($products as $product) {
             $product->image_urls = explode('|', $product->image_urls);
@@ -367,7 +369,8 @@ class ProductController extends Controller
         return $newProducts;
     }
 
-    public function formatOnlyPhotos($products)
+    public
+    function formatOnlyPhotos($products)
     {
         $nullParentProducts = [];
         $finalProducts = [];
@@ -425,7 +428,8 @@ class ProductController extends Controller
         return $finalProducts;
     }
 
-    public function getProductById($id)
+    public
+    function getProductById($id)
     {
         $products = Product::select(
             'prices.*',
@@ -453,7 +457,8 @@ class ProductController extends Controller
     }
 
 
-    public function getCategoryProducts($categoryName, Request $request)
+    public
+    function getCategoryProducts($categoryName, Request $request)
     {
         $categoryName = join("/", explode(",", $categoryName));
         $categories = Category::where(
@@ -540,7 +545,8 @@ class ProductController extends Controller
      */
 
 
-    public function create()
+    public
+    function create()
     {
         //
     }
@@ -551,7 +557,8 @@ class ProductController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function storeTemplate(Request $request, $id)
+    public
+    function storeTemplate(Request $request, $id)
     {
 
         foreach ($request[0] as $index => $template) {
@@ -622,7 +629,8 @@ class ProductController extends Controller
         return "Asi se to povedlo";
     }
 
-    public function store(Request $request)
+    public
+    function store(Request $request)
     {
 
         if ($request->colors["colorName"]) {
@@ -726,12 +734,14 @@ class ProductController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public
+    function show($id)
     {
         //
     }
 
-    public function deleteTemplate($productId, $templateId)
+    public
+    function deleteTemplate($productId, $templateId)
     {
         $existingProduct = Product::find($productId);
         $existingColor = Color::find($existingProduct->color_id);
@@ -772,7 +782,8 @@ class ProductController extends Controller
         $existingTemplate->delete();;
     }
 
-    public function delete($id)
+    public
+    function delete($id)
     {
         $orderProducts = Order_product::where('product_id', $id)->get();
         if ($orderProducts->isNotEmpty()) {
@@ -826,7 +837,8 @@ class ProductController extends Controller
 
     }
 
-    public function hideProduct($id): string
+    public
+    function hideProduct($id): string
     {
 
         $existingProduct = Product::find($id);
@@ -846,12 +858,14 @@ class ProductController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         //
     }
 
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         $product = Product::find($id);
         $productOriginalName = $product->name;
@@ -1178,7 +1192,8 @@ class ProductController extends Controller
         return $product->save();
     }
 
-    public function updateOrderOfProducts(Request $request)
+    public
+    function updateOrderOfProducts(Request $request)
     {
         foreach ($request->categories as $category) {
             foreach ($category["products"] as $product) {
@@ -1196,7 +1211,8 @@ class ProductController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         //
     }

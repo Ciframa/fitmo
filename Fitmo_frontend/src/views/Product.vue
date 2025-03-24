@@ -1,5 +1,6 @@
 <template>
   <div v-if="isLoading">Načítání produktu...</div>
+
   <div class="product" v-else-if="this.products[0]">
     <ul class="category__header__navigation">
       <li>
@@ -212,14 +213,14 @@ export default {
           this.parentProduct = response.data[0].find(
             (item) => item.parent_id == 0
           );
-          if (
-            response.data[0][0].price === null &&
-            response.data[0][0].color_id === null &&
-            response.data[0].length > 1
-          ) {
-            response.data[0].shift();
-            response.data[0][0].isMain = 1;
-          }
+          // if (
+          //   response.data[0][0].price === null &&
+          //   response.data[0][0].color_id === null &&
+          //   response.data[0].length > 1
+          // ) {
+          //   // response.data[0].shift();
+          //   response.data[0][0].isMain = 1;
+          // }
           this.products = response.data;
         }
         this.isLoading = false;
