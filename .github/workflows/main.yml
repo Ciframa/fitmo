@@ -27,7 +27,7 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD 287586.w86.wedos.net && mirror -R Fitmo_backend /www/subdom/be"
+          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD 287586.w86.wedos.net && mirror -R --exclude public Fitmo_backend /www/subdom/be"
 
   deploy-frontend:
     runs-on: ubuntu-latest
