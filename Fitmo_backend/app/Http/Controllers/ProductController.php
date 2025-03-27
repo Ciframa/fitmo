@@ -115,7 +115,6 @@ class ProductController extends Controller
             ->where('products.isActive', 1)
             ->groupBy('products.id') // Ensure each product is only once in children
             ->get();
-
         return $this->formatProducts($products);
     }
 
