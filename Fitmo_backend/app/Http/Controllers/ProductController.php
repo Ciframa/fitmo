@@ -1165,10 +1165,22 @@ class ProductController extends Controller
                     $imageFiles = glob($folderPath . '/*.jpg');
                     $folderPath .= "/";
                     foreach ($imageFiles as $imageFile) {
-                        if ($imageFile == $folderPath . $photo["image_path"]) {
-                            File::delete($imageFile);
+                        // first check if the this photo is not in other templates or products
+                        $existingSameImages = Image::where('image_path', $photo["image_path"])->where('product_id', $product->id)->get();
+                        $existingSameImagesInTemplates = Template::where('product_id', $product->id)
+                            ->where(function ($query) use ($photo) {
+                                $query->where('image1', $photo["image_path"])
+                                    ->orWhere('image2', $photo["image_path"])
+                                    ->orWhere('image3', $photo["image_path"])
+                                    ->orWhere('image4', $photo["image_path"])
+                                    ->orWhere('image5', $photo["image_path"])
+                                    ->orWhere('image6', $photo["image_path"]);
+                            })->get();
+                        if (($existingSameImages->count() + $existingSameImagesInTemplates->count()) <= 1) {
+                            if ($imageFile == $folderPath . $photo["image_path"]) {
+                                File::delete($imageFile);
+                            }
                         }
-
                     }
                 }
             } // just update
