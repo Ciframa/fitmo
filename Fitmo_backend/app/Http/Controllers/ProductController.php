@@ -140,29 +140,33 @@ class ProductController extends Controller
                 }
 
                 // Perform the product query for each word
-                $searchedProducts[] = Product::select(
+                $searchedItems = Product::select(
                     'products.id',
                 )
                     ->where('products.name', 'like', '%' . $word . '%')
                     ->where('products.isActive', 1)
                     ->where('products.parent_id', 0)
                     ->get();
-
-
-//                $searchedCategories = Category::select('categories.*')
-//                    ->where('categories.name', 'like', '%' . $word . '%')
-//                    ->groupBy('categories.id')->get();
+                if (count($searchedItems) > 0) {
+                    $searchedProducts[] = $searchedItems;
+                }
             }
         } else {
-            $searchedProducts[] = Product::select(
+            $searchedItems = Product::select(
                 'products.id',
             )
                 ->where('products.name', 'like', '%' . 'ball' . '%')
                 ->where('products.isActive', 1)
+                // need to check
                 ->where('products.parent_id', 0)
                 ->get();
 
+            if (count($searchedItems) > 0) {
+                $searchedProducts[] = $searchedItems;
+            }
+
         }
+        $categories = [];
         // if the search query is empty try to search categories
         if (count($searchedProducts) === 0) {
             if ($query !== 'byPopular') {
@@ -175,14 +179,83 @@ class ProductController extends Controller
                     if (empty($word)) {
                         continue;
                     }
-                    $searchedCategories = Category::select('categories.*')
-                        ->where('categories.name', 'like', '%' . "v" . '%')
+                    $categories[] = Category::select('categories.id')
+                        ->where('categories.name', 'like', '%' . $word . '%')
                         ->groupBy('categories.id')->get();
                 }
+            } else {
+                $categories = Category::select('categories.id')
+                    ->where('categories.name', 'like', '%' . "v" . '%')
+                    ->groupBy('categories.id')->get();
             }
-            $searchedCategories = Category::select('categories.*')
-                ->where('categories.name', 'like', '%' . "v" . '%')
-                ->groupBy('categories.id')->get();
+
+            // Take occurrences of categories and sort them
+            $flatArray = collect($categories)->flatten(1)->toArray();
+            $ids = array_column($flatArray, 'id');
+
+            // Count occurrences
+            $idCounts = array_count_values($ids);
+            // Sort by occurrences in descending order
+            arsort($idCounts);
+
+            $topCategoriesIds = array_slice(array_keys($idCounts), 0, 10);
+
+            // Get categories by ids
+            $categories = Category::select('categories.*')
+                ->whereIn('categories.id', $topCategoriesIds)
+                ->get();
+
+            // Now i need 6 products from the categories if they are not in first category then search in the second one and etc
+            $finalProducts = [];
+            foreach ($categories as $category) {
+                if (count($finalProducts) < 6) {
+                    $products = Product::select(
+                        'product_states.discount',
+                        'product_states.topProduct',
+                        'product_states.newProduct',
+                        'prices.price',
+                        'prices.discounted',
+                        'prices.discountedPercent',
+                        'colors.color_primary',
+                        'colors.color_secondary',
+                        'colors.color_name',
+                        'products.*',
+                        'product_categories.category_id as category_id',
+                        'map_table.path as category_path',
+                    )
+                        ->with(['children' => function ($query) {
+                            $query->select(
+                                'prices.*',
+                                'product_states.*',
+                                'colors.*',
+                                'products.*',
+                            )
+                                ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                                ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                                ->where('products.parent_id', '!=', 0)
+                                ->where('products.isActive', 1);
+                        }])
+                        ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                        ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
+                        ->leftJoin('product_states', 'products.id', '=', 'product_states.product_id')
+                        ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                        ->leftJoin('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
+                        ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                        ->where('products.parent_id', 0)
+                        ->where('products.isActive', 1)
+                        ->where('product_categories.category_id', $category->id)
+                        ->groupBy('products.id')
+                        ->limit(6)
+                        ->get();
+
+                }
+                if (count($products) > 0) {
+                    $finalProducts[] = $products;
+                }
+                $finalProducts = collect($finalProducts)->flatten(1);
+            }
 
         } else {
             $flatArray = collect($searchedProducts)->flatten(1)->toArray();
@@ -238,13 +311,25 @@ class ProductController extends Controller
                 return array_search($product->id, $topProductIds);
             })->values(); // Reset the keys
 
+            //here i need to get all categories from products even their children
+            $allCategoriesFromProducts = [];
+            foreach ($finalProducts as $product) {
+                foreach ($product->categories as $category) {
+                    array_push($allCategoriesFromProducts, $category);
+                }
+                foreach ($product->children as $child) {
+                    foreach ($child->categories as $category) {
+                        $allCategoriesFromProducts[] = $category;
+                    }
 
+                }
+            }
+            // now i need to remove duplicates from the array by id
+            $categories = collect($allCategoriesFromProducts)->unique('id')->values()->toArray();
         }
-
-
         return [
             'products' => $this->formatProducts($finalProducts, true),
-            'categories' => []
+            'categories' => $categories
         ];
     }
 
