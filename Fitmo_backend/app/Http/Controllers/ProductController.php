@@ -327,6 +327,12 @@ class ProductController extends Controller
             // now i need to remove duplicates from the array by id
             $categories = collect($allCategoriesFromProducts)->unique('id')->values()->toArray();
         }
+
+        // If categories are empty and there are no products, search
+        if (count($categories) === 0 && count($finalProducts) === 0) {
+            return $this->getSearchedItems($request, 'byPopular');
+        }
+
         return [
             'products' => $this->formatProducts($finalProducts, true),
             'categories' => $categories
