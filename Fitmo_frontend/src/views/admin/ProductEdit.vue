@@ -316,14 +316,37 @@
         :key="template.id"
         class="product__description__templateWrapper"
       >
-        <input
-          type="submit"
-          value="X"
-          class="btn-red deleteFromDb"
-          :onClick="() => deleteTemplateFromDb(template)"
-          v-if="template.from === 'db'"
-        />
-        <template v-if="template.from !== 'db'">
+        <div class="actions" :class="{ edit: template.mode === 'edit' }">
+          <input
+            type="submit"
+            value="Uložit aktuální stav šablon"
+            class="btn-yellow"
+            v-if="template.mode === 'edit'"
+            :onClick="addTemplate"
+          />
+          <input
+            type="submit"
+            :value="
+              template.mode === 'edit' ? 'Zrušit editaci' : 'Upravit šablonu'
+            "
+            class="btn-blue editFromDb"
+            :onClick="
+              () =>
+                template.mode === 'edit'
+                  ? (template.mode = 'read')
+                  : (template.mode = 'edit')
+            "
+            v-if="template.from === 'db'"
+          />
+          <input
+            type="submit"
+            value="X"
+            class="btn-red deleteFromDb"
+            :onClick="() => deleteTemplateFromDb(template)"
+            v-if="template.from === 'db'"
+          />
+        </div>
+        <template v-if="template.from !== 'db' || template.mode === 'edit'">
           <select v-model="template.type">
             <option value=""></option>
             <option value="fotkaText">Fotka | Text</option>
@@ -342,6 +365,7 @@
                 v-if="template.type !== 'jenFotka' && template.type !== 'bloky'"
               >
                 <quill-editor
+                  v-model:value="template.text"
                   class="editor"
                   @change="(value) => onEditorChange(value, template)"
                 />
@@ -820,11 +844,21 @@ export default {
 .product__description {
   &__templateWrapper {
     position: relative;
+    padding: 3rem 0;
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      position: absolute;
+      top: 4rem;
+      right: 1rem;
+    }
+
+    .edit {
+      top: 0;
+    }
 
     .deleteFromDb {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
       height: 4rem;
       width: 4rem;
       padding: 0;

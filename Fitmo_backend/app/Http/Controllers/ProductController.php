@@ -649,10 +649,10 @@ class ProductController extends Controller
             if ($template["from"] === "db") {
                 $foundTemplate = Template::find($template["id"]);
                 $foundTemplate->sort = $index;
+                $foundTemplate->text = $template["text"];
                 $foundTemplate->save();
             };
             if ($template["from"] && $template["from"] === "created") {
-
                 $path = 'products/';
                 if (isset($request[1]["color_name"])) {
                     $path .= $request[1]["name"] . "-" . $request[1]["color_name"];
