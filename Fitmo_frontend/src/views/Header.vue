@@ -495,7 +495,12 @@ export default {
           sessionStorage.setItem("user", JSON.stringify(response.data));
           this.$store.commit("updateUser", response.data);
           this.loggedUser = response.data;
-
+          const modalElement = document.getElementById("loginModal");
+          modalElement.classList.remove("show");
+          // wait 200 ms to hide the modal
+          setTimeout(() => {
+            $(".modal-backdrop").hide();
+          }, 300);
         })
         .catch((error) => {
           if (error.response?.status === 401) {
