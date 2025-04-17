@@ -66,7 +66,7 @@
       />
       <img
         class="md-to-lg"
-        src="../../public/assets/banners/zudesign_fitmo_bannery_4pilire_eshop_1_4_975x1200_vyziva.png"
+        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20tablet%201100x1200.png"
         alt=""
       />
       <img
