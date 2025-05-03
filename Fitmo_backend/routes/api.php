@@ -40,7 +40,8 @@ Route::get('/mainCategories', [CategoryController::class, 'getMainCategories']);
 Route::get('/subCategory/{id}', [CategoryController::class, 'getSubCategory']);
 Route::post('/makeMap', [CategoryController::class, 'makeMapTable']);
 Route::get('/category/{categoryName}', [CategoryController::class, 'getCategory']);
-Route::get('/categoryProducts/{categoryName}', [ProductController::class, 'getCategoryProducts']);
+Route::post('/categoryProducts/{categoryName}', [ProductController::class, 'getCategoryProducts']);
+Route::get('/initFilters/{categoryName}', [CategoryController::class, 'getInitFiltersFromCategory']);
 
 
 Route::post('/updateOrderOfProducts', [ProductController::class, 'updateOrderOfProducts']);

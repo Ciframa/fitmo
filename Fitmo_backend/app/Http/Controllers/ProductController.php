@@ -547,8 +547,7 @@ class ProductController extends Controller
     }
 
 
-    public
-    function getCategoryProducts($categoryName, Request $request)
+    public function getCategoryProducts($categoryName, Request $request)
     {
         $categoryName = join("/", explode(",", $categoryName));
         $categories = Category::where(
@@ -565,7 +564,7 @@ class ProductController extends Controller
         }
 
 
-        $paginatedProducts = Product::select(
+        $query = Product::select(
             'prices.*',
             'product_states.*',
             'categories.name as category_name',
@@ -607,10 +606,27 @@ class ProductController extends Controller
             ->orderBy('categories.id', 'asc')
             ->orderBy('categories.id_parent', 'asc')
             ->orderBy('categories.childIndex', 'asc')
-            ->orderBy('product_categories.product_order', 'asc')
-            ->paginate(16, ['*'], 'page', $request->page ?? 1);
+            ->orderBy('product_categories.product_order', 'asc');
 
+        if ($request->filter) {
+            $query->where(function ($q) use ($request) {
+                if (!empty($request->filter["and"])) {
+                    foreach ($request->filter["and"] as $andCondition) {
+                        $q->where($andCondition['column'], $andCondition['operator'], $andCondition['value']);
+                    }
+                }
 
+                if (!empty($request->filter["or"])) {
+                    $q->where(function ($orQ) use ($request) {
+                        foreach ($request->filter["or"] as $orCondition) {
+                            $orQ->orWhere($orCondition['column'], $orCondition['operator'], $orCondition['value']);
+                        }
+                    });
+                }
+            });
+        }
+
+        $paginatedProducts = $query->paginate(16, ['*'], 'page', $request->page ?? 1);
         $products = $this->formatProducts($paginatedProducts, true);
 
         return response()->json([

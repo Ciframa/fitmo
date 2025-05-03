@@ -11,6 +11,7 @@ import {
   faBars,
   faCheck,
   faFile,
+  faFilter,
   fas,
   faSignOut,
   faSpinner,
@@ -44,6 +45,7 @@ library.add(faStar);
 library.add(faSignOut);
 library.add(faSpinner);
 library.add(faFile);
+library.add(faFilter);
 
 createApp(App)
   .use(router)

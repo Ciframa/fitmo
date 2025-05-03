@@ -1,5 +1,59 @@
 <template>
   <div class="category">
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="filterModal"
+      tabindex="-1"
+      aria-labelledby="filterModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-slideout modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Filtry</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="category__eshop__filters">
+              <div class="category__eshop__filters__price">
+                <span>Cena</span>
+                <MultiRangeSlider
+                  v-if="
+                    initFilters.price.min !== null &&
+                    initFilters.price.max !== null
+                  "
+                  baseClassName="multi-range-slider"
+                  :min="initFilters.price.min"
+                  :max="initFilters.price.max"
+                  :step="1"
+                  :ruler="false"
+                  :label="true"
+                  :labels="[barMinValue, barMaxValue]"
+                  :minValue="barMinValue"
+                  :maxValue="barMaxValue"
+                  @input="UpdateValues"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Zavřít
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="category__header">
       <ul class="category__header__navigation">
         <li>
@@ -60,6 +114,15 @@
           <li>abecedně</li>
           <li>nejprodávanější</li>
         </ul>
+        <button
+          type="submit"
+          data-bs-toggle="modal"
+          data-bs-target="#filterModal"
+          class="btn-gray"
+        >
+          Zobrazit filtry
+          <font-awesome-icon :icon="['fa', 'filter']" />
+        </button>
       </div>
       <!--      <div class="category__eshop__filters col-12-xs col-4-md col-3-lg">-->
       <!--        <div class="category__eshop__filters__price">-->
@@ -159,8 +222,9 @@
       <!--        <img src="../../public/assets/banners/treti.png" alt="" />-->
       <!--        <img src="../../public/assets/banners/treti.png" alt="" />-->
       <!--      </div>-->
+      <VaProgressCircle v-show="this.wholeProductsAreLoading" indeterminate />
       <div
-        v-if="this.products.length !== 0"
+        v-if="this.products.length !== 0 && !this.wholeProductsAreLoading"
         class="home__eshop__wrapper my-row col-12-xs"
       >
         <Product
@@ -314,16 +378,23 @@ export default {
   },
   data() {
     return {
+      initFilters: {
+        price: {
+          min: null,
+          max: null,
+        },
+      },
       url_path: this.$route.params.categoryname,
       mainCategory: "",
       subCategories: [],
       products: [],
       provizorniCheck: false,
       showFilters: false,
-      barMinValue: 10,
-      barMaxValue: 5000,
+      barMinValue: 0,
+      barMaxValue: 0,
       categoryText: "",
       isLoading: false,
+      wholeProductsAreLoading: false,
       pagination: {},
       categories: [],
       imageBasePath: `https://be.fitmo.cz/categories/`,
@@ -336,6 +407,7 @@ export default {
       this.products = [];
       this.getSubCategories();
       this.getCategoryProducts();
+      this.getInitFilters();
     },
   },
 
@@ -394,6 +466,7 @@ export default {
       if (requestedUrl) {
         const urlPage = requestedUrl.split("?page=")[1];
         shouldReset =
+          !urlPage ||
           urlPage < this.pagination.current_page ||
           urlPage - this.pagination.current_page > 1;
       }
@@ -402,11 +475,34 @@ export default {
           requestedUrl ??
           this.pagination.next_page_url ??
           "/api/categoryProducts/" + [this.url_path];
-        const response = await axios.get(url);
+        const response = await axios.post(url, {
+          filter: {
+            or: [
+              {
+                column: "prices.price",
+                operator: ">=",
+                value: this.barMinValue,
+              },
+              {
+                column: "prices.discounted",
+                operator: ">=",
+                value: this.barMinValue,
+              },
+            ],
+            and: [
+              {
+                column: "prices.price",
+                operator: "<=",
+                value: this.barMaxValue,
+              },
+            ],
+          },
+        });
         if (this.products.length === 0) {
           shouldReset = false;
         }
         if (shouldReset) {
+          this.wholeProductsAreLoading = true;
           this.products = [];
           this.$nextTick(() => {
             const element = document.querySelector(
@@ -423,16 +519,45 @@ export default {
         console.log(error);
       } finally {
         this.isLoading = false;
+        this.wholeProductsAreLoading = false;
+      }
+    },
+
+    async getInitFilters() {
+      try {
+        const response = await axios.get("/api/initFilters/" + [this.url_path]);
+        this.initFilters = {
+          ...this.initFilters,
+          price: {
+            min: response.data.minPrice,
+            max: response.data.maxPrice,
+          },
+        };
+        this.barMinValue = response.data.minPrice;
+        this.barMaxValue = response.data.maxPrice;
+      } catch (error) {
+        console.log(error);
       }
     },
 
     UpdateValues(e) {
       this.barMinValue = e.minValue;
       this.barMaxValue = e.maxValue;
+
+      // here have some debounce for like 300ms
+      // and then call getCategoryProducts
+      if (this.debouncedGetCategoryProducts) {
+        clearTimeout(this.debouncedGetCategoryProducts);
+      }
+      this.debouncedGetCategoryProducts = setTimeout(() => {
+        this.wholeProductsAreLoading = true;
+        this.getCategoryProducts(this.pagination.path);
+      }, 300);
     },
   },
   mounted() {
-    this.getSubCategories().then(this.getCategoryProducts());
+    this.getInitFilters();
+    this.getSubCategories().then(() => this.getCategoryProducts());
     this.getCategories();
   },
 };
@@ -672,7 +797,7 @@ export default {
 
       &__price,
       &__brands {
-        background: $gray-third;
+        //background: $gray-third;
         display: flex;
         flex-direction: column;
         padding: 3rem 3rem;
@@ -693,7 +818,7 @@ export default {
 
           .bar-left,
           .bar-right {
-            background: $gray-second;
+            //background: $gray-second;
             box-shadow: none;
             height: 6px !important;
             padding: 0;
@@ -903,7 +1028,7 @@ export default {
       &__order {
         display: flex;
         margin-left: auto;
-        margin-top: 8rem;
+        padding-top: 8rem;
         font-size: 1.4rem;
 
         span {
@@ -928,14 +1053,14 @@ export default {
         border-radius: 2rem 2rem 0 0;
         position: relative;
 
-        &::after {
-          content: "";
-          height: 2px;
-          width: calc(100% - 6rem);
-          background: $gray-second;
-          position: absolute;
-          bottom: 0;
-        }
+        //&::after {
+        //  content: "";
+        //  height: 2px;
+        //  width: calc(100% - 6rem);
+        //  background: $gray-second;
+        //  position: absolute;
+        //  bottom: 0;
+        //}
       }
 
       &__brands {
@@ -979,5 +1104,30 @@ export default {
       }
     }
   }
+}
+
+.modal-dialog-slideout {
+  position: fixed;
+  right: 0;
+  margin: 0;
+  height: 100vh;
+  max-width: 400px; /* Or whatever width you want */
+  min-width: 400px; /* Or whatever width you want */
+
+  .modal-content {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.modal.fade .modal-dialog-slideout {
+  transform: translateX(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.modal.fade.show .modal-dialog-slideout {
+  transform: translateX(0);
 }
 </style>

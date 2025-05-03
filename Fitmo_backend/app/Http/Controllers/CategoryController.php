@@ -46,6 +46,46 @@ class CategoryController extends Controller
         return $query->get();
     }
 
+    public function getInitFiltersFromCategory($categoryName, Request $request)
+    {
+        $categoryPath = join("/", explode(",", $categoryName));
+
+        $baseCategory = Category::select("categories.path")
+            ->join('map_table', 'categories.id', '=', 'map_table.category_id')
+            ->where('map_table.path', $categoryPath)
+            ->first();
+
+        if (!$baseCategory) {
+            return [
+                "minPrice" => 0,
+                "maxPrice" => 0,
+            ];
+        }
+
+        $categoryIds = Category::where('path', 'LIKE', $baseCategory->path . '%')
+            ->pluck('id');
+
+        $priceStats = Product::join('prices', 'products.id', '=', 'prices.product_id')
+            ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->whereIn('product_categories.category_id', $categoryIds)
+            ->selectRaw('MIN(prices.price) as min_price, MAX(prices.price) as max_price, MIN(prices.discounted) as min_discounted_price')
+            ->first();
+
+        $minPrice = $priceStats->min_price;
+        $maxPrice = $priceStats->max_price;
+        $minDiscountedPrice = $priceStats->min_discounted_price;
+
+        if ($minDiscountedPrice && ($minPrice ?? 0) > $minDiscountedPrice) {
+            $minPrice = $minDiscountedPrice;
+        }
+
+        return [
+            "minPrice" => $minPrice ?? 0,
+            "maxPrice" => $maxPrice ?? 0,
+        ];
+
+    }
+
     public function remap()
     {
         $newCategoriesProducts = [];

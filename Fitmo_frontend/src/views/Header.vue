@@ -442,16 +442,6 @@ export default {
       }
     },
 
-    debounce(func, wait) {
-      let timeout;
-      return function (...args) {
-        const context = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          func.apply(context, args);
-        }, wait);
-      };
-    },
     groupByKeyReduce(arr) {
       if (arr.length === 0) return;
       var map = {};
