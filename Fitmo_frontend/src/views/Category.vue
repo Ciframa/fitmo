@@ -556,8 +556,8 @@ export default {
     },
   },
   mounted() {
-    this.getInitFilters();
-    this.getSubCategories().then(() => this.getCategoryProducts());
+    this.getInitFilters().then(() => this.getCategoryProducts());
+    this.getSubCategories();
     this.getCategories();
   },
 };
