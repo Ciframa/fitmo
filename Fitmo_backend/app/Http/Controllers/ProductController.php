@@ -674,6 +674,24 @@ class ProductController extends Controller
                 if (isset($template["text"])) {
                     $foundTemplate->text = $template["text"];
                 }
+                if (isset($template["txt1"])) {
+                    $foundTemplate->txt1 = $template["txt1"];
+                }
+                if (isset($template["txt2"])) {
+                    $foundTemplate->txt2 = $template["txt2"];
+                }
+                if (isset($template["txt3"])) {
+                    $foundTemplate->txt3 = $template["txt3"];
+                }
+                if (isset($template["txt4"])) {
+                    $foundTemplate->txt4 = $template["txt4"];
+                }
+                if (isset($template["txt5"])) {
+                    $foundTemplate->txt5 = $template["txt5"];
+                }
+                if (isset($template["txt6"])) {
+                    $foundTemplate->txt6 = $template["txt6"];
+                }
                 $foundTemplate->save();
             };
             if ($template["from"] && $template["from"] === "created") {
