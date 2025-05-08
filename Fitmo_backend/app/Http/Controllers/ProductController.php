@@ -671,7 +671,9 @@ class ProductController extends Controller
             if ($template["from"] === "db") {
                 $foundTemplate = Template::find($template["id"]);
                 $foundTemplate->sort = $index;
-                $foundTemplate->text = $template["text"];
+                if (isset($template["text"])) {
+                    $foundTemplate->text = $template["text"];
+                }
                 $foundTemplate->save();
             };
             if ($template["from"] && $template["from"] === "created") {
