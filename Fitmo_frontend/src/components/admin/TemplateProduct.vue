@@ -238,6 +238,16 @@ li {
   background: $white;
   border-radius: 2rem;
 
+  p,
+  h2,
+  h1,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-align: left;
+  }
+
   .my-row-reversed {
     flex-direction: row-reverse;
   }
@@ -342,12 +352,7 @@ li {
     flex-direction: column;
     padding-top: 5rem;
 
-    h2 {
-      text-align: center;
-    }
-
     h3 {
-      text-align: center;
       padding: 2.4rem 0 1rem 0;
     }
 
