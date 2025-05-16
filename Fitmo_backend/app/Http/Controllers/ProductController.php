@@ -1304,34 +1304,36 @@ class ProductController extends Controller
                     ->first();
                 $existingImage->delete();
                 $folderPath = 'products/';
-                if (isset($product->color_id)) {
-                    $existingColor = Color::find($product->color_id);
-                    $folderPath .= $product->name . "-" . $existingColor->color_name;
-                } elseif (isset($product->variant)) {
-                    $folderPath .= $product->name . "-" . $product->variant;
-                } else {
-                    $folderPath .= $product->name;
-                }
-                if (File::exists($folderPath) && File::isDirectory($folderPath)) {
-                    $imageFiles = glob($folderPath . '/*.jpg');
-                    $folderPath .= "/";
-                    foreach ($imageFiles as $imageFile) {
-                        // first check if the this photo is not in other templates or products
-                        $existingSameImages = Image::where('image_path', $photo["image_path"])->where('product_id', $product->id)->get();
-                        $existingSameImagesInTemplates = Template::where('product_id', $product->id)
-                            ->where(function ($query) use ($photo) {
-                                $query->where('image1', $photo["image_path"])
-                                    ->orWhere('image2', $photo["image_path"])
-                                    ->orWhere('image3', $photo["image_path"])
-                                    ->orWhere('image4', $photo["image_path"])
-                                    ->orWhere('image5', $photo["image_path"])
-                                    ->orWhere('image6', $photo["image_path"]);
-                            })->get();
-                        if (($existingSameImages->count() + $existingSameImagesInTemplates->count()) <= 1) {
-                            if ($imageFile == $folderPath . $photo["image_path"]) {
-                                File::delete($imageFile);
-                            }
-                        }
+                $imagePath = $photo["image_path"];
+
+                $existingSameImages = Image::where('image_path', $photo["image_path"])
+                    ->where('product_id', $product->id)
+                    ->get();
+
+                $existingSameImagesInTemplates = Template::where('product_id', $product->id)
+                    ->where(function ($query) use ($imagePath) {
+                        $query->where('image1', $imagePath)
+                            ->orWhere('image2', $imagePath)
+                            ->orWhere('image3', $imagePath)
+                            ->orWhere('image4', $imagePath)
+                            ->orWhere('image5', $imagePath)
+                            ->orWhere('image6', $imagePath);
+                    })->get();
+
+                if (($existingSameImages->count() + $existingSameImagesInTemplates->count()) < 1) {
+
+
+                    if (isset($product->color_id)) {
+                        $existingColor = Color::find($product->color_id);
+                        $folderPath .= $product->name . "-" . $existingColor->color_name;
+                    } elseif (isset($product->variant)) {
+                        $folderPath .= $product->name . "-" . $product->variant;
+                    } else {
+                        $folderPath .= $product->name;
+                    }
+                    if (File::exists($folderPath) && File::isDirectory($folderPath)) {
+                        $folderPath .= "/";
+                        File::delete($folderPath . $photo["image_path"]);
                     }
                 }
             } // just update
