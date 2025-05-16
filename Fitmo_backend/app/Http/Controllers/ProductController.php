@@ -873,19 +873,43 @@ class ProductController extends Controller
         $existingColor = Color::find($existingProduct->color_id);
         $existingTemplate = Template::find($templateId);
 
-        //here I need to check if there is more of that photo in other templates or in products
-        $existingSameImages = Image::where('image_path', $existingProduct["name"])->get();
-        $existingSameImagesInTemplates = Template::where('product_id', $existingProduct["id"])
-            ->where(function ($query) use ($existingProduct) {
-                $query->where('image1', $existingProduct["name"])
-                    ->orWhere('image2', $existingProduct["name"])
-                    ->orWhere('image3', $existingProduct["name"])
-                    ->orWhere('image4', $existingProduct["name"])
-                    ->orWhere('image5', $existingProduct["name"])
-                    ->orWhere('image6', $existingProduct["name"]);
-            })->get();
+        // Check if there is existing Image where product_id is same as $productId and image_path is same as $existingTemplate->image with number
+        // 1-6
+        $existingSameImages = Image::where('product_id', $existingProduct["id"])
+            ->where(function ($query) use ($existingTemplate) {
+                $query->where('image_path', $existingTemplate->image1)
+                    ->orWhere('image_path', $existingTemplate->image2)
+                    ->orWhere('image_path', $existingTemplate->image3)
+                    ->orWhere('image_path', $existingTemplate->image4)
+                    ->orWhere('image_path', $existingTemplate->image5)
+                    ->orWhere('image_path', $existingTemplate->image6);
+            })
+            ->get();
 
-        if (($existingSameImages->count() + $existingSameImagesInTemplates->count()) <= 1) {
+        $imagePaths = [
+            $existingTemplate->image1,
+            $existingTemplate->image2,
+            $existingTemplate->image3,
+            $existingTemplate->image4,
+            $existingTemplate->image5,
+            $existingTemplate->image6,
+        ];
+
+        $matchingTemplates = Template::where('product_id', $existingTemplate->product_id)
+            ->where('id', '!=', $existingTemplate->id)
+            ->where(function ($query) use ($imagePaths) {
+                foreach ($imagePaths as $imagePath) {
+                    $query->orWhere('image1', $imagePath)
+                        ->orWhere('image2', $imagePath)
+                        ->orWhere('image3', $imagePath)
+                        ->orWhere('image4', $imagePath)
+                        ->orWhere('image5', $imagePath)
+                        ->orWhere('image6', $imagePath);
+                }
+            })
+            ->get();
+
+        if (($existingSameImages->count() + $matchingTemplates->count()) < 1) {
             $folderPath = 'products/';
 
             if (isset($existingColor)) {
