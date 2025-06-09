@@ -34,7 +34,7 @@ html {
 }
 
 .content {
-  padding-top: 5rem;
+  //padding-top: 5rem;
 }
 
 .content {

@@ -1,34 +1,47 @@
 <template>
-  <div class="templates" :style="{ background: template.template.color }">
+  <div
+    class="templates"
+    :style="{
+      background:
+        template.template.type !== 'bloky'
+          ? template.template.color
+          : 'transparent',
+    }"
+  >
     <div v-if="template.template.type === 'bloky'" class="bloky my-row">
       <template v-for="i in 6" :key="i">
-        <div class="col-4-xs column" v-if="template.template[`image${i}`]">
-          <img
-            :src="
-              template.template.from !== 'db'
-                ? template.template[`image${i}`]?.tentativePath
-                : product.color_name
-                ? imageBasePath +
-                  product.name +
-                  '-' +
-                  product.color_name +
-                  '/' +
-                  template.template[`image${i}`]
-                : product.variant
-                ? imageBasePath +
-                  product.name +
-                  '-' +
-                  product.variant +
-                  '/' +
-                  template.template[`image${i}`]
-                : imageBasePath +
-                  product.name +
-                  '/' +
-                  template.template[`image${i}`]
-            "
-          />
-          <h2>{{ template.template[`txt${i}`] }}</h2>
-          <p>{{ template.template[`subtxt${i}`] }}</p>
+        <div
+          class="col-12-xs col-6-md col-4-lg column"
+          v-if="template.template[`image${i}`]"
+        >
+          <div>
+            <img
+              :src="
+                template.template.from !== 'db'
+                  ? template.template[`image${i}`]?.tentativePath
+                  : product.color_name
+                  ? imageBasePath +
+                    product.name +
+                    '-' +
+                    product.color_name +
+                    '/' +
+                    template.template[`image${i}`]
+                  : product.variant
+                  ? imageBasePath +
+                    product.name +
+                    '-' +
+                    product.variant +
+                    '/' +
+                    template.template[`image${i}`]
+                  : imageBasePath +
+                    product.name +
+                    '/' +
+                    template.template[`image${i}`]
+              "
+            />
+            <h3>{{ template.template[`txt${i}`] }}</h3>
+            <p>{{ template.template[`subtxt${i}`] }}</p>
+          </div>
         </div>
       </template>
     </div>
@@ -286,16 +299,29 @@ li {
   }
 
   .bloky {
+    margin: auto;
+    justify-content: center;
+
+    > div > div {
+      padding: 0.5rem 1rem;
+    }
+
     img {
+      box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
       margin: auto;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 1.5rem;
     }
 
     p {
-      text-align: left;
+      text-align: center;
+      line-height: 1.7rem;
     }
 
-    h2 {
+    h3 {
       padding: 1rem 0 0.2rem 0;
+      text-align: center;
     }
   }
 
@@ -320,6 +346,7 @@ li {
   .textFotka {
     // padding: 0 5%;
     img {
+      object-fit: scale-down;
       border-radius: 2rem;
       -webkit-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
       -moz-box-shadow: 2px 3px 18px rgba(0, 0, 0, 0.29);
@@ -359,7 +386,7 @@ li {
     p,
     li {
       font-size: 1.4rem !important;
-      max-width: 100rem;
+      //max-width: 100rem;
     }
 
     li {

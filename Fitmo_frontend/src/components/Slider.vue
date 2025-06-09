@@ -101,13 +101,13 @@ export default {
 
   &__slide {
     background: $white;
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     display: flex;
     flex-wrap: wrap;
     padding: 2rem;
     padding-bottom: 3rem;
     color: $black-headers;
-    min-height: 200px !important;
+    //min-height: 200px !important;
     min-width: 30rem;
     align-items: flex-start;
 

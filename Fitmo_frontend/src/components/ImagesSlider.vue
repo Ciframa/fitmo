@@ -34,9 +34,6 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
-
-import { useKeenSlider } from "keen-slider/vue.es";
 import "keen-slider/keen-slider.min.css";
 import KeenSlider from "keen-slider";
 
@@ -62,6 +59,44 @@ export default {
         slides: {
           perView: 6,
           spacing: 10,
+        },
+        breakpoints: {
+          "(min-width: 1px)": {
+            slides: {
+              perView: 3, // Adjust for smaller screens
+              spacing: 5,
+            },
+          },
+          "(min-width: 576px)": {
+            slides: {
+              perView: 4, // Adjust for very small screens
+              spacing: 10,
+            },
+          },
+          "(min-width: 768px)": {
+            slides: {
+              perView: 5, // Adjust for very small screens
+              spacing: 10,
+            },
+          },
+          "(min-width: 992px)": {
+            slides: {
+              perView: 4, // Adjust for very small screens
+              spacing: 10,
+            },
+          },
+          "(min-width: 1200px)": {
+            slides: {
+              perView: 5, // Adjust for very small screens
+              spacing: 10,
+            },
+          },
+          "(min-width: 1600px)": {
+            slides: {
+              perView: 6, // Adjust for very small screens
+              spacing: 10,
+            },
+          },
         },
       },
       [ThumbnailPlugin(this.slider)]
@@ -121,8 +156,10 @@ function ThumbnailPlugin(main) {
   max-height: unset !important;
 }
 
-.thumbnail {
-  margin: 1rem 0;
+@media screen and (min-width: $screen-lg-min) {
+  .thumbnail {
+    margin: 1rem 0;
+  }
 }
 
 .thumbnail .keen-slider__slide {
@@ -130,10 +167,10 @@ function ThumbnailPlugin(main) {
   padding: 0;
   font-size: 30px;
   margin-top: 10px;
-  height: 100px !important;
-  width: 100px !important;
+  //height: 100px !important;
+  //width: 100px !important;
   //min-width: 100px !important;
-  min-height: unset !important;
+  //min-height: unset !important;
 }
 
 .thumbnail .keen-slider__slide {
@@ -141,12 +178,15 @@ function ThumbnailPlugin(main) {
 }
 
 .thumbnail .keen-slider__slide.active {
-  border: 2px dashed black;
+  border: 2px solid $yellow;
 }
 
-@media screen and (min-width: $screen-md-min) {
-  .keen-slider:not([data-keen-slider-disabled]) .keen-slider__slide {
-    height: auto;
-  }
+.keen-slider {
+  min-height: fit-content;
+}
+
+.keen-slider:not([data-keen-slider-disabled]) .keen-slider__slide {
+  height: auto;
+  object-fit: inherit;
 }
 </style>

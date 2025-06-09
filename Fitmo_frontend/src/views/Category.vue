@@ -579,10 +579,9 @@ export default {
 
     &__navigation {
       display: flex;
-      position: absolute;
-      top: 0;
-      left: 5%;
-      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin: auto;
+      column-gap: 0.8rem;
       color: $gray;
       width: 90%;
       border-top: 1px solid $gray-second;

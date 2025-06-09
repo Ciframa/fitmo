@@ -603,7 +603,7 @@ header .loginModal {
   }
 }
 
-@media screen and (min-width: $screen-lg-min) {
+@media screen and (min-width: $screen-xl-min) {
   header .loginModal .modal-body {
     flex-wrap: nowrap;
   }
@@ -1298,7 +1298,7 @@ header.Home .content_wrapper__footer {
   }
 }
 
-@media screen and (max-width: $screen-lg-min) {
+@media screen and (max-width: $screen-xl-min) {
   header .loginModal .modal-dialog {
     form.login {
       width: 100%;
@@ -1352,7 +1352,7 @@ header.Home .content_wrapper__footer {
   }
 }
 
-@media screen and (min-width: $screen-lg-min) {
+@media screen and (min-width: $screen-xl-min) {
   header .content_wrapper {
     &__upper {
       & > a {
@@ -1460,7 +1460,7 @@ header.Home .content_wrapper__footer > img {
   }
 }
 
-@media screen and (max-width: $screen-lg-min) {
+@media screen and (max-width: $screen-xl-min) {
   .showX {
     display: flex !important;
   }
@@ -1551,7 +1551,7 @@ header.Home .content_wrapper__footer > img {
   }
 }
 
-@media screen and (min-width: $screen-lg-min) {
+@media screen and (min-width: $screen-xl-min) {
   header {
     .content_wrapper {
       &__upper {

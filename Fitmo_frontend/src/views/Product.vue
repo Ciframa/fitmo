@@ -1,6 +1,5 @@
 <template>
   <div v-if="isLoading">Načítání produktu...</div>
-
   <div class="product" v-else-if="this.products[0]">
     <ul class="category__header__navigation">
       <li>
@@ -44,27 +43,12 @@
           :key="product.id"
           v-if="product.isMain === 1"
         >
-          <div class="product__header__item__header">
-            <h1 v-if="!product.color_name">{{ product.name }}</h1>
-            <h1 v-if="product.color_name">
-              {{ product.name }}, {{ product.color_name }}
-            </h1>
-            <h2>{{ product.description }}</h2>
-            <div class="product__header__rating">
-              <font-awesome-icon :icon="['fa', 'star']" />
-              <font-awesome-icon :icon="['fa', 'star']" />
-              <font-awesome-icon :icon="['fa', 'star']" />
-              <font-awesome-icon :icon="['fa', 'star']" />
-              <font-awesome-icon :icon="['fa', 'star']" />
-            </div>
-          </div>
           <div class="product__header__item__img_wrapper">
             <span
               v-if="product.discountPercent"
               class="home__eshop__wrapper__item_discount"
               >-{{ product.discountPercent }}%</span
             >
-
             <div class="product__header__item__img_wrapper__more">
               <ImagesSlider
                 :images="product.image_urls"
@@ -75,77 +59,93 @@
               />
             </div>
           </div>
-
-          <div class="product__header__item__footer">
-            <div class="product__header__item__footer__variants">
-              <div v-for="variant in this.products[0]" :key="variant.id">
-                <div
-                  class="home__eshop__wrapper__img_wrapper__subProducts"
-                  :class="{ active: variant.isMain == 1 }"
-                  v-on:click="changeProduct(variant)"
-                  v-if="variant.color_id"
-                >
+          <div class="product__header__item__header">
+            <h1 v-if="!product.color_name">{{ product.name }}</h1>
+            <h1 v-if="product.color_name">
+              {{ product.name }}, {{ product.color_name }}
+            </h1>
+            <h2>{{ product.description }}</h2>
+            <!--            <div class="product__header__rating">-->
+            <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
+            <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
+            <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
+            <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
+            <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
+            <!--            </div>-->
+            <div class="product__header__item__footer">
+              <div class="product__header__item__footer__variants">
+                <div v-for="variant in this.products[0]" :key="variant.id">
                   <div
-                    v-if="variant.color_primary"
-                    :style="{ backgroundColor: variant.color_primary }"
-                  ></div>
-                  <div
-                    v-if="variant.color_secondary"
-                    :style="{ backgroundColor: variant.color_secondary }"
-                  ></div>
+                    v-if="variant.color_id"
+                    class="home__eshop__wrapper__img_wrapper__subProducts"
+                    :class="{ active: variant.isMain == 1 }"
+                    v-on:click="changeProduct(variant)"
+                  >
+                    <div
+                      v-if="variant.color_primary"
+                      :style="{ backgroundColor: variant.color_primary }"
+                    ></div>
+                    <div
+                      v-if="variant.color_secondary"
+                      :style="{ backgroundColor: variant.color_secondary }"
+                    ></div>
+                  </div>
+                  <template
+                    v-if="!products[0][0].color_id && products[0].length > 1"
+                  >
+                    <div
+                      class="btn-gray"
+                      v-if="variant.variant"
+                      v-on:click="changeProduct({ id: $event.target.value })"
+                    >
+                      {{ variant.variant }}
+                    </div>
+                  </template>
                 </div>
               </div>
-              <select
-                v-if="!products[0][0].color_id && products[0].length > 1"
-                @change="changeProduct({ id: $event.target.value })"
+              <p
+                v-if="product.description_sentence"
+                class="product__header__item__footer__info"
               >
-                <template v-for="variant in products[0]">
-                  <option
-                    v-if="variant.id"
-                    :key="variant.id"
-                    :value="variant.id"
-                    :selected="variant.isMain === 1"
+                {{ product.description_sentence }}
+              </p>
+              <div
+                v-if="
+                  product.discount || product.topProduct || product.newProduct
+                "
+                class="home__eshop__wrapper__discounts"
+              >
+                <span v-if="product.discount" class="btn-yellow">Akce</span>
+                <span v-if="product.topProduct" class="btn-green"
+                  >Top produkt</span
+                >
+                <span v-if="product.newProduct" class="btn-blue">Novinka</span>
+              </div>
+              <div class="home__eshop__wrapper__price">
+                <template v-if="product.discounted"
+                  ><span class="home__eshop__wrapper__price__trough"
+                    >{{ product.price }} Kč</span
                   >
-                    {{ variant.variant }}
-                  </option>
+                  <span class="home__eshop__wrapper__price__discount"
+                    >{{ product.discounted }} Kč</span
+                  >
                 </template>
-              </select>
-            </div>
-
-            <p class="product__header__item__footer__info">
-              {{ product.description_sentence }}
-            </p>
-            <div class="home__eshop__wrapper__discounts">
-              <span v-if="product.discount" class="btn-yellow">Akce</span>
-              <span v-if="product.topProduct" class="btn-green"
-                >Top produkt</span
-              >
-              <span v-if="product.newProduct" class="btn-blue">Novinka</span>
-            </div>
-            <div v-if="product.discounted" class="home__eshop__wrapper__price">
-              <span class="home__eshop__wrapper__price__trough"
-                >{{ product.price }} Kč</span
-              >
-              <span class="home__eshop__wrapper__price__discount"
-                >{{ product.discounted }} Kč</span
-              >
-            </div>
-            <div v-if="!product.discounted" class="home__eshop__wrapper__price">
-              <span>{{ product.price }} Kč</span>
-            </div>
-            <div class="product__header__item__footer__buy">
-              <vue-number-input
-                :model-value="1"
-                :min="1"
-                class="center-text"
-                v-model="amount"
-                :inputtable="false"
-                inline
-                controls
-              ></vue-number-input>
-              <button class="btn-yellow" @click="addItem(product)">
-                Přidat do košíku
-              </button>
+                <span v-if="!product.discounted">{{ product.price }} Kč</span>
+                <div class="product__header__item__footer__buy">
+                  <vue-number-input
+                    :model-value="1"
+                    :min="1"
+                    class="center-text"
+                    v-model="amount"
+                    :inputtable="false"
+                    inline
+                    controls
+                  ></vue-number-input>
+                  <button class="btn-yellow" @click="addItem(product)">
+                    Přidat do košíku
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -342,12 +342,13 @@ export default {
 
   &__header {
     width: 90%;
+    max-width: 1920px;
     margin: auto;
     padding-bottom: 3rem;
 
     h1 {
-      font-size: 44px;
-      margin-top: 2rem;
+      font-size: 3.2rem;
+      margin-top: 3rem;
     }
 
     h1,
@@ -358,8 +359,10 @@ export default {
 
     h2 {
       font-weight: 100;
-      color: $black;
-      font-size: 2.2rem;
+      color: $gray;
+      margin-top: 0.4rem;
+      margin-bottom: 0.6rem;
+      font-size: 2rem;
     }
 
     &__rating {
@@ -367,11 +370,6 @@ export default {
     }
 
     &__item {
-      display: grid !important;
-      grid-auto-flow: row;
-      margin: auto;
-      column-gap: 3rem;
-
       &__img_wrapper {
         margin: auto;
         position: relative;
@@ -379,13 +377,13 @@ export default {
 
         &__more {
           display: flex;
-          gap: 1.3rem;
+          gap: 1.6rem;
           margin-top: 1.6rem;
 
           img {
-            height: 7.5rem;
-            width: 7.5rem;
-            border: 1px solid black;
+            //height: 7.5rem;
+            //width: 7.5rem;
+            border: 1px solid $gray-second;
             padding: 0.6rem;
             aspect-ratio: 3 / 2;
             object-fit: contain;
@@ -395,6 +393,7 @@ export default {
 
       &__footer {
         margin-right: auto;
+        flex-direction: column;
 
         &__variants {
           display: flex;
@@ -419,7 +418,6 @@ export default {
         }
 
         &__buy {
-          margin-top: 2rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -436,6 +434,7 @@ export default {
             display: flex;
             font-size: 2.8rem;
             gap: 0.8rem;
+            margin-top: 2rem;
             align-items: flex-start;
 
             &__trough {
@@ -451,7 +450,6 @@ export default {
 
       .home__eshop__wrapper {
         &__price {
-          margin-top: 2rem;
         }
 
         &__discounts span {
@@ -484,84 +482,62 @@ export default {
   }
 }
 
-@media screen and (max-width: ($screen-md-min - 1px)) {
-  .product {
-    &__header__item {
-      position: relative;
-      //max-width: 41rem;
-      padding-bottom: 7rem;
+.product {
+  &__header__item {
+    position: relative;
+    //max-width: 41rem;
+    padding-bottom: 7rem;
 
-      &__footer {
-        display: flex;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-        width: 100%;
+    &__footer {
+      display: flex;
+      margin-top: 0.4rem;
+      flex-wrap: wrap;
+      width: 100%;
 
-        &__info {
-          display: none;
-        }
-
-        .home__eshop__wrapper {
-          &__price {
-            order: 2;
-            flex-direction: column;
-          }
-
-          &__discounts {
-            order: 1;
-            width: 100%;
-          }
-        }
-
-        &__buy {
-          order: 3;
-          margin-left: auto;
-          margin-top: 4rem;
-          margin-right: 5%;
-
-          button.btn-yellow {
-            position: absolute;
-            padding: 1.2rem 4rem;
-            border-radius: 2.5rem;
-            bottom: 0;
-            left: calc(50% - 10.9rem);
-          }
-        }
-      }
-    }
-  }
-}
-
-@media screen and (min-width: $screen-md-min) {
-  .product {
-    &__header__item {
-      &__img_wrapper {
-        grid-column: 1 / span 1;
-        grid-my-row: 1 / span 3;
-        overflow: hidden;
+      &__info {
+        display: none;
       }
 
-      &__footer {
-        grid-column: 2 / span 1;
-        grid-my-row: 2 / span 1;
+      .home__eshop__wrapper {
+        &__price {
+          flex-direction: column;
+        }
+
+        &__discounts {
+          width: 100%;
+        }
       }
 
-      &__header {
-        margin-top: 6rem;
+      &__buy {
+        button.btn-yellow {
+          padding: 1.2rem 4rem;
+          border-radius: 2.5rem;
+          bottom: 0;
+        }
       }
     }
   }
 }
 
 @media screen and (min-width: $screen-lg-min) {
-  .product__header {
-    &__item {
-      grid-template-columns: 700px 1fr;
+  .product__header__item {
+    &__img_wrapper {
+      width: 70%;
+      padding-right: 3rem;
+    }
 
-      &__footer {
-        width: 100%;
+    &__footer {
+      .home__eshop__wrapper__price {
+        justify-content: flex-start;
       }
     }
+
+    &__header {
+      width: 30%;
+    }
   }
+}
+
+@media screen and (min-width: $screen-xl-min) {
 }
 </style>
