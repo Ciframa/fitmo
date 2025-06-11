@@ -60,10 +60,11 @@
             </div>
           </div>
           <div class="product__header__item__header">
-            <h1 v-if="!product.color_name">{{ product.name }}</h1>
-            <h1 v-if="product.color_name">
-              {{ product.name }}, {{ product.color_name }}
-            </h1>
+            <h1>{{ product.name }}</h1>
+            <!--            <h1 v-if="!product.color_name">{{ product.name }}</h1>-->
+            <!--            <h1 v-if="product.color_name">-->
+            <!--              {{ product.name }}, {{ product.color_name }}-->
+            <!--            </h1>-->
             <h2>{{ product.description }}</h2>
             <!--            <div class="product__header__rating">-->
             <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
@@ -73,32 +74,49 @@
             <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
             <!--            </div>-->
             <div class="product__header__item__footer">
+              <p v-if="labelText">
+                {{ labelText }}
+              </p>
               <div class="product__header__item__footer__variants">
                 <div v-for="variant in this.products[0]" :key="variant.id">
                   <div
-                    v-if="variant.color_id"
-                    class="home__eshop__wrapper__img_wrapper__subProducts"
                     :class="{ active: variant.isMain == 1 }"
+                    class="btn-gray"
+                    v-if="variant?.color_id"
                     v-on:click="changeProduct(variant)"
                   >
-                    <div
-                      v-if="variant.color_primary"
-                      :style="{ backgroundColor: variant.color_primary }"
-                    ></div>
-                    <div
-                      v-if="variant.color_secondary"
-                      :style="{ backgroundColor: variant.color_secondary }"
-                    ></div>
+                    {{ variant.color_name }}
+                    <div class="home__eshop__wrapper__img_wrapper__subProducts">
+                      <div
+                        v-if="variant.color_primary"
+                        :style="{ backgroundColor: variant.color_primary }"
+                      ></div>
+                      <div
+                        v-if="variant.color_secondary"
+                        :style="{ backgroundColor: variant.color_secondary }"
+                      ></div>
+                    </div>
                   </div>
                   <template
                     v-if="!products[0][0].color_id && products[0].length > 1"
                   >
                     <div
+                      :class="variant.isMain ? 'active' : ''"
                       class="btn-gray"
-                      v-if="variant.variant"
-                      v-on:click="changeProduct({ id: $event.target.value })"
+                      v-if="variant.parent_id !== 0"
+                      v-on:click="
+                        changeProduct({
+                          id: variant.isMain ? 'default' : variant.id,
+                        })
+                      "
                     >
                       {{ variant.variant }}
+                      <font-awesome-icon
+                        class="btn-gray__times"
+                        v-if="variant.isMain"
+                        size="lg"
+                        :icon="['fa', 'times']"
+                      />
                     </div>
                   </template>
                 </div>
@@ -130,6 +148,7 @@
                     >{{ product.discounted }} Kč</span
                   >
                 </template>
+                <!--                TODO pridat od kdyz main-->
                 <span v-if="!product.discounted">{{ product.price }} Kč</span>
                 <div class="product__header__item__footer__buy">
                   <vue-number-input
@@ -291,6 +310,9 @@ export default {
     },
 
     changeProduct(variant) {
+      if (variant.id === "default") {
+        variant.id = this.products[0].find((item) => item.parent_id === 0)?.id;
+      }
       this.products[0].forEach((product) => {
         if (product.id != variant.id) {
           product.isMain = 0;
@@ -306,7 +328,18 @@ export default {
     },
   },
 
-  computed: {},
+  computed: {
+    labelText() {
+      const product = this.products?.[0];
+      if (product?.[0]?.color_id) {
+        return "Barva:";
+      } else if (product?.length > 1) {
+        return "Varianta:";
+      } else {
+        return "";
+      }
+    },
+  },
   mounted() {
     this.getCategories();
     this.getProduct().then(() => {
@@ -398,14 +431,70 @@ export default {
         &__variants {
           display: flex;
           gap: 0.8rem;
+          padding: 1px 0;
+          align-items: center;
+          flex-wrap: wrap;
+
+          &:has(.active) {
+            padding: 0;
+          }
+
+          .btn-gray {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            gap: 0.7rem;
+
+            // Hover on .btn-gray changes .btn-gray itself
+            &:hover {
+              cursor: pointer;
+              background: $white;
+              color: $black;
+              border-color: $yellow;
+
+              // This targets the child .btn-gray__times on hover
+              .btn-gray__times {
+                background: $gray-second;
+                color: $white;
+              }
+            }
+
+            &.active {
+              color: $black;
+              border-width: 2px;
+              border-color: $yellow;
+            }
+
+            &__times {
+              position: absolute;
+              height: 14px;
+              top: -3px;
+              right: -3px;
+              border: 1px solid $gray-second;
+              background: $white;
+              border-radius: 50%;
+              z-index: 2;
+              color: $gray-second;
+              transition: 0.2s ease all;
+              aspect-ratio: 1/1;
+
+              &:hover {
+                background: $gray-second;
+                color: $white;
+              }
+            }
+          }
 
           .home__eshop__wrapper__img_wrapper__subProducts {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-bottom: 0;
+            border: 0;
 
             > div {
-              width: 2.5rem;
-              height: 2.5rem;
+              width: 1.5rem;
+              height: 1.5rem;
             }
           }
         }
@@ -493,6 +582,11 @@ export default {
       margin-top: 0.4rem;
       flex-wrap: wrap;
       width: 100%;
+
+      > p {
+        margin-bottom: 0.3rem;
+        font-size: 1.6rem;
+      }
 
       &__info {
         display: none;
