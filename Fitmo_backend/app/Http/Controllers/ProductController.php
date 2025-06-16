@@ -573,26 +573,27 @@ class ProductController extends Controller
             'products.*',
             'product_categories.category_id as category_id',
             'product_categories.product_order'
-        )->with(['categories', 'children' => function ($query) {
-            $query->select(
-                'prices.*',
-                'product_states.*',
-                'categories.name as category_name',
-                'colors.*',
-                'products.*',
-                'product_categories.category_id as category_id'
-            )
-                ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
-                ->join('product_states', 'products.id', '=', 'product_states.product_id')
-                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
-                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
-                ->where('products.parent_id', '!=', 0)
-                ->where('products.isActive', 1)
-                ->whereNotNull('categories.id_parent')
-                ->groupBy('products.id'); // Ensure each product is only once in children
-        }])
+        )
+            ->with(['categories', 'children' => function ($query) {
+                $query->select(
+                    'prices.*',
+                    'product_states.*',
+                    'categories.name as category_name',
+                    'colors.*',
+                    'products.*',
+                    'product_categories.category_id as category_id'
+                )
+                    ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
+                    ->join('product_states', 'products.id', '=', 'product_states.product_id')
+                    ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                    ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                    ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                    ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
+                    ->where('products.parent_id', '!=', 0)
+                    ->where('products.isActive', 1)
+                    ->whereNotNull('categories.id_parent')
+                    ->groupBy('products.id'); // Ensure each product is only once in children
+            }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
@@ -607,25 +608,25 @@ class ProductController extends Controller
             ->orderBy('categories.id_parent', 'asc')
             ->orderBy('categories.childIndex', 'asc')
             ->orderBy('product_categories.product_order', 'asc');
+//TODO apply filter
 
-        if ($request->filter) {
-            $query->where(function ($q) use ($request) {
-                if (!empty($request->filter["and"])) {
-                    foreach ($request->filter["and"] as $andCondition) {
-                        $q->where($andCondition['column'], $andCondition['operator'], $andCondition['value']);
-                    }
-                }
-
-                if (!empty($request->filter["or"])) {
-                    $q->where(function ($orQ) use ($request) {
-                        foreach ($request->filter["or"] as $orCondition) {
-                            $orQ->orWhere($orCondition['column'], $orCondition['operator'], $orCondition['value']);
-                        }
-                    });
-                }
-            });
-        }
-
+//        if ($request->filter) {
+//            $query->where(function ($q) use ($request) {
+//                if (!empty($request->filter["and"])) {
+//                    foreach ($request->filter["and"] as $andCondition) {
+//                        $q->where($andCondition['column'], $andCondition['operator'], $andCondition['value']);
+//                    }
+//                }
+//
+//                if (!empty($request->filter["or"])) {
+//                    $q->where(function ($orQ) use ($request) {
+//                        foreach ($request->filter["or"] as $orCondition) {
+//                            $orQ->orWhere($orCondition['column'], $orCondition['operator'], $orCondition['value']);
+//                        }
+//                    });
+//                }
+//            });
+//        }
         $paginatedProducts = $query->paginate(16, ['*'], 'page', $request->page ?? 1);
         $products = $this->formatProducts($paginatedProducts, true);
 

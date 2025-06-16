@@ -140,16 +140,50 @@
                 <span v-if="product.newProduct" class="btn-blue">Novinka</span>
               </div>
               <div class="home__eshop__wrapper__price">
-                <template v-if="product.discounted"
-                  ><span class="home__eshop__wrapper__price__trough"
-                    >{{ product.price }} Kč</span
-                  >
-                  <span class="home__eshop__wrapper__price__discount"
-                    >{{ product.discounted }} Kč</span
-                  >
+                <template v-if="isMainProductActive()">
+                  <div class="home__eshop__wrapper__price">
+                    {{ getLowestPrice() }}
+                    <span
+                      >{{ this.products[0].length > 1 ? "od" : "" }}
+                      {{
+                        getLowestPrice()["discounted"] ??
+                        getLowestPrice()["normalPrice"]
+                      }}
+                      Kč</span
+                    >
+                  </div>
                 </template>
-                <!--                TODO pridat od kdyz main-->
-                <span v-if="!product.discounted">{{ product.price }} Kč</span>
+                <template v-if="!isMainProductActive(true)">
+                  <template v-if="product.discounted"
+                    ><span class="home__eshop__wrapper__price__trough"
+                      >{{ product.price }} Kč</span
+                    >
+                    <span class="home__eshop__wrapper__price__discount"
+                      >{{ product.discounted }} Kč</span
+                    >
+                  </template>
+
+                  <div
+                    v-if="getLowestPrice(true)['discounted']"
+                    class="home__eshop__wrapper__price"
+                  >
+                    <span class="home__eshop__wrapper__price__trough"
+                      >{{ getLowestPrice(true)["discounted"] }} Kč</span
+                    >
+                    <span class="home__eshop__wrapper__price__discount"
+                      >{{ getLowestPrice(true)["normalPrice"] }} Kč</span
+                    >
+                  </div>
+                  <div
+                    class="home__eshop__wrapper__price"
+                    v-if="!getLowestPrice(true)['discounted']"
+                  >
+                    <span>
+                      {{ getLowestPrice(true)["normalPrice"] }}
+                      Kč</span
+                    >
+                  </div>
+                </template>
                 <div class="product__header__item__footer__buy">
                   <vue-number-input
                     :model-value="1"
@@ -223,6 +257,12 @@ export default {
     },
   },
   methods: {
+    isMainProductActive() {
+      const item = this.products[0]?.find((item) => {
+        return item?.isMain === 1 && item?.parent_id === 0;
+      });
+      return item?.color_id ? false : item;
+    },
     async getProduct() {
       try {
         const response = await axios.get(
@@ -247,6 +287,30 @@ export default {
         this.isLoading = false;
         console.log(error);
       }
+    },
+    //TODO fixy
+    getLowestPrice(takeOnlyMain = false) {
+      let lowestPrice = null;
+      let connectedPrice = null;
+      const products = takeOnlyMain
+        ? this.products[0].filter((item) => item.isMain === 1)
+        : this.products[0];
+      products.forEach((product) => {
+        if (product.discounted !== null) {
+          console.log(product.discounted);
+          if (lowestPrice === null || lowestPrice > product.discounted) {
+            lowestPrice = product.discounted;
+            connectedPrice = product.price;
+          }
+        } else if (product.price !== null) {
+          console.log(product.price);
+          if (lowestPrice === null || lowestPrice > product.price) {
+            console.log(lowestPrice === null || lowestPrice > product.price);
+            lowestPrice = product.price;
+          }
+        }
+      });
+      return { normalPrice: connectedPrice, discounted: lowestPrice };
     },
     async getTemplates() {
       if (this.products[0]) {

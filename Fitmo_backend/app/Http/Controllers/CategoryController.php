@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Map_table;
+use App\Models\Price;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use File;
@@ -65,10 +66,22 @@ class CategoryController extends Controller
         $categoryIds = Category::where('path', 'LIKE', $baseCategory->path . '%')
             ->pluck('id');
 
-        $priceStats = Product::join('prices', 'products.id', '=', 'prices.product_id')
+        $products = Product::select('products.*')
+            ->join('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+            ->leftJoin('products as parent', 'products.parent_id', '=', 'parent.id') // alias 'parent' here
             ->whereIn('product_categories.category_id', $categoryIds)
-            ->selectRaw('MIN(prices.price) as min_price, MAX(prices.price) as max_price, MIN(prices.discounted) as min_discounted_price')
+            ->where('products.isActive', 1)
+            ->where(function ($query) {
+                $query->where('products.parent_id', 0) // product has no parent
+                ->orWhere('parent.isActive', 1); // or parent is active
+            })
+            ->get();
+
+        $productIds = $products->pluck('id');
+
+        $priceStats = Price::whereIn('product_id', $productIds)
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price, MIN(discounted) as min_discounted_price')
             ->first();
 
         $minPrice = $priceStats->min_price;

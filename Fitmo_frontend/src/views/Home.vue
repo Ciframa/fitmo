@@ -9,7 +9,10 @@
           class="col-12-xs col-6-md col-3-xl"
         >
           <div class="category_wrapper">
-            <img :src="imageBasePath + category.image_path" alt="" />
+            <img
+              :src="imageBasePath + 'categories/' + category.image_path"
+              alt=""
+            />
             <h3>
               <router-link
                 :to="{
@@ -39,45 +42,110 @@
       </div>
     </div>
     <div class="banners">
-      <!--      <b-carousel-->
-      <!--        id="banners-carousel"-->
-      <!--        v-model="slide"-->
-      <!--        :interval="1000"-->
-      <!--        controls-->
-      <!--        indicators-->
-      <!--        style="text-shadow: 1px 1px 2px #333"-->
-      <!--        @sliding-start="onSlideStart"-->
-      <!--        @sliding-end="onSlideEnd"-->
-      <!--      >-->
-      <!--        &lt;!&ndash; Text slides with image &ndash;&gt;-->
-      <!--        <b-carousel-slide-->
-      <!--          img-src="https://picsum.photos/1024/480/?image=52"-->
-      <!--        ></b-carousel-slide>-->
-      <!--      </b-carousel>-->
-      <img
+      <banners-images-slider
         class="xs-to-sm"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20moibil%20576x1200.png"
-        alt=""
+        :imageBasePath="this.imageBasePath + 'banners/'"
+        :images="[
+          {
+            path: 'Banner - Výživa - mobil 576x1200.png',
+          },
+          {
+            path: 'Banner - Regenerace - mobil 576x1200.png',
+          },
+          {
+            path: 'Banner - OCR Vybavení - mobil 576x1200.png',
+          },
+          {
+            path: 'Banner - Fitness Vybavení - mobil 576x1200.png',
+          },
+          {
+            path: 'Banner - Boty - mobil 576x1200.png',
+          },
+        ]"
       />
-      <img
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20moibil%20768x1200.png"
-        alt=""
+      <banners-images-slider
         class="sm-to-md"
+        :imageBasePath="this.imageBasePath + 'banners/'"
+        :images="[
+          {
+            path: 'Banner - Výživa - mobil 768x1200.png',
+          },
+          {
+            path: 'Banner - Regenerace - mobil 768x1200.png',
+          },
+          {
+            path: 'Banner - OCR Vybavení - mobil 768x1200.png',
+          },
+          {
+            path: 'Banner - Fitness Vybavení - mobil 768x1200.png',
+          },
+          {
+            path: 'Banner - Boty - mobil 768x1200.png',
+          },
+        ]"
       />
-      <img
+      <banners-images-slider
         class="md-to-lg"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20tablet%201100x1200.png"
-        alt=""
+        :imageBasePath="this.imageBasePath + 'banners/'"
+        :images="[
+          {
+            path: 'Banner - Výživa - tablet 1100x1200.png',
+          },
+          {
+            path: 'Banner - Regenerace - tablet 1100x1200.png',
+          },
+          {
+            path: 'Banner - OCR Vybavení - tablet 1100x1200.png',
+          },
+          {
+            path: 'Banner - Fitness Vybavení - tablet 1100x1200.png',
+          },
+          {
+            path: 'Banner - Boty - tablet 1100x1200.png',
+          },
+        ]"
       />
-      <img
+      <banners-images-slider
         class="lg-to-xl"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20desktop%20n.%202%201200x650.png"
-        alt=""
+        :imageBasePath="this.imageBasePath + 'banners/'"
+        :images="[
+          {
+            path: 'Banner - Výživa - desktop n. 2 1200x650.png',
+          },
+          {
+            path: 'Banner - Regenerace - desktop 1200x650.png',
+          },
+          {
+            path: 'Banner - OCR Vybavení - desktop n. 2 1200x650.png',
+          },
+          {
+            path: 'Banner - Fitness Vybavení - desktop 1200x650.png',
+          },
+          {
+            path: 'Banner - Boty - desktop 1200x650.png',
+          },
+        ]"
       />
-      <img
+      <banners-images-slider
         class="xl-to-"
-        src="../../public/assets/banners/Banner%20-%20Výživa%20-%20desktop%201920x750.png"
-        alt=""
+        :imageBasePath="this.imageBasePath + 'banners/'"
+        :images="[
+          {
+            path: 'Banner - Výživa - desktop 1920x750.png',
+          },
+          {
+            path: 'Banner - Regenerace - desktop 1920x750.png',
+          },
+          {
+            path: 'Banner - OCR Vybavení- desktop 1920x750.png',
+          },
+          {
+            path: 'Banner - Fitness Vybavení - desktop 1920x750.png',
+          },
+          {
+            path: 'Banner - Boty - desktop 1920x750.png',
+          },
+        ]"
       />
     </div>
     <div class="home__trailer">
@@ -146,12 +214,15 @@ import axios from "../api";
 import CustomMade from "@/components/CustomMade.vue";
 import Slider from "@/components/Slider.vue";
 import Product from "@/components/Product.vue";
+import BannersImagesSlider from "../components/BannersImagesSlider.vue";
+import "keen-slider/keen-slider.min.css";
 
 export default {
   components: {
     CustomMade,
     Slider,
     Product,
+    BannersImagesSlider,
   },
 
   data() {
@@ -164,17 +235,11 @@ export default {
       products: [],
       pagination: {},
       isLoading: false,
-      imageBasePath: `https://be.fitmo.cz/categories/`,
+      imageBasePath: `https://be.fitmo.cz/`,
     };
   },
 
   methods: {
-    onSlideStart(slide) {
-      this.sliding = true;
-    },
-    onSlideEnd(slide) {
-      this.sliding = false;
-    },
     getCategories() {
       axios
         .post("/api/categories", {
@@ -931,7 +996,11 @@ export default {
   margin: 5rem 0 1rem 0;
   padding: 0 1rem;
 
-  & > img {
+  > div {
+    display: none !important;
+  }
+
+  img {
     display: none;
     margin: auto;
     border-radius: 2.5rem;
