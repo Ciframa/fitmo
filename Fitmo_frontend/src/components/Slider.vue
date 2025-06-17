@@ -56,18 +56,54 @@ export default {
   },
   setup() {
     const current = ref(1);
-    const [container, slider] = useKeenSlider({
-      initial: current.value,
-      slideChanged: (s) => {
-        current.value = s.track.details.rel;
+    const [container, slider] = useKeenSlider(
+      {
+        initial: current.value,
+        slideChanged: (s) => {
+          current.value = s.track.details.rel;
+        },
+        loop: true,
+        mode: "free-snap",
+        renderMode: "performance",
+        slides: {
+          spacing: 15,
+          perView: "auto",
+        },
       },
-      loop: true,
-      mode: "free-snap",
-      slides: {
-        spacing: 15,
-        perView: "auto",
-      },
-    });
+      [
+        (slider) => {
+          let timeout;
+          let mouseOver = false;
+
+          function clearNextTimeout() {
+            clearTimeout(timeout);
+          }
+
+          function nextTimeout() {
+            clearTimeout(timeout);
+            if (mouseOver) return;
+            timeout = setTimeout(() => {
+              slider.next();
+            }, 1500);
+          }
+
+          slider.on("created", () => {
+            slider.container.addEventListener("mouseover", () => {
+              mouseOver = true;
+              clearNextTimeout();
+            });
+            slider.container.addEventListener("mouseout", () => {
+              mouseOver = false;
+              nextTimeout();
+            });
+            nextTimeout();
+          });
+          slider.on("dragStarted", clearNextTimeout);
+          slider.on("animationEnded", nextTimeout);
+          slider.on("updated", nextTimeout);
+        },
+      ]
+    );
 
     const dotHelper = computed(() =>
       slider.value
@@ -160,15 +196,15 @@ export default {
   display: none;
   @media screen and (min-width: $screen-md-min) {
     display: flex;
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
     justify-content: center;
   }
 }
 
 .dot {
   border: none;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   background: #c5c5c5;
   border-radius: 50%;
   cursor: pointer;
@@ -182,7 +218,6 @@ export default {
 }
 
 .dot.active {
-  border: 1px solid black;
   background: $yellow;
 }
 

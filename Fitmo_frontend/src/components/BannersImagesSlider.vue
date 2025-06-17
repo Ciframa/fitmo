@@ -12,8 +12,27 @@
         :src="imageBasePath + image.path"
         alt=""
       />
+      <font-awesome-icon
+        v-if="slider"
+        size="3x"
+        :icon="['fas', 'angle-left']"
+        @click="slider.prev()"
+        :class="{
+          arrow__left: true,
+          arrow: true,
+        }"
+      />
+      <font-awesome-icon
+        v-if="slider"
+        size="3x"
+        :icon="['fas', 'angle-right']"
+        @click="slider.next()"
+        :class="{
+          arrow__right: true,
+          arrow: true,
+        }"
+      />
     </div>
-    <!--    <div @click="$refs.slider.prev()">ahoj</div>-->
     <div class="dots">
       <button
         v-for="(_slide, idx) in dotHelper"
@@ -38,21 +57,23 @@ export default {
     },
     imageBasePath: String,
     class: String,
+    breakpoints: String,
   },
   name: "BannersImagesSlider",
-  setup() {
-    const current = ref(1);
+  setup(props) {
+    // Pass props as an argument
+    const current = ref(0);
     const [container, slider] = useKeenSlider({
       initial: current.value,
       slideChanged: (s) => {
         current.value = s.track.details.rel;
       },
       loop: true,
-      mode: "free-snap",
       slides: {
         spacing: 10,
-        perView: 1,
+        perView: 1, // Use props.perView
       },
+      breakpoints: props.breakpoints,
     });
 
     const dotHelper = computed(() =>
@@ -71,6 +92,32 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.keen-slider {
+  position: relative;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: $gray-third;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &__left {
+    left: 2rem;
+  }
+
+  &__right {
+    right: 2rem;
+  }
+}
+
 .banners__slide {
   padding: 0;
 

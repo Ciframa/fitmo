@@ -201,7 +201,67 @@
         <span v-show="!this.isLoading">Zobrazit další produkty</span>
       </button>
     </div>
-    <div class="home__gray_banner"></div>
+    <div class="banners">
+      <banners-images-slider
+        class="xs-to-md"
+        :breakpoints="{
+          '(min-width: 1px)': { slides: { perView: 1.1, spacing: 5 } },
+          '(min-width: 576px)': { slides: { perView: 2.1, spacing: 10 } },
+          '(min-width: 768px)': { slides: { perView: 2.1, spacing: 10 } },
+        }"
+        :imageBasePath="this.imageBasePath + 'ambassadors/'"
+        :images="[
+          {
+            path: 'Banner Adam volák - Mobil.png',
+          },
+          {
+            path: 'Banner Josef Drbohlav - mobil.png',
+          },
+          {
+            path: 'Banner Klára Lokajíčková - Mobil.png',
+          },
+          {
+            path: 'Banner Kuba Jakoubek - mobil.png',
+          },
+          {
+            path: 'Banner Lukáš Novák - mobil.png',
+          },
+          {
+            path: 'Banner Patrik Stupka - Mobil.png',
+          },
+        ]"
+      />
+      <banners-images-slider
+        class="md-to-"
+        :breakpoints="{
+          '(min-width: 768px)': { slides: { perView: 3.1, spacing: 10 } },
+          '(min-width: 992px)': { slides: { perView: 3.1, spacing: 10 } },
+          '(min-width: 1200px)': { slides: { perView: 4.1, spacing: 20 } },
+          '(min-width: 1600px)': { slides: { perView: 4.1, spacing: 20 } },
+        }"
+        :imageBasePath="this.imageBasePath + 'ambassadors/'"
+        :images="[
+          {
+            path: 'Banner Adam volák - Desktop + Tablet.png',
+          },
+          {
+            path: 'Banner Josef Drbohlav - Desktop + Tablet.png',
+          },
+          {
+            path: 'Banner Klára Lokajíčková - Desktop + Tablet.png',
+          },
+          {
+            path: 'Banner Kuba Jakoubek - Desktop + Tablet.png',
+          },
+          {
+            path: 'Banner Lukáš Novák - Desktop + Tablet.png',
+          },
+          {
+            path: 'Banner Patrik Stupka - Desktop + Tablet.png',
+          },
+        ]"
+      />
+    </div>
     <CustomMade></CustomMade>
     <div class="home__reviews">
       <Slider v-if="ratings.length" :ratings="ratings"></Slider>
