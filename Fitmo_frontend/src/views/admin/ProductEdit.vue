@@ -357,12 +357,21 @@
             <option value="jenText">Jen text</option>
             <option value="textNaFotce">Text na fotce</option>
             <option value="bloky">Bloky</option>
+            <option value="youtubeVideo">YT video</option>
           </select>
           <div class="my-row">
             <div class="column">
-              <input type="text" v-model="template.color" />
+              <input
+                type="text"
+                v-if="template.type !== 'youtubeVideo'"
+                v-model="template.color"
+              />
               <template
-                v-if="template.type !== 'jenFotka' && template.type !== 'bloky'"
+                v-if="
+                  template.type !== 'jenFotka' &&
+                  template.type !== 'bloky' &&
+                  template.type !== 'youtubeVideo'
+                "
               >
                 <quill-editor
                   v-model:value="template.text"
@@ -374,17 +383,23 @@
             <div class="column" v-if="template.type !== 'jenText'">
               <div>
                 <input
+                  v-if="template.type !== 'youtubeVideo'"
                   type="file"
                   @change="(event) => addPhoto(event, 1, template)"
                 />
                 <input
                   type="text"
                   v-model="template.txt1"
-                  placeholder="Hlavní popis"
+                  :placeholder="
+                    template.type !== 'youtubeVideo'
+                      ? 'Hlavní popis'
+                      : 'Link na video'
+                  "
                   v-if="
                     template.type === 'textFotky' ||
                     template.type === 'fotkyText' ||
-                    template.type === 'bloky'
+                    template.type === 'bloky' ||
+                    template.type === 'youtubeVideo'
                   "
                 />
                 <input

@@ -101,11 +101,24 @@ input[type="tel"] {
   @extend .btn;
   color: $white;
   background: $yellow;
+  transition: 0.2s ease all;
 
   &:hover {
     cursor: pointer;
     // background little darker
     background: darken($yellow, 3%);
+  }
+
+  &-disabled {
+    background: $gray-second;
+    color: $white;
+    cursor: not-allowed;
+
+    &:hover {
+      background: $gray-second;
+      cursor: not-allowed;
+      color: $white;
+    }
   }
 }
 

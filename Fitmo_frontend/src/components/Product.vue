@@ -99,10 +99,10 @@
             class="home__eshop__wrapper__price"
           >
             <span class="home__eshop__wrapper__price__trough"
-              >{{ getLowestPrice()["discounted"] }} Kč</span
+              >{{ getLowestPrice()["originalPrice"] }} Kč</span
             >
             <span class="home__eshop__wrapper__price__discount"
-              >{{ getLowestPrice()["normalPrice"] }} Kč</span
+              >{{ getLowestPrice()["price"] }} Kč</span
             >
           </div>
           <div
@@ -111,7 +111,7 @@
           >
             <span
               >{{ this.products.length > 1 ? "od" : "" }}
-              {{ getLowestPrice()["normalPrice"] }} Kč</span
+              {{ getLowestPrice()["price"] }} Kč</span
             >
           </div>
           <!--        <div class="home__eshop__wrapper__discounts">-->
@@ -153,21 +153,43 @@ export default {
       }
     },
     getLowestPrice() {
-      let lowestPrice = null;
-      let connectedPrice = null;
+      let lowestDiscounted = null;
+      let originalOfDiscounted = null;
+      let lowestNormal = null;
+
       this.products.forEach((product) => {
-        if (product.discounted !== null) {
-          if (lowestPrice === null || lowestPrice > product.discounted) {
-            lowestPrice = product.discounted;
-            connectedPrice = product.price;
-          }
-        } else if (product.price !== null) {
-          if (lowestPrice === null || lowestPrice > product.price) {
-            lowestPrice = product.price;
+        if (!(product.price === 0)) {
+          if (product.discounted !== null) {
+            if (
+              lowestDiscounted === null ||
+              lowestDiscounted > product.discounted
+            ) {
+              lowestDiscounted = product.discounted;
+              originalOfDiscounted = product.price;
+            }
+          } else if (product.price !== null) {
+            if (lowestNormal === null || lowestNormal > product.price) {
+              lowestNormal = product.price;
+            }
           }
         }
       });
-      return { normalPrice: lowestPrice, discounted: connectedPrice };
+
+      if (
+        lowestDiscounted !== null &&
+        (lowestNormal === null || lowestDiscounted < lowestNormal)
+      ) {
+        return {
+          price: lowestDiscounted,
+          originalPrice: originalOfDiscounted,
+          discounted: true,
+        };
+      } else {
+        return {
+          price: lowestNormal,
+          discounted: false,
+        };
+      }
     },
   },
 };

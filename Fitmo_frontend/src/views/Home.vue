@@ -201,7 +201,8 @@
         <span v-show="!this.isLoading">Zobrazit další produkty</span>
       </button>
     </div>
-    <div class="banners">
+    <div class="banners my-row home__eshop">
+      <h3 class="col-12-xs">NAŠI AMBASADOŘI</h3>
       <banners-images-slider
         class="xs-to-md"
         :breakpoints="{
@@ -234,10 +235,11 @@
       <banners-images-slider
         class="md-to-"
         :breakpoints="{
-          '(min-width: 768px)': { slides: { perView: 3.1, spacing: 10 } },
-          '(min-width: 992px)': { slides: { perView: 3.1, spacing: 10 } },
-          '(min-width: 1200px)': { slides: { perView: 4.1, spacing: 20 } },
-          '(min-width: 1600px)': { slides: { perView: 4.1, spacing: 20 } },
+          '(min-width: 768px)': { slides: { perView: 2.1, spacing: 10 } },
+          '(min-width: 992px)': { slides: { perView: 2.1, spacing: 10 } },
+          '(min-width: 1200px)': { slides: { perView: 3.1, spacing: 20 } },
+          '(min-width: 1600px)': { slides: { perView: 3.1, spacing: 20 } },
+          '(min-width: 1920px)': { slides: { perView: 4.1, spacing: 20 } },
         }"
         :imageBasePath="this.imageBasePath + 'ambassadors/'"
         :images="[
@@ -1055,6 +1057,10 @@ export default {
 .banners {
   margin: 5rem 0 1rem 0;
   padding: 0 1rem;
+
+  h3 {
+    margin: 2rem 0 4rem 0;
+  }
 
   > div {
     display: none !important;

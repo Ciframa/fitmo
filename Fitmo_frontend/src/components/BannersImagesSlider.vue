@@ -104,17 +104,33 @@ export default {
   color: $gray-third;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 30px;
+  height: 30px;
+  padding: 1rem;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 
   &:hover {
     transform: translateY(-50%) scale(1.1);
   }
 
   &__left {
-    left: 2rem;
+    left: 1rem;
   }
 
   &__right {
-    right: 2rem;
+    right: 1rem;
   }
 }
 

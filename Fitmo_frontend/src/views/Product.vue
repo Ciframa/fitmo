@@ -142,44 +142,41 @@
               <div class="home__eshop__wrapper__price">
                 <template v-if="isMainProductActive()">
                   <div class="home__eshop__wrapper__price">
-                    {{ getLowestPrice() }}
                     <span
                       >{{ this.products[0].length > 1 ? "od" : "" }}
-                      {{
-                        getLowestPrice()["discounted"] ??
-                        getLowestPrice()["normalPrice"]
-                      }}
-                      Kč</span
-                    >
+                      <div
+                        class="home__eshop__wrapper__price"
+                        v-if="getLowestPrice()['discounted']"
+                      >
+                        <span class="home__eshop__wrapper__price__trough"
+                          >{{ getLowestPrice()["originalPrice"] }} Kč</span
+                        >
+
+                        <span class="home__eshop__wrapper__price__discount"
+                          >{{ getLowestPrice()["price"] }} Kč</span
+                        >
+                      </div>
+                      <template v-else>
+                        {{ getLowestPrice()["price"] }} Kč
+                      </template>
+                    </span>
                   </div>
                 </template>
-                <template v-if="!isMainProductActive(true)">
-                  <template v-if="product.discounted"
-                    ><span class="home__eshop__wrapper__price__trough"
+                <template v-if="!isMainProductActive()">
+                  <template v-if="product.discounted">
+                    <span class="home__eshop__wrapper__price__trough"
                       >{{ product.price }} Kč</span
                     >
                     <span class="home__eshop__wrapper__price__discount"
                       >{{ product.discounted }} Kč</span
                     >
                   </template>
-
-                  <div
-                    v-if="getLowestPrice(true)['discounted']"
-                    class="home__eshop__wrapper__price"
-                  >
-                    <span class="home__eshop__wrapper__price__trough"
-                      >{{ getLowestPrice(true)["discounted"] }} Kč</span
-                    >
-                    <span class="home__eshop__wrapper__price__discount"
-                      >{{ getLowestPrice(true)["normalPrice"] }} Kč</span
-                    >
-                  </div>
                   <div
                     class="home__eshop__wrapper__price"
-                    v-if="!getLowestPrice(true)['discounted']"
+                    v-if="!product.discounted"
                   >
                     <span>
-                      {{ getLowestPrice(true)["normalPrice"] }}
+                      {{ product.price }}
                       Kč</span
                     >
                   </div>
@@ -194,8 +191,19 @@
                     inline
                     controls
                   ></vue-number-input>
-                  <button class="btn-yellow" @click="addItem(product)">
-                    Přidat do košíku
+                  <button
+                    :class="[
+                      'btn-yellow',
+                      { 'btn-yellow-disabled': isMainProductActive() },
+                    ]"
+                    @click="addItem(product)"
+                    :disabled="isMainProductActive()"
+                  >
+                    {{
+                      isMainProductActive()
+                        ? "Vyberte variantu"
+                        : "Přidat do košíku"
+                    }}
                   </button>
                 </div>
               </div>
@@ -258,6 +266,7 @@ export default {
   },
   methods: {
     isMainProductActive() {
+      if (this.products[0].length === 1) return false;
       const item = this.products[0]?.find((item) => {
         return item?.isMain === 1 && item?.parent_id === 0;
       });
@@ -288,29 +297,45 @@ export default {
         console.log(error);
       }
     },
-    //TODO fixy
-    getLowestPrice(takeOnlyMain = false) {
-      let lowestPrice = null;
-      let connectedPrice = null;
-      const products = takeOnlyMain
-        ? this.products[0].filter((item) => item.isMain === 1)
-        : this.products[0];
-      products.forEach((product) => {
-        if (product.discounted !== null) {
-          console.log(product.discounted);
-          if (lowestPrice === null || lowestPrice > product.discounted) {
-            lowestPrice = product.discounted;
-            connectedPrice = product.price;
-          }
-        } else if (product.price !== null) {
-          console.log(product.price);
-          if (lowestPrice === null || lowestPrice > product.price) {
-            console.log(lowestPrice === null || lowestPrice > product.price);
-            lowestPrice = product.price;
+
+    getLowestPrice() {
+      let lowestDiscounted = null;
+      let originalOfDiscounted = null;
+      let lowestNormal = null;
+
+      this.products[0]?.forEach((product) => {
+        if (!(product.price === 0)) {
+          if (product.discounted !== null) {
+            if (
+              lowestDiscounted === null ||
+              lowestDiscounted > product.discounted
+            ) {
+              lowestDiscounted = product.discounted;
+              originalOfDiscounted = product.price;
+            }
+          } else if (product.price !== null) {
+            if (lowestNormal === null || lowestNormal > product.price) {
+              lowestNormal = product.price;
+            }
           }
         }
       });
-      return { normalPrice: connectedPrice, discounted: lowestPrice };
+
+      if (
+        lowestDiscounted !== null &&
+        (lowestNormal === null || lowestDiscounted < lowestNormal)
+      ) {
+        return {
+          price: lowestDiscounted,
+          originalPrice: originalOfDiscounted,
+          discounted: true,
+        };
+      } else {
+        return {
+          price: lowestNormal,
+          discounted: false,
+        };
+      }
     },
     async getTemplates() {
       if (this.products[0]) {
