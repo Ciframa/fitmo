@@ -1,200 +1,257 @@
 <template>
   <div>
-    <form class="admin__add-product" @submit.prevent="addPhoto($event)">
-      <h2>Přidání produktu</h2>
-      <label for="add-product-name">Název produktu</label>
-      <input
-        id="add-product-name"
-        type="text"
-        placeholder="Název produktu..."
-        v-model="product.name"
-      />
-      <input
-        id="add-product-subName"
-        type="text"
-        placeholder="Popisek produktu..."
-        v-model="product.subName"
-      />
-      <label>Zadej, jestli patří pod nějaký produkt</label>
-      <select v-model="this.product.parent" :key="product.id">
-        <option selected value="0"></option>
-        <option v-for="product in products" :value="product" :key="product.id">
-          {{ product.name }}
-        </option>
-      </select>
-      <label>Zadej variantu která se bude prodávat</label>
-      <input v-model="this.product.variant" type="text" />
-      <template v-if="this.product.parent.color_id !== null">
-        <label>Zadej barvu</label>
+    <div class="sideBar">
+      <ul>
+        <li v-on:click="showedMain = 1">Obecné</li>
+        <li v-on:click="showedMain = 2">Skladovost</li>
+      </ul>
+    </div>
+    <h2>Přidání produktu</h2>
+    <template v-if="showedMain === 1">
+      <h3>Obecné</h3>
+      <form class="admin__add-product" @submit.prevent="addPhoto($event)">
+        <label for="add-product-name">Název produktu</label>
         <input
-          v-model="this.product.colors.primary"
-          type="color"
-          :style="{ backgroundColor: this.product.colors.primary }"
-        />
-        <input
-          v-model="this.product.colors.secondary"
-          type="color"
-          :style="{ backgroundColor: this.product.colors.secondary }"
-        />
-        <input
-          id="add-product-colorName"
+          id="add-product-name"
           type="text"
-          placeholder="Barva produktu..."
-          v-model="this.product.colors.colorName"
+          placeholder="Název produktu..."
+          v-model="product.name"
         />
-      </template>
-      <label>Zadej cenu</label>
-      <input type="text" v-model="this.product.prices.normal" />
-      <div class="my-row" v-if="this.product.isDiscount">
-        <label>Zadej zlevněnou cenu</label>
         <input
-          v-on:change="
-            this.product.prices.discountedPercent =
-              100 -
-              Math.round(
-                (this.product.prices.discounted / this.product.prices.normal) *
-                  100
+          id="add-product-subName"
+          type="text"
+          placeholder="Popisek produktu..."
+          v-model="product.subName"
+        />
+        <label>Zadej, jestli patří pod nějaký produkt</label>
+        <select v-model="this.product.parent" :key="product.id">
+          <option selected value="0"></option>
+          <option
+            v-for="product in products"
+            :value="product"
+            :key="product.id"
+          >
+            {{ product.name }}
+          </option>
+        </select>
+        <label>Zadej variantu která se bude prodávat</label>
+        <input v-model="this.product.variant" type="text" />
+        <template v-if="this.product.parent.color_id !== null">
+          <label>Zadej barvu</label>
+          <input
+            v-model="this.product.colors.primary"
+            type="color"
+            :style="{ backgroundColor: this.product.colors.primary }"
+          />
+          <input
+            v-model="this.product.colors.secondary"
+            type="color"
+            :style="{ backgroundColor: this.product.colors.secondary }"
+          />
+          <input
+            id="add-product-colorName"
+            type="text"
+            placeholder="Barva produktu..."
+            v-model="this.product.colors.colorName"
+          />
+        </template>
+        <label>Zadej cenu</label>
+        <input type="text" v-model="this.product.prices.normal" />
+        <div class="my-row" v-if="this.product.isDiscount">
+          <label>Zadej zlevněnou cenu</label>
+          <input
+            v-on:change="
+              this.product.prices.discountedPercent =
+                100 -
+                Math.round(
+                  (this.product.prices.discounted /
+                    this.product.prices.normal) *
+                    100
+                )
+            "
+            type="text"
+            v-model="this.product.prices.discounted"
+          />
+          <label>Zadej zlevněnou cenu %</label>
+          <input
+            type="text"
+            v-on:change="
+              this.product.prices.discounted = Math.round(
+                (this.product.prices.normal / 100) *
+                  (100 - this.product.prices.discountedPercent)
               )
-          "
-          type="text"
-          v-model="this.product.prices.discounted"
-        />
-        <label>Zadej zlevněnou cenu %</label>
+            "
+            v-model="this.product.prices.discountedPercent"
+          />
+        </div>
+        <label>Sleva?</label>
         <input
-          type="text"
-          v-on:change="
-            this.product.prices.discounted = Math.round(
-              (this.product.prices.normal / 100) *
-                (100 - this.product.prices.discountedPercent)
-            )
-          "
-          v-model="this.product.prices.discountedPercent"
+          type="checkbox"
+          v-model="this.product.isDiscount"
+          class="isDiscount"
+          :class="this.product.isDiscount ? 'active' : ''"
         />
-      </div>
-      <label>Sleva?</label>
-      <input
-        type="checkbox"
-        v-model="this.product.isDiscount"
-        class="isDiscount"
-        :class="this.product.isDiscount ? 'active' : ''"
-      />
-      <label
-        >Kategorie produktu:
-        {{ getCategoryName(this.product.parent.category_id) }}</label
-      >
-      <template v-if="product.parent.id === 0">
-        <div
-          v-for="(productCategory, categoriesIndex) in this.product.categories"
-          :key="categoriesIndex"
+        <label
+          >Kategorie produktu:
+          {{ getCategoryName(this.product.parent.category_id) }}</label
         >
-          {{ productCategory }}
-          <select
-            :disabled="product.parent.id !== 0"
-            :name="'add-product-category-' + categoriesIndex"
-            :id="'add-product-category-' + categoriesIndex"
-            :v-model="productCategory.categoryId"
-            v-for="(subCategory, index) in categoriesSelects"
-            :key="subCategory.id"
-            :onChange="
-              (e) => {
-                productCategory.categoryId = e.target.value;
-                this.getSubCategory(e.target.value, index, categoriesIndex);
+        <template v-if="product.parent.id === 0">
+          <div
+            v-for="(productCategory, categoriesIndex) in this.product
+              .categories"
+            :key="categoriesIndex"
+          >
+            {{ productCategory }}
+            <select
+              :disabled="product.parent.id !== 0"
+              :name="'add-product-category-' + categoriesIndex"
+              :id="'add-product-category-' + categoriesIndex"
+              :v-model="productCategory.categoryId"
+              v-for="(subCategory, index) in categoriesSelects"
+              :key="subCategory.id"
+              :onChange="
+                (e) => {
+                  productCategory.categoryId = e.target.value;
+                  this.getSubCategory(e.target.value, index, categoriesIndex);
+                }
+              "
+            >
+              <option disabled selected></option>
+              <option
+                v-for="category in subCategory"
+                :value="category.id"
+                :key="category.id"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          <font-awesome-icon
+            :icon="['fa', 'plus']"
+            :onClick="
+              () => {
+                this.product.categories.push({ categoryId: 0 });
               }
             "
+          />
+        </template>
+        <div class="my-row admin__stateButtons">
+          <span
+            :class="
+              product.stateButtons.discount
+                ? 'btn-yellow'
+                : 'btn-yellow-notActive'
+            "
+            v-on:click="
+              product.stateButtons.discount = !product.stateButtons.discount
+            "
+            >Akce</span
           >
-            <option disabled selected></option>
-            <option
-              v-for="category in subCategory"
-              :value="category.id"
-              :key="category.id"
-            >
-              {{ category.name }}
+          <span
+            :class="
+              product.stateButtons.topProduct
+                ? 'btn-green'
+                : 'btn-green-notActive'
+            "
+            v-on:click="
+              product.stateButtons.topProduct = !product.stateButtons.topProduct
+            "
+            >Top produkt</span
+          >
+          <span
+            :class="
+              product.stateButtons.newProduct
+                ? 'btn-blue'
+                : 'btn-blue-notActive'
+            "
+            v-on:click="
+              product.stateButtons.newProduct = !product.stateButtons.newProduct
+            "
+            >Novinka</span
+          >
+        </div>
+        <div class="addPhoto__wrapper">
+          <div
+            class="addPhoto__wrapper__checkbox"
+            v-on:click="fileCropping = !fileCropping"
+          >
+            <font-awesome-icon
+              v-if="fileCropping"
+              :icon="['fa', 'check']"
+              class="addPhoto__wrapper__checkbox__svg"
+            />
+
+            <span v-if="fileCropping">S ořezem</span>
+            <span v-if="!fileCropping">Bez ořezu</span>
+          </div>
+          <upload-images
+            v-if="fileCropping"
+            ref="cropper"
+            @updateReview="(value) => (this.imageReview = value)"
+          ></upload-images>
+          <input type="file" v-if="!fileCropping" v-on:change="addPhoto2" />
+          <div class="home__eshop__wrapper">
+            <Product :products="this.product" />
+          </div>
+        </div>
+        <div class="addPhoto__tentativePhotos">
+          <label v-for="(image, index) in product.photos" :key="image.id">
+            <img :src="image.tentativePath" />
+            <div class="buttonsWrapper">
+              <input type="checkbox" :id="index" v-model="image.isMain" />
+              <button
+                type="button"
+                class="delete"
+                v-on:click="this.deleteImage(index)"
+              >
+                X
+              </button>
+            </div>
+          </label>
+        </div>
+        <input type="submit" value="Přidat fotku" class="btn-yellow" />
+      </form>
+    </template>
+    <template v-if="showedMain === 2">
+      <h3>Skladovost</h3>
+      <div class="my-row">
+        <div class="my-row manageStock">
+          <label for="manageStock">
+            <input
+              type="checkbox"
+              v-model="this.product.manageStock"
+              id="manageStock"
+            />
+            <font-awesome-icon :icon="['fa', 'check']" />
+            Spravovat sklad?
+          </label>
+        </div>
+        <template v-if="this.product.manageStock">
+          <label for="add-product-stock">Skladovost produktu</label>
+          <input
+            id="add-product-stock"
+            type="number"
+            placeholder="Skladovost produktu..."
+            v-model="this.product.stock"
+          />
+          <label>Povolit nákup na objednávku?</label>
+          <select v-model="this.product.stockInformation">
+            <option value="allow">Povolit</option>
+            <option value="notAllowed">Nepovolovat</option>
+            <option value="allowButInform">
+              Povolit, ale informovat zákazníka
             </option>
           </select>
-        </div>
-        <font-awesome-icon
-          :icon="['fa', 'plus']"
-          :onClick="
-            () => {
-              this.product.categories.push({ categoryId: 0 });
-            }
-          "
-        />
-      </template>
-      <div class="my-row admin__stateButtons">
-        <span
-          :class="
-            product.stateButtons.discount
-              ? 'btn-yellow'
-              : 'btn-yellow-notActive'
-          "
-          v-on:click="
-            product.stateButtons.discount = !product.stateButtons.discount
-          "
-          >Akce</span
-        >
-        <span
-          :class="
-            product.stateButtons.topProduct
-              ? 'btn-green'
-              : 'btn-green-notActive'
-          "
-          v-on:click="
-            product.stateButtons.topProduct = !product.stateButtons.topProduct
-          "
-          >Top produkt</span
-        >
-        <span
-          :class="
-            product.stateButtons.newProduct ? 'btn-blue' : 'btn-blue-notActive'
-          "
-          v-on:click="
-            product.stateButtons.newProduct = !product.stateButtons.newProduct
-          "
-          >Novinka</span
-        >
+        </template>
+        <template v-if="!this.product.manageStock">
+          <select v-model="this.product.stockInformation">
+            <option value="onStock">Skladem</option>
+            <option value="notOnStock">Není skladem</option>
+            <option value="onOrder">Na objednávku</option>
+          </select>
+        </template>
       </div>
-      <div class="addPhoto__wrapper">
-        <div
-          class="addPhoto__wrapper__checkbox"
-          v-on:click="fileCropping = !fileCropping"
-        >
-          <font-awesome-icon
-            v-if="fileCropping"
-            :icon="['fa', 'check']"
-            class="addPhoto__wrapper__checkbox__svg"
-          />
-
-          <span v-if="fileCropping">S ořezem</span>
-          <span v-if="!fileCropping">Bez ořezu</span>
-        </div>
-        <upload-images
-          v-if="fileCropping"
-          ref="cropper"
-          @updateReview="(value) => (this.imageReview = value)"
-        ></upload-images>
-        <input type="file" v-if="!fileCropping" v-on:change="addPhoto2" />
-        <div class="home__eshop__wrapper">
-          <Product :products="this.product" />
-        </div>
-      </div>
-      <div class="addPhoto__tentativePhotos">
-        <label v-for="(image, index) in product.photos" :key="image.id">
-          <img :src="image.tentativePath" />
-          <div class="buttonsWrapper">
-            <input type="checkbox" :id="index" v-model="image.isMain" />
-            <button
-              type="button"
-              class="delete"
-              v-on:click="this.deleteImage(index)"
-            >
-              X
-            </button>
-          </div>
-        </label>
-      </div>
-      <input type="submit" value="Přidat fotku" class="btn-yellow" />
-    </form>
+    </template>
     <input
       type="submit"
       value="Přidat produkt"
@@ -217,6 +274,8 @@ export default {
       imageReview: "https://be.fitmo.cz/default/default.png",
       categoriesSelects: [],
       product: {
+        stockInformation: "notAllowed",
+        manageStock: true,
         categories: [{ categoryId: 0 }],
         colors: {
           primary: null,
@@ -244,6 +303,7 @@ export default {
       },
       products: [],
       categories: [],
+      showedMain: 1,
     };
   },
 

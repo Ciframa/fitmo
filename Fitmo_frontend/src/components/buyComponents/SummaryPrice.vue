@@ -74,7 +74,6 @@
   </div>
 </template>
 <script>
-
 export default {
   props: {
     page: String,
@@ -89,11 +88,11 @@ export default {
     async loadItems() {
       this.$store.commit(
         "updatePaymentType",
-        JSON.parse(sessionStorage.getItem("paymentType"))
+        JSON.parse(localStorage.getItem("paymentType"))
       );
       this.$store.commit(
         "updateDeliveryType",
-        JSON.parse(sessionStorage.getItem("deliveryType"))
+        JSON.parse(localStorage.getItem("deliveryType"))
       );
     },
     triggerSubmit() {

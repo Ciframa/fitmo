@@ -2,10 +2,12 @@
 import Header from "./views/Header.vue";
 import Footer from "./views/Footer.vue";
 import { Vue3Snackbar } from "vue3-snackbar";
+import AddCartModal from "@/components/AddCartModal.vue";
 </script>
 
 <template>
   <div>
+    <AddCartModal></AddCartModal>
     <Header></Header>
     <RouterView class="content" />
     <Footer></Footer>

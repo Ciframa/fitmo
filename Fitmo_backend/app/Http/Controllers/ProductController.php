@@ -201,10 +201,12 @@ class ProductController extends Controller
             $topCategoriesIds = array_slice(array_keys($idCounts), 0, 10);
 
             // Get categories by ids
-            $categories = Category::select('categories.*')
+            $categories = Category::select('categories.*',
+                'map_table.path as category_path',
+            )
+                ->join('map_table', 'categories.id', '=', 'map_table.category_id')
                 ->whereIn('categories.id', $topCategoriesIds)
                 ->get();
-
             // Now i need 6 products from the categories if they are not in first category then search in the second one and etc
             $finalProducts = [];
             foreach ($categories as $category) {
@@ -221,7 +223,6 @@ class ProductController extends Controller
                         'colors.color_name',
                         'products.*',
                         'product_categories.category_id as category_id',
-                        'map_table.path as category_path',
                     )
                         ->with(['children' => function ($query) {
                             $query->select(
@@ -241,7 +242,6 @@ class ProductController extends Controller
                         ->leftJoin('product_categories', 'products.id', '=', 'product_categories.product_id')
                         ->leftJoin('product_states', 'products.id', '=', 'product_states.product_id')
                         ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
-                        ->leftJoin('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
                         ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                         ->where('products.parent_id', 0)
                         ->where('products.isActive', 1)
@@ -295,6 +295,9 @@ class ProductController extends Controller
                         ->selectRaw('(SELECT GROUP_CONCAT(image_path SEPARATOR "|") FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                         ->where('products.parent_id', '!=', 0)
                         ->where('products.isActive', 1);
+                }, 'categories' => function ($query) {
+                    $query->select('categories.id', 'categories.name', 'map_table.path')
+                        ->join('map_table', 'categories.id', '=', 'map_table.category_id');
                 }])
                 ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                 ->join('product_states', 'products.id', '=', 'product_states.product_id')
@@ -305,11 +308,10 @@ class ProductController extends Controller
                 ->whereIn('products.id', $topProductIds)
                 ->groupBy('products.id')
                 ->get();
-
-
             $finalProducts = $finalProducts->sortBy(function ($product) use ($topProductIds) {
                 return array_search($product->id, $topProductIds);
             })->values(); // Reset the keys
+
 
             //here i need to get all categories from products even their children
             $allCategoriesFromProducts = [];
@@ -518,9 +520,10 @@ class ProductController extends Controller
         return $finalProducts;
     }
 
-    public
-    function getProductById($id)
+    public function getProductByIds($ids)
     {
+        $ids = explode(',', $ids); // <-- Add this line
+
         $products = Product::select(
             'prices.*',
             'product_states.*',
@@ -535,14 +538,16 @@ class ProductController extends Controller
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
             ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
             ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
-            ->where('products.id', $id)
+            ->whereIn('products.id', $ids)
             ->addSelect(Product::raw('(CASE WHEN products.id IN (SELECT parent_id FROM products WHERE parent_id IS NOT NULL) THEN 1 ELSE 0 END) AS hasChildren'))
             ->with('categories', 'images')
             ->get();
+
         foreach ($products as $product) {
             $product->image_urls = explode('|', $product->image_urls);
             $product->categoryPath = str_replace([","], "", Str::ascii(Str::kebab(strtolower(($product["category_name"])))));
         }
+
         return $products;
     }
 
@@ -608,7 +613,7 @@ class ProductController extends Controller
             ->orderBy('categories.id_parent', 'asc')
             ->orderBy('categories.childIndex', 'asc')
             ->orderBy('product_categories.product_order', 'asc');
-//TODO apply filter
+//TODO fix filter
 
 //        if ($request->filter) {
 //            $query->where(function ($q) use ($request) {
@@ -773,6 +778,9 @@ class ProductController extends Controller
         $newProduct->name = $request->name;
         $newProduct->description = $request->subName;
         $newProduct->variant = $request->variant;
+        $newProduct->manageStock = (int)filter_var($request->manageStock, FILTER_VALIDATE_BOOLEAN) ?? true;
+        $newProduct->stock = $request->stock ?? 0;
+        $newProduct->stockInformation = $request->stockInformation ?? $newProduct->manageStock ? "notAllowed" : "onStock";
 
         $newProduct->parent_id = $request->parent["id"];
         $newProduct->url_name = str_replace(" ", "-", (strtolower(str_replace([","], "", Str::ascii($request["name"])))));
@@ -1354,6 +1362,10 @@ class ProductController extends Controller
 //             Product::where('parent_id', $product->id)->update(['category_id' => $request->parent["category_id"]]);
 //         }
         $this->setUrlNames();
+
+        $product->manageStock = (int)filter_var($request->manageStock, FILTER_VALIDATE_BOOLEAN) ?? true;
+        $product->stock = $request->stock ?? 0;
+        $product->stockInformation = $request->stockInformation ?? $product->manageStock ? "notAllowed" : "onStock";
         return $product->save();
     }
 

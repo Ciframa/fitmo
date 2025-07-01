@@ -411,9 +411,9 @@ export default {
             this.$store.commit("updateDeliveryType", []);
             this.$store.commit("updatePaymentType", []);
             this.$store.commit("updateCart", []);
-            sessionStorage.removeItem("paymentType");
-            sessionStorage.removeItem("deliveryType");
-            sessionStorage.removeItem("cart");
+            localStorage.removeItem("paymentType");
+            localStorage.removeItem("deliveryType");
+            localStorage.removeItem("cart");
             this.$router.push({
               path: "/objednavka/potvrzeni/" + response.data.order_id,
             });
@@ -429,13 +429,13 @@ export default {
       this.loggedUser = JSON.parse(sessionStorage.getItem("user"));
       this.$store.commit(
         "updatePaymentType",
-        JSON.parse(sessionStorage.getItem("paymentType"))
+        JSON.parse(localStorage.getItem("paymentType"))
       );
-      const paymentType = JSON.parse(sessionStorage.getItem("paymentType"));
+      const paymentType = JSON.parse(localStorage.getItem("paymentType"));
       this.deliveryDetails.paymentType = paymentType;
       this.$store.commit(
         "updateDeliveryType",
-        JSON.parse(sessionStorage.getItem("deliveryType"))
+        JSON.parse(localStorage.getItem("deliveryType"))
       );
     },
     triggerSubmit() {

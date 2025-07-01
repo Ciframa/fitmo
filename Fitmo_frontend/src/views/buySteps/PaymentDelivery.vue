@@ -132,8 +132,8 @@ export default {
     },
 
     changeDeliveryType(deliveryType) {
-      sessionStorage.removeItem("deliveryType");
-      sessionStorage.setItem(
+      localStorage.removeItem("deliveryType");
+      localStorage.setItem(
         "deliveryType",
         JSON.stringify({
           id: deliveryType.id,
@@ -179,8 +179,8 @@ export default {
     },
 
     changePaymentType(paymentType) {
-      sessionStorage.removeItem("paymentType");
-      sessionStorage.setItem(
+      localStorage.removeItem("paymentType");
+      localStorage.setItem(
         "paymentType",
         JSON.stringify({
           id: paymentType.id,

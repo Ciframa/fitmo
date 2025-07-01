@@ -1,38 +1,60 @@
 <template>
-  <a href="/objednavka/kosik" class="cart">
-    <div class="cart__icon__wrapper">
-      <img src="../../public/assets/icons/cart.svg" alt="Cart icon" />
-      <span class="cart__number">{{ cartAmount }}</span>
+  <div
+    class="modal fade addCartModal"
+    id="addCartModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="addCartModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body my-row">ahoj</div>
+      </div>
     </div>
-    <span v-if="cartAmount === 0" class="cart__text__white"
-      >Košík je<br />prázdný</span
-    >
-  </a>
+  </div>
 </template>
 <script>
 export default {
+  data() {
+    return {
+      initialized: false,
+    };
+  },
   methods: {
-    loadData() {
-      const cart = JSON.parse(localStorage.getItem("cart"));
-      this.$store.commit("updateCart", cart);
+    showAddToCartModal() {
+      const modalElement = document.getElementById("addCartModal");
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
     },
   },
-  mounted() {
-    this.loadData();
-  },
-  computed: {
-    cartAmount() {
-      let amount = 0;
-      if (this.$store.state.cart) {
-        this.$store.state.cart.forEach((element) => {
-          amount += element.count;
-        });
+  watch: {
+    "$store.state.cart"(newCart, oldCart) {
+      // Ignore first trigger
+      if (!this.initialized) {
+        this.initialized = true;
+        return;
       }
-      return amount;
+      let newCount = 0;
+      newCart?.forEach((item) => {
+        newCount += item.count;
+      });
+      let oldCount = 0;
+      oldCart?.forEach((item) => {
+        oldCount += item.count;
+      });
+
+      // Trigger only if new items are added
+      if (newCart.length > oldCart.length || newCount > oldCount) {
+        this.showAddToCartModal();
+      }
     },
   },
 };
 </script>
+
 <style lang="scss" scoped>
 .cart {
   display: flex;

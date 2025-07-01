@@ -74,50 +74,56 @@
             <!--              <font-awesome-icon :icon="['fa', 'star']" />-->
             <!--            </div>-->
             <div class="product__header__item__footer">
-              <p v-if="labelText">
-                {{ labelText }}
-              </p>
-              <div class="product__header__item__footer__variants">
-                <div v-for="variant in this.products[0]" :key="variant.id">
-                  <div
-                    :class="{ active: variant.isMain == 1 }"
-                    class="btn-gray"
-                    v-if="variant?.color_id"
-                    v-on:click="changeProduct(variant)"
-                  >
-                    {{ variant.color_name }}
-                    <div class="home__eshop__wrapper__img_wrapper__subProducts">
-                      <div
-                        v-if="variant.color_primary"
-                        :style="{ backgroundColor: variant.color_primary }"
-                      ></div>
-                      <div
-                        v-if="variant.color_secondary"
-                        :style="{ backgroundColor: variant.color_secondary }"
-                      ></div>
-                    </div>
-                  </div>
-                  <template
-                    v-if="!products[0][0].color_id && products[0].length > 1"
-                  >
+              <div class="product__header__item__footer__variants__wrapper">
+                <p v-if="labelText">
+                  {{ labelText }}
+                </p>
+                <div class="product__header__item__footer__variants">
+                  <template v-for="variant in this.products[0]">
                     <div
-                      :class="variant.isMain ? 'active' : ''"
+                      :class="{ active: variant.isMain == 1 }"
                       class="btn-gray"
-                      v-if="variant.parent_id !== 0"
-                      v-on:click="
-                        changeProduct({
-                          id: variant.isMain ? 'default' : variant.id,
-                        })
-                      "
+                      v-if="variant?.color_id"
+                      v-on:click="changeProduct(variant)"
                     >
-                      {{ variant.variant }}
-                      <font-awesome-icon
-                        class="btn-gray__times"
-                        v-if="variant.isMain"
-                        size="lg"
-                        :icon="['fa', 'times']"
-                      />
+                      {{ variant.color_name }}
+                      <div
+                        class="home__eshop__wrapper__img_wrapper__subProducts"
+                      >
+                        <div
+                          v-if="variant.color_primary"
+                          :style="{ backgroundColor: variant.color_primary }"
+                        ></div>
+                        <div
+                          v-if="variant.color_secondary"
+                          :style="{
+                            backgroundColor: variant.color_secondary,
+                          }"
+                        ></div>
+                      </div>
                     </div>
+                    <template
+                      v-if="!products[0][0].color_id && products[0].length > 1"
+                    >
+                      <div
+                        :class="variant.isMain ? 'active' : ''"
+                        class="btn-gray"
+                        v-if="variant.parent_id !== 0"
+                        v-on:click="
+                          changeProduct({
+                            id: variant.isMain ? 'default' : variant.id,
+                          })
+                        "
+                      >
+                        {{ variant.variant }}
+                        <font-awesome-icon
+                          class="btn-gray__times"
+                          v-if="variant.isMain"
+                          size="lg"
+                          :icon="['fa', 'times']"
+                        />
+                      </div>
+                    </template>
                   </template>
                 </div>
               </div>
@@ -141,13 +147,10 @@
               </div>
               <div class="home__eshop__wrapper__price">
                 <template v-if="isMainProductActive()">
-                  <div class="home__eshop__wrapper__price">
+                  <div>
                     <span
                       >{{ this.products[0].length > 1 ? "od" : "" }}
-                      <div
-                        class="home__eshop__wrapper__price"
-                        v-if="getLowestPrice()['discounted']"
-                      >
+                      <div v-if="getLowestPrice()['discounted']">
                         <span class="home__eshop__wrapper__price__trough"
                           >{{ getLowestPrice()["originalPrice"] }} Kč</span
                         >
@@ -171,10 +174,7 @@
                       >{{ product.discounted }} Kč</span
                     >
                   </template>
-                  <div
-                    class="home__eshop__wrapper__price"
-                    v-if="!product.discounted"
-                  >
+                  <div v-if="!product.discounted">
                     <span>
                       {{ product.price }}
                       Kč</span
@@ -360,7 +360,7 @@ export default {
       }
     },
     addItem(product) {
-      const storedItems = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const storedItems = JSON.parse(localStorage.getItem("cart")) || [];
 
       const itemToUpdate = storedItems.find(
         (item) => item.id === product.product_id
@@ -375,7 +375,7 @@ export default {
 
       this.$store.commit("updateCart", storedItems);
 
-      sessionStorage.setItem("cart", JSON.stringify(storedItems));
+      localStorage.setItem("cart", JSON.stringify(storedItems));
     },
     getNavigation(url) {
       let navigation = [];
@@ -524,6 +524,15 @@ export default {
           align-items: center;
           flex-wrap: wrap;
 
+          &__wrapper {
+            padding: 1.5rem 0;
+
+            p {
+              margin-bottom: 0.3rem;
+              font-size: 1.6rem;
+            }
+          }
+
           &:has(.active) {
             padding: 0;
           }
@@ -611,7 +620,7 @@ export default {
           &__price {
             display: flex;
             font-size: 2.8rem;
-            gap: 0.8rem;
+            gap: 1.8rem;
             margin-top: 2rem;
             align-items: flex-start;
 
@@ -671,11 +680,6 @@ export default {
       margin-top: 0.4rem;
       flex-wrap: wrap;
       width: 100%;
-
-      > p {
-        margin-bottom: 0.3rem;
-        font-size: 1.6rem;
-      }
 
       &__info {
         display: none;
