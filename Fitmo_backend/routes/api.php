@@ -34,7 +34,8 @@ Route::get('/mainProducts', [ProductController::class, 'getMainProducts']);
 
 Route::get('/productsByCategories', [ProductController::class, 'getProductsForOrders']);
 
-Route::get('/productById/{id}', [ProductController::class, 'getProductById']);
+Route::get('/productsByIds/{ids}', [ProductController::class, 'getProductByIds']);
+
 
 Route::get('/mainCategories', [CategoryController::class, 'getMainCategories']);
 Route::get('/subCategory/{id}', [CategoryController::class, 'getSubCategory']);
