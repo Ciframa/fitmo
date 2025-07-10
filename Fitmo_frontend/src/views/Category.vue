@@ -477,25 +477,10 @@ export default {
           "/api/categoryProducts/" + [this.url_path];
         const response = await axios.post(url, {
           filter: {
-            or: [
-              {
-                column: "prices.price",
-                operator: ">=",
-                value: this.barMinValue,
-              },
-              {
-                column: "prices.discounted",
-                operator: ">=",
-                value: this.barMinValue,
-              },
-            ],
-            and: [
-              {
-                column: "prices.price",
-                operator: "<=",
-                value: this.barMaxValue,
-              },
-            ],
+            price: {
+              min: this.barMinValue,
+              max: this.barMaxValue,
+            },
           },
         });
         if (this.products.length === 0) {

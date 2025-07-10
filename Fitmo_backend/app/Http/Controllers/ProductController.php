@@ -579,7 +579,7 @@ class ProductController extends Controller
             'product_categories.category_id as category_id',
             'product_categories.product_order'
         )
-            ->with(['categories', 'children' => function ($query) {
+            ->with(['categories', 'children' => function ($query) use ($request) {
                 $query->select(
                     'prices.*',
                     'product_states.*',
@@ -597,7 +597,25 @@ class ProductController extends Controller
                     ->where('products.parent_id', '!=', 0)
                     ->where('products.isActive', 1)
                     ->whereNotNull('categories.id_parent')
-                    ->groupBy('products.id'); // Ensure each product is only once in children
+                    ->groupBy('products.id');
+
+                // 🔽 Apply same filter logic to children as well
+                if ($request->filter) {
+                    $query->where(function ($q) use ($request) {
+                        $rangeFrom = $request->filter['price']["min"] ?? 0;
+                        $rangeTo = $request->filter['price']["max"] ?? PHP_INT_MAX;
+
+                        $q->where(function ($sub) use ($rangeFrom, $rangeTo) {
+                            $sub->whereNull('prices.price')
+                                ->orWhereBetween('prices.price', [$rangeFrom, $rangeTo]);
+                        });
+
+                        $q->where(function ($sub) use ($rangeFrom, $rangeTo) {
+                            $sub->whereNull('prices.discounted')
+                                ->orWhereBetween('prices.discounted', [$rangeFrom, $rangeTo]);
+                        });
+                    });
+                }
             }])
             ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
             ->join('product_states', 'products.id', '=', 'product_states.product_id')
@@ -615,23 +633,24 @@ class ProductController extends Controller
             ->orderBy('product_categories.product_order', 'asc');
 //TODO fix filter
 
-//        if ($request->filter) {
-//            $query->where(function ($q) use ($request) {
-//                if (!empty($request->filter["and"])) {
-//                    foreach ($request->filter["and"] as $andCondition) {
-//                        $q->where($andCondition['column'], $andCondition['operator'], $andCondition['value']);
-//                    }
-//                }
-//
-//                if (!empty($request->filter["or"])) {
-//                    $q->where(function ($orQ) use ($request) {
-//                        foreach ($request->filter["or"] as $orCondition) {
-//                            $orQ->orWhere($orCondition['column'], $orCondition['operator'], $orCondition['value']);
-//                        }
-//                    });
-//                }
-//            });
-//        }
+        if ($request->filter) {
+            $query->where(function ($q) use ($request) {
+                $rangeFrom = $request->filter['and'][0]["value"] ?? 0;
+                $rangeTo = $request->filter['and'][1]["value"] ?? PHP_INT_MAX;
+
+                // price check: either null OR between range
+                $q->where(function ($sub) use ($rangeFrom, $rangeTo) {
+                    $sub->whereNull('prices.price')
+                        ->orWhereBetween('prices.price', [$rangeFrom, $rangeTo]);
+                });
+
+                // discounted check: either null OR between range
+                $q->where(function ($sub) use ($rangeFrom, $rangeTo) {
+                    $sub->whereNull('prices.discounted')
+                        ->orWhereBetween('prices.discounted', [$rangeFrom, $rangeTo]);
+                });
+            });
+        }
         $paginatedProducts = $query->paginate(16, ['*'], 'page', $request->page ?? 1);
         $products = $this->formatProducts($paginatedProducts, true);
 
