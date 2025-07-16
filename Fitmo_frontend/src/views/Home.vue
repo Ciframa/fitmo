@@ -955,7 +955,7 @@ export default {
     }
 
     &__header {
-      padding-top: 18.3rem;
+      //padding-top: 18.3rem;
       max-width: 1484px;
 
       h2 {

@@ -1298,6 +1298,10 @@ header.Home .content_wrapper__footer {
   }
 }
 
+header.Category + .category.content {
+  padding-top: 0;
+}
+
 @media screen and (max-width: $screen-xl-min) {
   header .loginModal .modal-dialog {
     form.login {

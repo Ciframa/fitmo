@@ -1,5 +1,32 @@
 <template>
   <div class="cart paymentDelivery">
+    <div
+      class="modal fade deleteFromCartModal"
+      id="deleteFromCartModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="deleteFromCartModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body my-row">
+            <h2>Odebrat zboží z košíku?</h2>
+            <div class="my-row">
+              <button class="btn-gray" data-bs-dismiss="modal">
+                Ponechat v košíku
+              </button>
+              <button
+                class="btn-yellow"
+                v-on:click="removeItem(productToBeRemoved)"
+              >
+                Odebrat
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <current-step-c
       v-if="this.cartProducts?.length > 0"
       class="col-12-xs col-8-lg"
@@ -50,7 +77,10 @@
               <span class="cart__wrapper__item_wrapper__header__title"
                 >{{ product.name }}
               </span>
-              <span>{{ product?.variant ?? product?.color_name }}</span>
+              <span
+                >{{ labelText(product) }}
+                {{ product?.variant ?? product?.color_name }}</span
+              >
             </div>
           </div>
           <div class="cart__wrapper__item_wrapper__to_hide">
@@ -85,17 +115,25 @@
           </section>
           <section class="cart__wrapper__item_wrapper__count">
             <div class="number_input">
-              <div class="number_input__minus">-</div>
+              <div
+                class="number_input__minus"
+                v-on:click="reduceProductCount(product)"
+              >
+                -
+              </div>
               <div class="number_input__count">{{ product.count }}</div>
-              <div class="number_input__plus">+</div>
+              <div class="number_input__plus" v-on:click="product.count++">
+                +
+              </div>
             </div>
           </section>
           <div class="cart__wrapper__item_wrapper__to_hide">
             <span>Cena/ks</span>
+            <span>Cena celkem</span>
           </div>
           <section>
             <span class="cart__wrapper__item_wrapper__priceItem"
-              >{{ getLowestPrice(product) }}/ks</span
+              >{{ getLowestPrice(product) }} Kč/ks</span
             >
           </section>
           <section>
@@ -132,6 +170,7 @@ import currentStepC from "../../components/buyComponents/CurrentStep.vue";
 import summaryPriceC from "../../components/buyComponents/SummaryPrice.vue";
 import navButtonsC from "../../components/buyComponents/NavButtons.vue";
 import axios from "../../api";
+import * as bootstrap from "bootstrap";
 
 export default {
   components: {
@@ -142,12 +181,22 @@ export default {
 
   data() {
     return {
+      productToBeRemoved: null,
       imagesBasePath: `https://be.fitmo.cz/products/`,
       cartProducts: [],
     };
   },
 
   methods: {
+    labelText(product) {
+      if (product?.color_name) {
+        return "Barva:";
+      } else if (product?.variant) {
+        return "Varianta:";
+      } else {
+        return "";
+      }
+    },
     removeItem(itemToRemove) {
       // Get the current items from sessionStorage
       const storedItems = this.cartProducts;
@@ -157,10 +206,20 @@ export default {
         (item) => item.id !== itemToRemove
       );
 
+      //Hide modal
+      const modalElement = document.getElementById("deleteFromCartModal");
+      if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+      }
       // Save the filtered array back to sessionStorage
       localStorage.setItem("cart", JSON.stringify(filteredItems));
 
       this.$store.commit("updateCart", filteredItems);
+
+      this.getProducts();
     },
 
     getLowestPrice(product) {
@@ -194,6 +253,19 @@ export default {
         } catch (error) {}
       } else {
         this.cartProducts = [];
+      }
+    },
+    reduceProductCount(product) {
+      if (product.count === 1) {
+        const modalElement = document.getElementById("deleteFromCartModal");
+        if (modalElement) {
+          this.productToBeRemoved = product.id;
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+        }
+      }
+      if (product.count > 1) {
+        product.count--;
       }
     },
     getAvailibility(product) {
@@ -265,6 +337,9 @@ export default {
     },
   },
   computed: {
+    bootstrap() {
+      return bootstrap;
+    },
     products() {
       console.log(this.$store.state.cart);
       return this.$store.state.cart;
@@ -276,7 +351,46 @@ export default {
 };
 </script>
 <style lang="scss">
+.deleteFromCartModal {
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: auto;
+  }
+
+  .btn {
+    padding: 0.8rem 2rem;
+    font-size: 1.7rem;
+  }
+
+  .modal-body .my-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem; /* Add gap between buttons */
+  }
+
+  .modal-body .my-row .btn {
+    flex: 1; /* Make buttons equal width */
+    text-align: center; /* Center text inside buttons */
+  }
+
+  .modal-content {
+    border-radius: 2rem;
+  }
+
+  .modal-body {
+    padding: 3rem;
+    border-radius: 2rem;
+
+    .my-row {
+      margin-top: 1.2rem;
+    }
+  }
+}
+
 .number_input {
+  user-select: none;
+
   display: flex;
   border: 2px solid $gray-second;
   border-radius: 2rem;
@@ -307,6 +421,9 @@ export default {
 
   &__count {
     font-weight: 600;
+    text-align: center;
+    width: 31.5px;
+    white-space: nowrap;
   }
 }
 
@@ -334,7 +451,8 @@ export default {
     &__headings {
       display: none;
       font-size: 1.2rem;
-      color: $gray-second;
+      color: $black-headers;
+      font-weight: 600;
       justify-content: space-between;
 
       span {
@@ -372,6 +490,7 @@ export default {
       display: flex;
       flex-wrap: wrap;
       margin: 1rem auto;
+      position: relative;
 
       &__availibility {
         font-size: 1.5rem;
@@ -455,28 +574,34 @@ export default {
       }
 
       &__to_hide {
-        color: $gray-second;
+        color: $black-headers;
+        font-weight: 600;
         font-size: 1.1rem;
         width: 100%;
         display: flex;
         justify-content: space-between;
+        margin-top: 1.8rem;
 
         :nth-child(2) {
           margin-right: 0.3rem;
         }
 
         &:nth-child(2n) {
-          margin-top: 1.8rem;
         }
       }
 
       section {
         width: 50%;
         display: flex;
+        align-items: center;
 
         &:nth-child(4),
         &:nth-child(7) {
           justify-content: flex-end;
+
+          .number_input {
+            margin-left: auto;
+          }
         }
 
         &:last-child span {
@@ -485,8 +610,9 @@ export default {
           align-items: center;
 
           svg {
-            margin-left: 3rem;
-            margin-right: 0.3rem;
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
           }
         }
       }
@@ -494,7 +620,7 @@ export default {
   }
 }
 
-@media screen and (min-width: $screen-md-min) {
+@media screen and (min-width: $screen-lg-min) {
   .cart {
     display: flex;
     flex-wrap: wrap;
@@ -580,15 +706,20 @@ export default {
 
         &__priceItem {
           font-size: 1rem;
+          width: 12rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
         &__priceFinal {
           font-weight: 400;
-          font-size: 1.2rem;
-          width: 13.2rem;
           display: flex;
-          justify-content: space-between;
+          justify-content: center;
           align-items: center;
+          font-size: 1.2rem;
+          width: 11.5rem;
+          text-align: right;
         }
       }
     }
@@ -645,14 +776,14 @@ export default {
       &__item_wrapper {
         &__header {
           img {
-            height: 10rem;
-            width: 10rem;
+            height: 9rem;
+            width: 9rem;
             object-fit: contain;
           }
 
           &__title {
             font-size: 1.8rem;
-            width: 19rem;
+            width: 18rem;
             line-height: 2.2rem;
           }
 
@@ -666,19 +797,19 @@ export default {
         }
 
         &__priceItem {
-          font-size: 1.4rem;
+          font-size: 1.7rem;
         }
 
         &__priceFinal {
           font-weight: 700;
-          font-size: 2rem;
+          font-size: 1.7rem;
         }
       }
     }
   }
 }
 
-@media screen and (max-width: $screen-md-min - 1px) {
+@media screen and (max-width: $screen-lg-min - 1px) {
   .cart {
     .paymentDelivery {
       &__buttons {
