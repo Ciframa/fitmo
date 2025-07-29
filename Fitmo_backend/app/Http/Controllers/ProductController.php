@@ -700,7 +700,7 @@ class ProductController extends Controller
                     $foundTemplate->text = $template["text"];
                 }
                 if (isset($template["text2"])) {
-                    $foundTemplate->text = $template["text2"];
+                    $foundTemplate->text2 = $template["text2"];
                 }
                 if (isset($template["txt1"])) {
                     $foundTemplate->txt1 = $template["txt1"];
@@ -756,7 +756,7 @@ class ProductController extends Controller
                 $newTemplate->type = $template["type"];
                 $newTemplate->sort = $index;
                 $newTemplate->text = $template["text"];
-                $newTemplate->text = $template["text2"];
+                $newTemplate->text2 = $template["text2"];
                 $newTemplate->image1 = $template["image1"]["image_path"] ?? null;
                 $newTemplate->image2 = $template["image2"]["image_path"] ?? null;
                 $newTemplate->image3 = $template["image3"]["image_path"] ?? null;

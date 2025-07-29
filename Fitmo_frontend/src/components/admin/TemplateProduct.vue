@@ -139,6 +139,65 @@
       />
     </div>
     <div
+      v-if="template.template.type === 'fotkaFotka'"
+      class="fotkaFotka my-row"
+    >
+      <img
+        class="col-12-xs col-6-lg"
+        :src="
+          template.template.from !== 'db'
+            ? template.template.image1?.tentativePath
+            : product.color_name
+            ? imageBasePath +
+              product.name +
+              '-' +
+              product.color_name +
+              '/' +
+              template.template.image1
+            : product.variant
+            ? imageBasePath +
+              product.name +
+              '-' +
+              product.variant +
+              '/' +
+              template.template.image1
+            : imageBasePath + product.name + '/' + template.template.image1
+        "
+      />
+      <img
+        class="col-12-xs col-6-lg"
+        :src="
+          template.template.from !== 'db'
+            ? template.template.image2?.tentativePath
+            : product.color_name
+            ? imageBasePath +
+              product.name +
+              '-' +
+              product.color_name +
+              '/' +
+              template.template.image2
+            : product.variant
+            ? imageBasePath +
+              product.name +
+              '-' +
+              product.variant +
+              '/' +
+              template.template.image2
+            : imageBasePath + product.name + '/' + template.template.image2
+        "
+      />
+    </div>
+    <div v-if="template.template.type === 'textText'" class="textText my-row">
+      <div
+        class="col-12-xs col-6-lg text"
+        v-html="template.template.text"
+      ></div>
+      <div
+        class="col-12-xs col-6-lg text"
+        v-html="template.template.text2"
+      ></div>
+    </div>
+    <div
       v-if="
         template.template.type === 'fotkyText' ||
         template.template.type === 'textFotky'
@@ -307,6 +366,20 @@ li {
     border-radius: 2rem;
   }
 
+  .fotkaFotka {
+    img {
+      object-fit: scale-down;
+    }
+
+    img:first-of-type {
+      border-radius: 2rem 2rem 0 0;
+    }
+
+    img:last-of-type {
+      border-radius: 0 0 2rem 2rem;
+    }
+  }
+
   .youtubeVideo {
     position: relative;
     padding-bottom: 56.25%; /* 16:9 ratio (9 / 16 = 0.5625) */
@@ -349,6 +422,17 @@ li {
     h3 {
       padding: 1rem 0 0.2rem 0;
       text-align: center;
+    }
+  }
+
+  .textText {
+    .text {
+      padding: 3rem;
+      justify-content: center;
+
+      h2 {
+        padding-top: 0;
+      }
     }
   }
 
@@ -501,6 +585,18 @@ li {
   h3 {
     font-size: 2rem !important;
     text-align: left;
+  }
+}
+
+@media screen and (min-width: $screen-md-min) {
+  .fotkaFotka {
+    img:first-of-type {
+      border-radius: 2rem 0 0 2rem;
+    }
+
+    img:last-of-type {
+      border-radius: 0 2rem 2rem 0;
+    }
   }
 }
 </style>
