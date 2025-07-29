@@ -409,6 +409,8 @@
             <option value="fotkyText">Více fotek | Text</option>
             <option value="jenFotka">Jen fotka</option>
             <option value="jenText">Jen text</option>
+            <option value="fotkaFotka">Fotka | Fotka</option>
+            <option value="textText">Text | Text</option>
             <option value="textNaFotce">Text na fotce</option>
             <option value="bloky">Bloky</option>
             <option value="youtubeVideo">YT video</option>
@@ -417,22 +419,33 @@
             <div class="column">
               <input
                 type="text"
-                v-if="template.type !== 'youtubeVideo'"
+                v-if="
+                  template.type !== 'youtubeVideo' &&
+                  template.type !== 'fotkaFotka' &&
+                  template.type !== 'textText'
+                "
                 v-model="template.color"
               />
               <template
                 v-if="
                   template.type !== 'jenFotka' &&
                   template.type !== 'bloky' &&
-                  template.type !== 'youtubeVideo'
+                  template.type !== 'youtubeVideo' &&
+                  template.type !== 'fotkaFotka'
                 "
               >
                 <quill-editor
                   v-model:value="template.text"
                   class="editor"
-                  @change="(value) => onEditorChange(value, template)"
+                  @change="(value) => (template.text = value.html)"
                 />
               </template>
+              <quill-editor
+                v-if="template.type === 'textText'"
+                v-model:value="template.text2"
+                class="editor"
+                @change="(value) => (template.text2 = value.html)"
+              />
             </div>
             <div class="column" v-if="template.type !== 'jenText'">
               <div>
@@ -440,6 +453,11 @@
                   v-if="template.type !== 'youtubeVideo'"
                   type="file"
                   @change="(event) => addPhoto(event, 1, template)"
+                />
+                <input
+                  v-if="template.type === 'fotkaFotka'"
+                  type="file"
+                  @change="(event) => addPhoto(event, 2, template)"
                 />
                 <input
                   type="text"
@@ -562,9 +580,6 @@ export default {
   },
 
   methods: {
-    onEditorChange(value, template) {
-      template.text = value.html;
-    },
     loggedUser() {
       return JSON.parse(sessionStorage.getItem("user"));
     },
@@ -683,6 +698,7 @@ export default {
       this.templates.splice(index, 0, {
         type: "",
         text: "",
+        text2: "",
         from: "created",
         image1: "",
         image2: "",
