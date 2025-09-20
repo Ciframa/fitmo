@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Product;
 use App\Models\Address;
 use App\Models\Order;
-use App\Models\Map_table;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
 use App\Models\Order_product;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -20,76 +17,73 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-public function index()
-{
-    // Retrieve orders with products, pivot data, delivery type, product colors, billing address, and delivery address
-    $orders = Order::with([
-        'products' => function ($query) {
-            // Include pivot data from the order_product table
-            $query->withPivot('product_price');
-            $query->withPivot('product_discounted');
-            $query->withPivot('product_discountedPercent');
-            $query->withPivot('product_count');
-            // Include color information for each product
-            $query->with('color');
-              $query->with('categories');
-        },
-        'deliveryType',
-        'paymentType',
-        'billingAddress',
-        'deliveryAddress',
-        'user'
-    ])->get();
+    public function index()
+    {
+        // Retrieve orders with products, pivot data, delivery type, product colors, billing address, and delivery address
+        $orders = Order::with([
+            'products' => function ($query) {
+                $query->withPivot('product_price')
+                    ->withPivot('product_discounted')
+                    ->withPivot('product_discountedPercent')
+                    ->withPivot('product_count')
+                    ->with(['color', 'categories']);
+            },
+            'deliveryType',
+            'paymentType',
+            'billingAddress',
+            'deliveryAddress',
+            'user'
+        ])
+            ->orderBy('created_at', 'desc') // newest orders first
+            ->get();
 
-    // Loop through each order
-    foreach ($orders as $order) {
-        // Loop through each product in the order
-        foreach ($order->products as $product) {
-            // Map the price to the product from pivot data
-            $product->price = $product->pivot->product_price;
-            $product->discounted = $product->pivot->product_discounted;
-            $product->discountedPercent = $product->pivot->product_discountedPercent;
+        // Loop through each order
+        foreach ($orders as $order) {
+            // Loop through each product in the order
+            foreach ($order->products as $product) {
+                // Map the price to the product from pivot data
+                $product->price = $product->pivot->product_price;
+                $product->discounted = $product->pivot->product_discounted;
+                $product->discountedPercent = $product->pivot->product_discountedPercent;
+            }
         }
-    }
 
-    return $orders;
-}
+        return $orders;
+    }
 
 
     public function getOrderById($hash)
     {
 
-         $orders = Order::with([
-        'products' => function ($query) {
-            // Include pivot data from the order_product table
-            $query->withPivot('product_price');
-            $query->withPivot('product_discounted');
-            $query->withPivot('product_discountedPercent');
-            // Include color information for each product
-            $query->with('color');
-              $query->with('categories');
-        },
-        'deliveryType',
-        'paymentType',
-        'billingAddress',
-        'deliveryAddress',
-        'user'
-    ])->where("hash", $hash)->get();
+        $orders = Order::with([
+            'products' => function ($query) {
+                // Include pivot data from the order_product table
+                $query->withPivot('product_price');
+                $query->withPivot('product_discounted');
+                $query->withPivot('product_discountedPercent');
+                // Include color information for each product
+                $query->with('color');
+                $query->with('categories');
+            },
+            'deliveryType',
+            'paymentType',
+            'billingAddress',
+            'deliveryAddress',
+            'user'
+        ])->where("hash", $hash)->get();
 
-    // Loop through each order
-    foreach ($orders as $order) {
-        // Loop through each product in the order
-        foreach ($order->products as $product) {
-            // Map the price to the product from pivot data
-            $product->price = $product->pivot->product_price;
-            $product->discounted = $product->pivot->product_discounted;
-            $product->discountedPercent = $product->pivot->product_discountedPercent;
+        // Loop through each order
+        foreach ($orders as $order) {
+            // Loop through each product in the order
+            foreach ($order->products as $product) {
+                // Map the price to the product from pivot data
+                $product->price = $product->pivot->product_price;
+                $product->discounted = $product->pivot->product_discounted;
+                $product->discountedPercent = $product->pivot->product_discountedPercent;
+            }
         }
+        return $orders;
     }
-    return $orders;
-    }
-
-
 
 
     /**
@@ -101,7 +95,6 @@ public function index()
     {
         //
     }
-
 
 
     function guidv4($data = null)
@@ -167,7 +160,7 @@ public function index()
             ]);
         }
 
-            $productsToSave = [];
+        $productsToSave = [];
 
         // Check if items in cart exist in the database
         foreach ($cart as $item) {
@@ -175,9 +168,8 @@ public function index()
                 ->selectRaw('(SELECT GROUP_CONCAT(image_path) FROM images WHERE images.product_id = products.id AND images.is_main = 1) AS image_urls')
                 ->leftJoin('prices', 'products.id', '=', 'prices.product_id')
                 ->join('product_states', 'products.id', '=', 'product_states.product_id')
-
-        ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
-        ->join('categories', 'categories.id', '=', 'product_categories.category_id')
+                ->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->join('categories', 'categories.id', '=', 'product_categories.category_id')
                 ->join('map_table', 'product_categories.category_id', '=', 'map_table.category_id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->orderBy('products.created_at', "desc")
@@ -195,18 +187,22 @@ public function index()
                     'status' => 400
                 ]);
             }
+            // Check if enough items are in stock
+
+
             // Assign the count value from $item to the product
             $product['count'] = $item['count'];
-            if($product->discounted){
+            if ($product->discounted) {
                 $totalPrice += $product->discounted * $product['count'];
-            }
-            else{
+            } else {
                 $totalPrice += $product->price * $product['count'];
             }
 
             // Add the modified product to the $productsToSave array
             $productsToSave[] = $product;
         }
+
+
         //Save address
         $newBillingAddress = new Address();
         $newBillingAddress->city = $billingInfo["city"];
@@ -229,13 +225,12 @@ public function index()
         $newDeliveryAddressId = $newDeliveryAddress->id;
 
         $userId = $request->userId;
-        if(!$userId){
+        if (!$userId) {
             $foundUser = User::where('email', $customerInfo['email'])->first();
-            if($foundUser){
+            if ($foundUser) {
                 $userId = $foundUser->id;
                 //doplnit úprava adres?
-            }
-            else{
+            } else {
                 $newUser = new User();
                 $newUser->name = $customerInfo["nameSurname"];
                 $newUser->phone = $customerInfo["phone"];
@@ -280,7 +275,7 @@ public function index()
         $to_email = $customerInfo["email"];
         $email_data = array('name' => $to_name, 'email' => $to_email, "order_id" => $newOrder->hash, 'order_hash' => $newOrder->hash, "total_price" => $totalPrice);
 
-         Mail::send('shipped', $email_data, function ($message) use ($email_data) {
+        Mail::send('shipped', $email_data, function ($message) use ($email_data) {
             $message->to($email_data['email'], $email_data['name'])
                 ->subject('Potvrzení objednávky na Fitmo.cz č.' . $email_data["order_hash"])
                 ->from('obchod@fitmo.cz', 'Fitmo');
@@ -296,7 +291,7 @@ public function index()
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -307,7 +302,7 @@ public function index()
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -318,34 +313,35 @@ public function index()
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         //
     }
-   public function updateState(Request $request)
-   {
-       // Validate the request data
-       $request->validate([
-           'orderIds' => 'required|array',
-           'action' => 'required|string',
-       ]);
 
-       // Update the status of each order
-       Order::whereIn('id', $request->orderIds)
-           ->update(['status' => $request->action]);
+    public function updateState(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'orderIds' => 'required|array',
+            'action' => 'required|string',
+        ]);
 
-       // Return a success response
-       return response()->json(['message' => 'Orders updated successfully']);
-   }
+        // Update the status of each order
+        Order::whereIn('id', $request->orderIds)
+            ->update(['status' => $request->action]);
+
+        // Return a success response
+        return response()->json(['message' => 'Orders updated successfully']);
+    }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

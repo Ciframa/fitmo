@@ -5,7 +5,7 @@
       class="paymentDelivery__buttons__back btn"
     >
       <img src="../../../public/assets/icons/double_arrow_gray.svg" alt="" />
-      <img src="../../../public/assets/icons/double_arrow_white.svg" alt="" />
+      <!--      <img src="../../../public/assets/icons/double_arrow_white.svg" alt="" />-->
       Pokračovat v nakupování
     </router-link>
     <router-link

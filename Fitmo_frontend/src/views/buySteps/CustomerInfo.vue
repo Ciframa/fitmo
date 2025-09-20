@@ -129,11 +129,14 @@
             />
           </div>
           <div
-            class="my-row"
+            class="my-row customersInfo__form_wrapper__country__wrapper"
             :class="{ 'has-error': validationErrors.billingInfo.country }"
           >
             <label for="country">Země*</label>
             <select
+              v-on:click="
+                this.billingInfoShownCountry = !this.billingInfoShownCountry
+              "
               name="country"
               v-model="this.deliveryDetails.billingInfo.country"
               class="customersInfo__form_wrapper__country"
@@ -141,6 +144,10 @@
               <option value="cz">Česko</option>
               <option value="sk">Slovensko</option>
             </select>
+            <font-awesome-icon
+              :class="{ rotate: this.billingInfoShownCountry }"
+              :icon="['fa', 'angle-down']"
+            />
           </div>
         </form>
       </div>
@@ -222,7 +229,7 @@
             />
           </div>
           <div
-            class="my-row"
+            class="my-row customersInfo__form_wrapper__country__wrapper"
             :class="{ 'has-error': validationErrors.deliveryInfo.country }"
           >
             <label for="country">Země*</label>
@@ -268,6 +275,7 @@ export default {
   data() {
     return {
       value: "",
+      billingInfoShownCountry: false,
       loggedUser: null,
       selectedAddress: "",
       validationErrors: {
@@ -361,6 +369,8 @@ export default {
     },
 
     validateForm() {
+      // Validate only if submitted
+
       // Validate all fields
       Object.keys(this.validationErrors.customerInfo).forEach((fieldName) => {
         this.validateField(fieldName, "customerInfo");
@@ -535,6 +545,27 @@ export default {
       border-radius: 1rem;
       border-color: $gray-second;
       color: $gray;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 2em; /* space for arrow */
+
+      &.rotate svg {
+        transform: rotateX(180deg);
+      }
+
+      &__wrapper {
+        position: relative;
+        display: inline-block;
+
+        svg {
+          position: absolute;
+          pointer-events: none;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
 
       div {
         margin: 0;

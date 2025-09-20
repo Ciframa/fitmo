@@ -127,7 +127,7 @@ export default {
     return {
       products: [],
       imagesBasePath: "https://be.fitmo.cz/products/",
-      // imagesBasePath: "http://localhost:8000/products/",
+      // imagesBasePath: "https://be.fitmo.cz/products/",
     };
   },
 

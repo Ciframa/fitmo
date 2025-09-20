@@ -118,13 +118,12 @@
               <div
                 class="number_input__minus"
                 v-on:click="reduceProductCount(product)"
-              >
-                -
-              </div>
+              ></div>
               <div class="number_input__count">{{ product.count }}</div>
-              <div class="number_input__plus" v-on:click="product.count++">
-                +
-              </div>
+              <div
+                class="number_input__plus"
+                v-on:click="product.count++"
+              ></div>
             </div>
           </section>
           <div class="cart__wrapper__item_wrapper__to_hide">
@@ -405,24 +404,34 @@ export default {
   &__plus {
     background: $gray-third;
     border-radius: 50%;
-    aspect-ratio: 1/1;
-    height: 2.2rem;
+    width: 2rem;
+    height: 2rem;
     display: flex;
-    align-items: center;
+    align-items: center; // ⬅️ put this back
     justify-content: center;
     font-size: 1.6rem;
     transition: background 0.3s ease;
     cursor: pointer;
+    line-height: 1; // keep it neutral
+    text-align: center;
 
     &:hover {
       background: $yellow;
     }
   }
 
+  &__minus:before {
+    content: "-";
+  }
+
+  &__plus:before {
+    content: "+";
+  }
+
   &__count {
     font-weight: 600;
     text-align: center;
-    width: 31.5px;
+    width: 3rem;
     white-space: nowrap;
   }
 }

@@ -361,7 +361,7 @@ export default {
     },
     addItem(product) {
       const storedItems = JSON.parse(localStorage.getItem("cart")) || [];
-
+      console.log(storedItems, product);
       const itemToUpdate = storedItems.find(
         (item) => item.id === product.product_id
       );
