@@ -25,7 +25,7 @@
             </h3>
             <ul>
               <li v-for="child in category.children" :key="child.id">
-                <a :href="child.url_path">{{ child.name }}</a>
+                <router-link :to="child.url_path">{{ child.name }}</router-link>
               </li>
             </ul>
             <router-link

@@ -1,5 +1,5 @@
 <template>
-  <a href="/objednavka/kosik" class="cart">
+  <router-link to="/objednavka/kosik" class="cart">
     <div class="cart__icon__wrapper">
       <img src="../../public/assets/icons/cart.svg" alt="Cart icon" />
       <span class="cart__number">{{ cartAmount }}</span>
@@ -7,7 +7,7 @@
     <span v-if="cartAmount === 0" class="cart__text__white"
       >Košík je<br />prázdný</span
     >
-  </a>
+  </router-link>
 </template>
 <script>
 export default {

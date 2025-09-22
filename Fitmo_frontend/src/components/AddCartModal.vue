@@ -32,6 +32,7 @@ export default {
   },
   watch: {
     "$store.state.cart"(newCart, oldCart) {
+      console.log(newCart, oldCart);
       // Ignore first trigger
       if (!this.initialized) {
         this.initialized = true;
@@ -45,7 +46,7 @@ export default {
       oldCart?.forEach((item) => {
         oldCount += item.count;
       });
-
+      console.log(newCount, oldCount);
       // Trigger only if new items are added
       if (newCart.length > oldCart.length || newCount > oldCount) {
         this.showAddToCartModal();

@@ -82,8 +82,8 @@
                 </li>
               </ul>
               <div class="no-acc">
-                <a href="/registrace" class="btn-black"
-                  >Chci se zaregistrovat</a
+                <router-link to="/registrace" class="btn-black"
+                  >Chci se zaregistrovat</router-link
                 >
               </div>
             </div>
