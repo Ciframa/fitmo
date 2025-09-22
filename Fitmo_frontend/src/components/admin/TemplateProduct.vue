@@ -576,6 +576,10 @@ li {
   text-align: justify !important;
 }
 
+.templates a {
+  display: inline !important;
+}
+
 .editor {
   h2 {
     font-size: 2rem !important;
