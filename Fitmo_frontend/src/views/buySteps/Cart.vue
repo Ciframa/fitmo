@@ -28,7 +28,6 @@
       </div>
     </div>
     <current-step-c
-      v-if="this.cartProducts?.length > 0"
       class="col-12-xs col-8-lg"
     ></current-step-c>
     <h1>
@@ -292,7 +291,7 @@ export default {
           return { text: "Skladem", type: "success", count: ">5" };
         }
         if (product.stockInformation === "onOrder") {
-          return { text: "Na objednávku", type: "warning", count: ">5" };
+          return { text: "Na objednávku", type: "warning", count: 0 };
         }
         if (product.stockInformation === "notOnStock") {
           return { text: "Není skladem", type: "danger", count: 0 };
@@ -745,7 +744,7 @@ export default {
     .paymentDelivery {
       &__currentStep {
         order: 1;
-        margin: auto;
+        //margin: auto;
       }
 
       &__summary__wrapper {

@@ -23,14 +23,15 @@
             <div class="category__eshop__filters">
               <div class="category__eshop__filters__price">
                 <span>Cena</span>
+                {{initFilters}}
                 <MultiRangeSlider
                   v-if="
-                    initFilters.price.min !== null &&
-                    initFilters.price.max !== null
+                    initFilters.price?.min !== null &&
+                    initFilters.price?.max !== null
                   "
                   baseClassName="multi-range-slider"
-                  :min="initFilters.price.min"
-                  :max="initFilters.price.max"
+                  :min="10"
+                  :max="20"
                   :step="1"
                   :ruler="false"
                   :label="true"
