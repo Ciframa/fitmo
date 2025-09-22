@@ -100,6 +100,7 @@
           <p>Kategorie produktu:</p>
 
           <template v-if="product.parent_id === 0">
+            <!-- Start with just one select at the top level -->
             <div
               :key="category.id"
               v-for="(category, categoryIndex) in product.categories"
@@ -109,45 +110,32 @@
               {{ category.categoryId }}
               <div>
                 {{ category?.name }}
-                <select
-                  :disabled="product.parent_id !== 0"
-                  v-if="category?.categoryStatus"
-                  :name="'add-product-category-' + index"
-                  :id="'add-product-category-' + index"
-                  v-for="(subCategory, index) in categoriesSelects"
-                  :key="subCategory.id"
-                  :onChange="
-                    (e) => {
-                      this.getSubCategory(e.target.value, index, categoryIndex);
-                    }
-                  "
+                <div
+                  class="my-row"
+                  v-if="groupedCategories && category?.categoryStatus"
                 >
-                  <option disabled selected></option>
-                  <option
-                    v-for="category in subCategory"
-                    :value="category.id"
-                    :key="category.id"
-                  >
-                    {{ category?.name }}
-                  </option>
-                </select>
-                <font-awesome-icon
-                  :icon="['fa', 'times']"
-                  :onClick="
-                    () => {
-                      if (
-                        this.product.categories[categoryIndex].categoryStatus
-                      ) {
-                        // Remove the category at index `categoryIndex`
-                        this.product.categories.splice(categoryIndex, 1);
-                      } else {
-                        this.product.categories[categoryIndex].categoryStatus =
-                          'deleted';
-                      }
-                    }
-                  "
-                />
+                  <CategorySelect
+                    :category="groupedCategories"
+                    :product="product"
+                    @category-selected="onCategorySelected"
+                    :index="categoryIndex"
+                  />
+                </div>
               </div>
+              <font-awesome-icon
+                :icon="['fa', 'times']"
+                :onClick="
+                  () => {
+                    if (this.product.categories[categoryIndex].categoryStatus) {
+                      // Remove the category at index `categoryIndex`
+                      this.product.categories.splice(categoryIndex, 1);
+                    } else {
+                      this.product.categories[categoryIndex].categoryStatus =
+                        'deleted';
+                    }
+                  }
+                "
+              />
             </div>
             <font-awesome-icon
               :icon="['fa', 'plus']"
@@ -554,9 +542,11 @@ import TemplateProduct from "../../components/admin/TemplateProduct.vue";
 import { quillEditor } from "vue3-quill";
 import Product from "@/components/Product.vue";
 import UploadImages from "@/components/UploadImages.vue";
+import CategorySelect from "@/views/admin/CategorySelect.vue";
 
 export default {
   components: {
+    CategorySelect,
     UploadImages,
     Product,
     ImagesSlider,
@@ -569,7 +559,6 @@ export default {
       product: {},
       products: {},
       templates: [],
-      categoriesSelects: [],
       categories: [],
       fileCropping: false,
       groupedCategories: [],
@@ -582,6 +571,9 @@ export default {
   methods: {
     loggedUser() {
       return JSON.parse(sessionStorage.getItem("user"));
+    },
+    onCategorySelected({ index, id }) {
+      this.product.categories[index].categoryId = id;
     },
     addPhoto2(event) {
       const uploadedFile = event.target.files[0]; // Get the selected file
@@ -761,14 +753,6 @@ export default {
         console.log(error);
       }
     },
-    async getMainCategories() {
-      try {
-        const response = await axios.get("/api/mainCategories");
-        this.categoriesSelects.push(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
     async getTemplates() {
       try {
         const response = await axios.get(
@@ -827,18 +811,6 @@ export default {
           });
         });
     },
-    async getSubCategory(id, index, categoryIndex) {
-      this.product.categories[categoryIndex].categoryId = id;
-      this.categoriesSelects.splice(index + 1);
-      try {
-        const response = await axios.get("/api/subCategory/" + id);
-        if (response.data.length) {
-          this.categoriesSelects.push(response.data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
     async editProduct() {
       await axios
         .post("/api/product/" + this.product.id, this.product, {
@@ -883,7 +855,6 @@ export default {
         this.product.categoryName = this.getCategoryName(
           this.product.category_id
         );
-        this.categoriesSelects = [];
       } catch (error) {
         console.log(error);
       }
@@ -911,7 +882,7 @@ export default {
         this.getTemplates();
       });
       this.getCategories();
-      this.getMainCategories();
+      // this.getMainCategories();
     },
   },
 
@@ -925,6 +896,7 @@ export default {
 <style lang="scss">
 .category-my-row {
   gap: 1rem;
+  align-items: center;
   padding: 0.3rem 0;
 }
 
