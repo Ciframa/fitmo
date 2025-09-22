@@ -874,11 +874,6 @@ export default {
           "/api/productsByIds/" + [this.$route.params.productId]
         );
         this.product = response.data[0];
-        console.log(
-          response.data[0].manageStock,
-          response.data[0].manageStock == 1,
-          response.data[0].manageStock === 1
-        );
         this.product.manageStock = response.data[0].manageStock === 1;
         //new photos
         this.product.photos = response.data[0].images.map((image) => {

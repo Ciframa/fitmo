@@ -586,6 +586,10 @@ li {
     font-size: 2rem !important;
     text-align: left;
   }
+
+  a {
+    display: inline !important;
+  }
 }
 
 @media screen and (min-width: $screen-md-min) {
