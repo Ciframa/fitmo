@@ -312,14 +312,14 @@ export default {
           street: "",
           city: "",
           zip: "",
-          country: "",
+          country: "cz",
           type: "billing",
         },
         deliveryInfo: {
           street: "",
           city: "",
           zip: "",
-          country: "",
+          country: "cz",
           type: "home",
         },
       },
@@ -441,8 +441,9 @@ export default {
         "updatePaymentType",
         JSON.parse(localStorage.getItem("paymentType"))
       );
-      const paymentType = JSON.parse(localStorage.getItem("paymentType"));
-      this.deliveryDetails.paymentType = paymentType;
+      this.deliveryDetails.paymentType = JSON.parse(
+        localStorage.getItem("paymentType")
+      );
       this.$store.commit(
         "updateDeliveryType",
         JSON.parse(localStorage.getItem("deliveryType"))

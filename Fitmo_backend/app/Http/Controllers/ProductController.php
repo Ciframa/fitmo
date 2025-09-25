@@ -1379,16 +1379,11 @@ class ProductController extends Controller
                 }
             }
         }
-//         if ($request->parent["category_id"] != 0) {
-//
-//             $product->category_id = $request->parent["category_id"];
-//             Product::where('parent_id', $product->id)->update(['category_id' => $request->parent["category_id"]]);
-//         }
         $this->setUrlNames();
 
         $product->manageStock = (int)filter_var($request->manageStock, FILTER_VALIDATE_BOOLEAN) ?? true;
         $product->stock = $request->stock ?? 0;
-        $product->stockInformation = $request->stockInformation ?? $product->manageStock ? "notAllowed" : "onStock";
+        $product->stockInformation = $request->stockInformation;
         return $product->save();
     }
 
